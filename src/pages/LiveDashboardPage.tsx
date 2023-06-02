@@ -71,7 +71,7 @@ const LiveDashboardPage = () => {
     url: `/0/query?where=(city='Brno' AND pubMillis >= DATE '${filter.fromDate}' AND pubMillis <= DATE '${filter.toDate}')&outFields=*&outSR=4326&f=json`,
     api: 'event',
   });
-  console.log('Hello world');
+  console.log('🚀 ~ file: LiveDashboardPage.tsx:74 ~ LiveDashboardPage ~ dataEvent:', dataEvent);
   return (
     <div>
       {loadingDelay || loadingEvent ? (

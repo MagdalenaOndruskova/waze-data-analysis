@@ -1,0 +1,85 @@
+$backgroundColor: white;
+$contentTextColor: black;
+$filterTextColor: white;
+$linkColorActive: #d4041c;
+$fontFamily: 'Roboto', 'sans-serif';
+$cardBodyColor: #d9d9d9;
+$buttonHoverBackgroundColor: #6f040f;
+
+header {
+  background-color: $backgroundColor;
+  text-align: center;
+  color: $contentTextColor;
+  height: 50px;
+  padding-inline: 50;
+  line-height: 64px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  font-family: $fontFamily;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav {
+  a {
+    margin: 0 1rem;
+    color: $contentTextColor;
+    text-decoration: none;
+  }
+}
+
+.active {
+  color: $linkColorActive !important;
+}
+
+.sidebar {
+  text-align: center;
+  line-height: 40px;
+  color: $filterTextColor;
+  background-color: $linkColorActive;
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  overflow-x: hidden;
+  top: 50px;
+  left: 0;
+
+  Button {
+    color: $linkColorActive;
+    letter-spacing: 2px;
+    font-weight: bold;
+  }
+  Button:hover {
+    background-color: $buttonHoverBackgroundColor;
+    color: $filterTextColor !important;
+    border: $buttonHoverBackgroundColor;
+  }
+}
+
+.content {
+  text-align: center;
+  min-height: 120;
+  line-height: 120px;
+  color: $contentTextColor;
+  background-color: $backgroundColor;
+  padding-top: 60px;
+  padding-left: 200px;
+  overflow: hidden;
+}
+
+.cardbody {
+  width: 218px;
+  height: 100px;
+  margin-top: 10px;
+  background-color: $cardBodyColor;
+  padding: 0;
+}
+
+.filterStyle {
+  width: 180px;
+}

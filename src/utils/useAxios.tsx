@@ -33,7 +33,7 @@ const useAxios = <T,>({ url, method = 'get', api, body, headers }: Props) => {
   } else if (api === 'street') {
     apiName = streetApi;
   }
-
+  console.log(`${apiName}${url}`);
   const fetchData = () => {
     axios[method]<T>(`${apiName}${url}`, headers, body)
       .then((res) => {

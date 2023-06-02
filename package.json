@@ -1,6 +1,6 @@
 {
   "homepage": "https://magdalenaondruskova.github.io/waze-data-analysis",
-  "name": "traffic-app",
+  "name": "waze-data-analysis",
   "private": true,
   "version": "0.0.0",
   "type": "module",

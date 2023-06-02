@@ -71,7 +71,7 @@ const LiveDashboardPage = () => {
     url: `/0/query?where=(city='Brno' AND pubMillis >= DATE '${filter.fromDate}' AND pubMillis <= DATE '${filter.toDate}')&outFields=*&outSR=4326&f=json`,
     api: 'event',
   });
-  console.log('ahoj');
+  console.log('Hello world');
   return (
     <div>
       {loadingDelay || loadingEvent ? (

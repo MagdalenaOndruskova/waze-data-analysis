@@ -14,7 +14,7 @@ function App() {
         <Route index element={<LiveDashboardPage />} />
         <Route path="dashboard" element={<Dashboard />} />
       </Route>
-      <Route path="*" element={<h1>TODO: NotFound komponent</h1>} />
+      <Route path="*" element={<h1>TODO: NotFound komponent!</h1>} />
     </Routes>
   );
 }

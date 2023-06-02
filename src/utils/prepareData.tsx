@@ -10,6 +10,7 @@ import {
   TrafficJamTypePlot,
 } from '../types/TrafficDelay';
 import { TrafficEvent, TrafficEventStreetsPlot, TrafficEventTypePlot } from '../types/TrafficEvent';
+import { number } from 'prop-types';
 
 type DataDelay = {
   features: {
@@ -26,19 +27,15 @@ type DataEvent = {
 // TODO: Refactor this shit
 function prepareDataArray(data: DataDelay | DataEvent | null) {
   var preparedData = data?.features?.map((item) => new TrafficDelayPlot(item.attributes));
-  var preparedDataWithTime = preparedData?.map(function (e) {
-    e.roundToNearestHour(e.x);
-    return e;
-  });
 
   const counts = {};
-  preparedDataWithTime?.forEach(function (item) {
+  preparedData?.forEach(function (item) {
     counts[item.x] = (counts[item.x] || 0) + 1;
   });
 
   var arrayData = Object.entries(counts);
   var sortedArray = arrayData.sort(function (a, b) {
-    return new Date(a[0]) - new Date(b[0]);
+    return a[0].localeCompare(b[0]);
   });
 
   const final = [];
@@ -74,29 +71,25 @@ function prepareDataJamTypePreprocessing(data: DataDelay | null) {
 // TODO: Refactor this shit
 function prepareDataJamLevelPreprocessing(data: DataDelay | null) {
   var preparedData = data?.features?.map((item) => new TrafficJamLevelPlot(item.attributes));
-  var preparedDataWithTime = preparedData?.map(function (e) {
-    e.roundToNearestHour(e.x);
-    return e;
-  });
 
-  const counts = {};
-  preparedDataWithTime?.forEach(function (item) {
+  const counts: { [key: string]: number } = {};
+  preparedData?.forEach(function (item) {
     counts[item.x] = (counts[item.x] || 0) + 1;
   });
 
-  const sumsLevel = {};
-  preparedDataWithTime?.forEach(function (item) {
+  const sumsLevel: { [key: string]: number } = {};
+  preparedData?.forEach(function (item) {
     sumsLevel[item.x] = (sumsLevel[item.x] || 0) + item.y;
   });
 
-  const averageLevel = {};
-  preparedDataWithTime?.forEach(function (item) {
+  const averageLevel: { [key: string]: number } = {};
+  preparedData?.forEach(function (item) {
     averageLevel[item.x] = Number((sumsLevel[item.x] / counts[item.x]).toFixed(2));
   });
 
   var arrayData = Object.entries(averageLevel);
   var sortedArray = arrayData.sort(function (a, b) {
-    return new Date(a[0]) - new Date(b[0]);
+    return a[0].localeCompare(b[0]);
   });
 
   const final = [];
@@ -107,29 +100,25 @@ function prepareDataJamLevelPreprocessing(data: DataDelay | null) {
 
 function prepareDataAverageSpeedPreprocessing(data: DataDelay | null) {
   var preparedData = data?.features?.map((item) => new TrafficJamAverageSpeedPlot(item.attributes));
-  var preparedDataWithTime = preparedData?.map(function (e) {
-    e.roundToNearestHour(e.x);
-    return e;
-  });
 
-  const counts = {};
-  preparedDataWithTime?.forEach(function (item) {
+  const counts: { [key: string]: number } = {};
+  preparedData?.forEach(function (item) {
     counts[item.x] = (counts[item.x] || 0) + 1;
   });
 
-  const sumsLevel = {};
-  preparedDataWithTime?.forEach(function (item) {
+  const sumsLevel: { [key: string]: number } = {};
+  preparedData?.forEach(function (item) {
     sumsLevel[item.x] = (sumsLevel[item.x] || 0) + item.y;
   });
 
-  const averageLevel = {};
-  preparedDataWithTime?.forEach(function (item) {
+  const averageLevel: { [key: string]: number } = {};
+  preparedData?.forEach(function (item) {
     averageLevel[item.x] = Number((sumsLevel[item.x] / counts[item.x]).toFixed(2));
   });
 
   var arrayData = Object.entries(averageLevel);
   var sortedArray = arrayData.sort(function (a, b) {
-    return new Date(a[0]) - new Date(b[0]);
+    return a[0].localeCompare(b[0]);
   });
 
   const final = [];
@@ -140,19 +129,15 @@ function prepareDataAverageSpeedPreprocessing(data: DataDelay | null) {
 
 function prepareDataJamLengthPreprocessing(data: DataDelay | null) {
   var preparedData = data?.features?.map((item) => new TrafficJamLengthPlot(item.attributes));
-  var preparedDataWithTime = preparedData?.map(function (e) {
-    e.roundToNearestHour(e.x);
-    return e;
-  });
 
-  const sumsLevel = {};
-  preparedDataWithTime?.forEach(function (item) {
+  const sumsLevel: { [key: string]: number } = {};
+  preparedData?.forEach(function (item) {
     sumsLevel[item.x] = (sumsLevel[item.x] || 0) + item.y;
   });
 
   var arrayData = Object.entries(sumsLevel);
   var sortedArray = arrayData.sort(function (a, b) {
-    return new Date(a[0]) - new Date(b[0]);
+    return a[0].localeCompare(b[0]);
   });
 
   const final = [];
@@ -163,19 +148,15 @@ function prepareDataJamLengthPreprocessing(data: DataDelay | null) {
 
 function prepareDataDelayPreprocessing(data: DataDelay | null) {
   var preparedData = data?.features?.map((item) => new TrafficJamDelayPlot(item.attributes));
-  var preparedDataWithTime = preparedData?.map(function (e) {
-    e.roundToNearestHour(e.x);
-    return e;
-  });
 
-  const sumsLevel = {};
-  preparedDataWithTime?.forEach(function (item) {
+  const sumsLevel: { [key: string]: number } = {};
+  preparedData?.forEach(function (item) {
     sumsLevel[item.x] = (sumsLevel[item.x] || 0) + item.y;
   });
 
   var arrayData = Object.entries(sumsLevel);
   var sortedArray = arrayData.sort(function (a, b) {
-    return new Date(a[0]) - new Date(b[0]);
+    return a[0].localeCompare(b[0]);
   });
 
   const final = [];
@@ -187,7 +168,7 @@ function prepareDataDelayPreprocessing(data: DataDelay | null) {
 function prepareStreetsByAlerts(data: DataEvent | null) {
   var preparedData = data?.features?.map((item) => new TrafficEventStreetsPlot(item.attributes));
 
-  const counts = {};
+  const counts: { [key: string]: number } = {};
   preparedData?.forEach(function (item) {
     if (item.street != null) {
       counts[item.street] = (counts[item.street] || 0) + 1;
@@ -209,7 +190,7 @@ function prepareStreetsByAlerts(data: DataEvent | null) {
 function prepareStreetsByJams(data: DataDelay | null) {
   var preparedData = data?.features?.map((item) => new TrafficDelayStreetsPlot(item.attributes));
 
-  const counts = {};
+  const counts: { [key: string]: number } = {};
   preparedData?.forEach(function (item) {
     if (item.street != null) {
       counts[item.street] = (counts[item.street] || 0) + 1;
@@ -217,6 +198,7 @@ function prepareStreetsByJams(data: DataDelay | null) {
   });
 
   var arrayData = Object.entries(counts);
+  console.log('🚀 ~ file: prepareData.tsx:221 ~ prepareStreetsByJams ~ arrayData:', arrayData);
   var sortedArray = arrayData.sort(function (a, b) {
     return b[1] - a[1];
   });

@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Col, DatePicker, Row, Spin } from 'antd';
-import { TrafficDelay, TrafficDelayPlot, trafficDelayPlotFinal } from '../types/TrafficDelay';
-import { TrafficEvent, TrafficEventPlot } from '../types/TrafficEvent';
+import { TrafficDelay } from '../types/TrafficDelay';
+import { TrafficEvent } from '../types/TrafficEvent';
 import useAxios from '../utils/useAxios';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';

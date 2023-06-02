@@ -13,32 +13,36 @@ export type TrafficDelay = GeoData & {
 };
 
 export class TrafficDelayPlot {
-  x: Date | string;
+  x: string;
   y: number;
 
   constructor(item: TrafficDelay) {
-    this.x = new Date(item.pubMillis);
+    this.x = this.roundToNearestHour(new Date(item.pubMillis));
     this.y = 1;
   }
 
-  roundToNearestHour(date: Date) {
+  roundToNearestHour(date: Date | string) {
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
     if (date.getMinutes() >= 0 && date.getMinutes() <= 29) {
       date.setMinutes(0, 0, 0);
     } else if (date.getMinutes() >= 30 && date.getMinutes() <= 59) {
       date.setMinutes(date.getMinutes() + 30);
       date.setMinutes(0, 0, 0);
     }
-    this.x = date.toISOString();
+    const final = date.toISOString();
+    return final;
   }
 }
 
 export class TrafficJamLevelPlot {
-  x: Date | string;
+  x: string;
   y: number;
   count: number;
 
   constructor(item: TrafficDelay) {
-    this.x = new Date(item.pubMillis);
+    this.x = this.roundToNearestHour(new Date(item.pubMillis));
     this.y = item.level;
     this.count = 1;
   }
@@ -50,16 +54,17 @@ export class TrafficJamLevelPlot {
       date.setMinutes(date.getMinutes() + 30);
       date.setMinutes(0, 0, 0);
     }
-    this.x = date.toISOString();
+    const final = date.toISOString();
+    return final;
   }
 }
 
 export class TrafficJamLengthPlot {
-  x: Date | string;
+  x: string;
   y: number;
 
   constructor(item: TrafficDelay) {
-    this.x = new Date(item.pubMillis);
+    this.x = this.roundToNearestHour(new Date(item.pubMillis));
     this.y = item.length;
   }
 
@@ -70,16 +75,16 @@ export class TrafficJamLengthPlot {
       date.setMinutes(date.getMinutes() + 30);
       date.setMinutes(0, 0, 0);
     }
-    this.x = date.toISOString();
+    return date.toISOString();
   }
 }
 
 export class TrafficJamDelayPlot {
-  x: Date | string;
+  x: string;
   y: number;
 
   constructor(item: TrafficDelay) {
-    this.x = new Date(item.pubMillis);
+    this.x = this.roundToNearestHour(new Date(item.pubMillis));
     this.y = item.delay;
   }
 
@@ -90,17 +95,17 @@ export class TrafficJamDelayPlot {
       date.setMinutes(date.getMinutes() + 30);
       date.setMinutes(0, 0, 0);
     }
-    this.x = date.toISOString();
+    return date.toISOString();
   }
 }
 
 export class TrafficJamAverageSpeedPlot {
-  x: Date | string;
+  x: string;
   y: number;
   count: number;
 
   constructor(item: TrafficDelay) {
-    this.x = new Date(item.pubMillis);
+    this.x = this.roundToNearestHour(new Date(item.pubMillis));
     this.y = item.speedKMH;
     this.count = 1;
   }
@@ -112,7 +117,7 @@ export class TrafficJamAverageSpeedPlot {
       date.setMinutes(date.getMinutes() + 30);
       date.setMinutes(0, 0, 0);
     }
-    this.x = date.toISOString();
+    return date.toISOString();
   }
 }
 

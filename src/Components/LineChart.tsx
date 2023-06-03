@@ -26,13 +26,13 @@ const LineChart = ({ data, xTickValues, yAxisValue }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: 'count', //TODO: { yAxisValue },
+        legend: yAxisValue,
         legendOffset: -40,
         legendPosition: 'middle',
       }}
       axisBottom={{
         format: '%Y-%m-%d %H:%M',
-        tickValues: 'every 12 hour', //TODO: { xTickValues },
+        tickValues: xTickValues,
         tickRotation: -45,
         tickPadding: 5,
         tickSize: 5,

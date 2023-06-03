@@ -70,22 +70,22 @@ const Dashboard = () => {
         </div>
       ) : (
         <div>
-          <Row>
-            <Col span={4}>
+          <Row gutter={8} className="top-row">
+            <Col span={4} flex="auto">
               <LiveTile
                 icon={<Icons.WarningIcon />}
                 tileTitle={dataEvent?.features.length}
                 tileType="Active Alerts"
               ></LiveTile>
             </Col>
-            <Col span={4}>
+            <Col span={4} flex="auto">
               <LiveTile
                 icon={<Icons.CarIcon />}
                 tileTitle={dataDelay?.features.length}
                 tileType="Traffic Jams"
               ></LiveTile>
             </Col>
-            <Col span={4}>
+            <Col span={4} flex="auto">
               <LiveTile
                 icon={<Icons.SpeedIcon />}
                 tileTitle={(
@@ -95,21 +95,21 @@ const Dashboard = () => {
                 tileType="Average speed"
               ></LiveTile>
             </Col>
-            <Col span={4}>
+            <Col span={4} flex="auto">
               <LiveTile
                 icon={<Icons.CarIcon />}
                 tileTitle={dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.length, 0)}
                 tileType="Jams Length [m]"
               ></LiveTile>
             </Col>
-            <Col span={4}>
+            <Col span={4} flex="auto">
               <LiveTile
                 icon={<Icons.JamDelayIcon />}
                 tileTitle={dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.delay, 0)}
                 tileType="Jams Delay [s]"
               ></LiveTile>
             </Col>
-            <Col span={4}>
+            <Col span={4} flex="auto">
               <LiveTile
                 icon={<Icons.JamLevelIcon />}
                 tileTitle={(
@@ -120,7 +120,7 @@ const Dashboard = () => {
               ></LiveTile>
             </Col>
           </Row>
-          <Row>
+          <Row className="graphs-row">
             <Col span={6} style={{ height: 295 }}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Alerts:</h3>
               <LineChart data={prepareData(null, dataEvent)} xTickValues="every 12 hour" yAxisValue="Count"></LineChart>
@@ -147,7 +147,7 @@ const Dashboard = () => {
             </Col>
           </Row>
 
-          <Row>
+          <Row className="graphs-row">
             <Col span={6} style={{ height: 280 }}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
                 Average Jam Speed:

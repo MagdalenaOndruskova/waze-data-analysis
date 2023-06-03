@@ -73,7 +73,7 @@ nav {
 }
 
 .cardbody {
-  width: 218px;
+  // width: 218px;
   height: 100px;
   margin-top: 10px;
   background-color: $cardBodyColor;
@@ -82,4 +82,32 @@ nav {
 
 .filterStyle {
   width: 180px;
+}
+
+.graphs-row {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+
+  .ant-col {
+    max-width: unset;
+  }
+}
+
+@media only screen and (max-width: 1440px) {
+  .top-row .ant-card-body {
+    padding: 8px !important;
+
+    .ant-card-meta {
+      flex-direction: column;
+    }
+
+    .ant-card-meta-avatar {
+      padding-inline-end: 0;
+    }
+
+    .ant-card-meta-title {
+      margin-bottom: 0 !important;
+    }
+  }
 }

@@ -10,7 +10,7 @@ function Navbar() {
     <header>
       <img src={Brno} alt="Brno" />
       <nav id="header">
-        <NavLink to="/">Live Map</NavLink>
+        <NavLink to="/waze-data-analysis/">Live Map</NavLink>
         <NavLink to="dashboard">Dashboard</NavLink>
       </nav>
     </header>

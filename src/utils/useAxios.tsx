@@ -23,7 +23,6 @@ const useAxios = <T,>({ url, method = 'get', api, body, headers }: Props) => {
   const [response, setResponse] = useState<T | null>(null);
   const [error, setError] = useState('');
   const [loading, setloading] = useState(true);
-  // const [dateFilter, setDateFilter] = useState<DateFilter>({ dateFrom: '2023-04-01', dateTo: '2023-04-02' });
 
   var apiName: String;
   if (api === 'event') {
@@ -47,19 +46,9 @@ const useAxios = <T,>({ url, method = 'get', api, body, headers }: Props) => {
       });
   };
 
-  // const onRangeChange = (dates: null | (Dayjs | null)[], dateStrings: string[]) => {
-  //   if (dates) {
-  //     setDateFilter({ dateFrom: dateStrings[0], dateTo: dateStrings[1] });
-  //     console.log('🚀 ~ file: LiveDashboardPage.tsx:104 ~ onRangeChange ~ dateFilter:', dateFilter);
-  //   } else {
-  //     console.log('Clear');
-  //   }
-  // };
-
   useEffect(() => {
     fetchData();
-  }, [url]); // TODO: Filtre z premennej dostat sem
-  // TODO: filter - debounce => lodash
+  }, [url]);
 
   return { response, error, loading };
 };

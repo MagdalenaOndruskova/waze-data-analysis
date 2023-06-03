@@ -132,7 +132,7 @@ const LiveDashboardPage = () => {
           <Row style={{ height: 320 }}>
             <LineChart
               data={prepareData(dataDelay, dataEvent)}
-              xTickValues="every 1 hour"
+              xTickValues="every 12 hour"
               yAxisValue="count"
             ></LineChart>
           </Row>

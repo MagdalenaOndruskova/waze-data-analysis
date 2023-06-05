@@ -120,16 +120,16 @@ const Dashboard = () => {
               ></LiveTile>
             </Col>
           </Row>
-          <Row className="graphs-row">
-            <Col span={6} style={{ height: 295 }}>
+          <Row>
+            <Col style={{ height: 295 }} lg={8} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Alerts:</h3>
               <LineChart data={prepareData(null, dataEvent)} xTickValues="every 12 hour" yAxisValue="Count"></LineChart>
             </Col>
-            <Col span={6} style={{ height: 295 }}>
+            <Col style={{ height: 295 }} lg={8} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Jams:</h3>
               <LineChart data={prepareData(dataDelay, null)} xTickValues="every 12 hour" yAxisValue="Count"></LineChart>
             </Col>
-            <Col span={6} style={{ height: 295 }}>
+            <Col style={{ height: 295 }} lg={8} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Average Jam Level:</h3>
               <LineChart
                 data={prepareDataJamLevel(dataDelay)}
@@ -137,7 +137,7 @@ const Dashboard = () => {
                 yAxisValue="Count"
               ></LineChart>
             </Col>
-            <Col span={6} style={{ height: 295 }}>
+            <Col style={{ height: 295 }} lg={8} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Jam Length:</h3>
               <LineChart
                 data={prepareDataJamLength(dataDelay)}
@@ -145,10 +145,10 @@ const Dashboard = () => {
                 yAxisValue="Count"
               ></LineChart>
             </Col>
-          </Row>
+            {/* </Row>
 
-          <Row className="graphs-row">
-            <Col span={6} style={{ height: 280 }}>
+          <Row className="graphs-row"> */}
+            <Col lg={8} style={{ height: 280 }} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
                 Average Jam Speed:
               </h3>
@@ -157,20 +157,26 @@ const Dashboard = () => {
                 xTickValues="every 12 hour"
                 yAxisValue="Count"
               ></LineChart>
+              {/* <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Jam Delay:</h3>
+              <LineChart data={prepareDataDelay(dataDelay)} xTickValues="every 12 hour" yAxisValue="Count"></LineChart> */}
+            </Col>
+            <Col lg={8} md={12} style={{ height: 280 }}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Jam Delay:</h3>
               <LineChart data={prepareDataDelay(dataDelay)} xTickValues="every 12 hour" yAxisValue="Count"></LineChart>
             </Col>
-            <Col span={6} style={{ height: 250 }}>
+            <Col lg={8} style={{ height: 250 }} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
                 Alerts Type:
               </h3>
               <PieChart values={prepareDataAlertsType(dataEvent)} />
+            </Col>
+            <Col lg={8} md={12} style={{ height: 250 }}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
                 Jams Type:
               </h3>
               <PieChart values={prepareDataJamType(dataDelay)}></PieChart>
             </Col>
-            <Col span={6} style={{ height: 570 }}>
+            <Col lg={8} style={{ height: 570 }} md={12}>
               <h3
                 style={{
                   lineHeight: '15px',
@@ -184,7 +190,7 @@ const Dashboard = () => {
               </h3>
               <BarChart values={prepareCriticalStreetsByAlerts(dataEvent)} legend="alerts"></BarChart>
             </Col>
-            <Col span={6} style={{ height: 570 }}>
+            <Col lg={8} style={{ height: 570 }} md={12}>
               <h3
                 style={{
                   lineHeight: '15px',

@@ -5,7 +5,7 @@ const LineChart = ({ data, xTickValues, yAxisValue }) => {
   return (
     <ResponsiveLine
       data={data}
-      margin={{ top: 5, right: 110, bottom: 110, left: 60 }}
+      margin={{ top: 5, right: 60, bottom: 110, left: 60 }}
       xScale={{
         type: 'time',
         format: '%Y-%m-%d %H:%M',

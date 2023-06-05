@@ -72,12 +72,22 @@ nav {
   overflow: hidden;
 }
 
+.live-map-top-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .cardbody {
-  // width: 218px;
-  height: 100px;
-  margin-top: 10px;
+  max-width: 250px;
+  // height: 100%;
+  // margin-top: 10px;
   background-color: $cardBodyColor;
   padding: 0;
+
+  // &:not(.live-map-top-row) {
+  //   height: unset;
+  // }
 }
 
 .filterStyle {
@@ -95,7 +105,8 @@ nav {
 }
 
 @media only screen and (max-width: 1440px) {
-  .top-row .ant-card-body {
+  .top-row .ant-card-body,
+  .live-map-top-row .ant-card-body {
     padding: 8px !important;
 
     .ant-card-meta {
@@ -109,5 +120,14 @@ nav {
     .ant-card-meta-title {
       margin-bottom: 0 !important;
     }
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .top-row .cardbody {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

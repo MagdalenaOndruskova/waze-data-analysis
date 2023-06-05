@@ -83,14 +83,21 @@ const LiveDashboardPage = () => {
         <div>
           <Row>
             <Col span={20}>
-              <MapContainer center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true}>
+              <MapContainer center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true} style={{ height: 580 }}>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
               </MapContainer>
+              <div style={{ height: 400 }}>
+                <LineChart
+                  data={prepareData(dataDelay, dataEvent)}
+                  xTickValues="every 12 hour"
+                  yAxisValue="count"
+                ></LineChart>
+              </div>
             </Col>
-            <Col span={2}>
+            <Col span={4} className="live-map-top-row">
               <LiveTile
                 icon={<Icons.WarningIcon />}
                 tileTitle={dataEvent?.features.length}
@@ -128,13 +135,6 @@ const LiveDashboardPage = () => {
                 tileType="Average Jam Level"
               ></LiveTile>
             </Col>
-          </Row>
-          <Row style={{ height: 320 }}>
-            <LineChart
-              data={prepareData(dataDelay, dataEvent)}
-              xTickValues="every 12 hour"
-              yAxisValue="count"
-            ></LineChart>
           </Row>
         </div>
       )}

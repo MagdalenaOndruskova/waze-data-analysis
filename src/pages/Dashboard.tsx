@@ -164,19 +164,19 @@ const Dashboard = () => {
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Jam Delay:</h3>
               <LineChart data={prepareDataDelay(dataDelay)} xTickValues="every 12 hour" yAxisValue="Count"></LineChart>
             </Col>
-            <Col lg={8} style={{ height: 250 }} md={12}>
+            <Col lg={8} style={{ height: 280 }} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
                 Alerts Type:
               </h3>
               <PieChart values={prepareDataAlertsType(dataEvent)} />
             </Col>
-            <Col lg={8} md={12} style={{ height: 250 }}>
+            <Col lg={8} md={12} style={{ height: 280 }}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
                 Jams Type:
               </h3>
               <PieChart values={prepareDataJamType(dataDelay)}></PieChart>
             </Col>
-            <Col lg={8} style={{ height: 570 }} md={12}>
+            <Col lg={8} style={{ height: 280 }} md={12}>
               <h3
                 style={{
                   lineHeight: '15px',
@@ -190,7 +190,7 @@ const Dashboard = () => {
               </h3>
               <BarChart values={prepareCriticalStreetsByAlerts(dataEvent)} legend="alerts"></BarChart>
             </Col>
-            <Col lg={8} style={{ height: 570 }} md={12}>
+            <Col lg={8} style={{ height: 280 }} md={12}>
               <h3
                 style={{
                   lineHeight: '15px',

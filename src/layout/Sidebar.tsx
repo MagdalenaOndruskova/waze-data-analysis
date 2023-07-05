@@ -34,12 +34,17 @@ const Sidebar = () => {
   const [dateTo, setDateTo] = useState(dayjs());
   const [timeFrom, setTimeFrom] = useState(dayjs('08:00', 'HH:mm'));
   const [timeTo, setTimeTo] = useState(dayjs('08:00', 'HH:mm'));
-  const { filter, setNewFilter } = useContext(filterContext);
+  const { filter, setNewFilter, streetsFromMap } = useContext(filterContext);
+
+  useEffect(() => {
+    setSelected((prevState) => [...new Set([...prevState, ...streetsFromMap])]);
+  }, [streetsFromMap]);
 
   const clearFilters = () => {
     setSelected([]);
     setDateFrom(dayjs().add(-7, 'd'));
     setDateTo(dayjs());
+
     //TODO: funguje iba aj ked sa date zmeni?
     setTimeFrom(dayjs('08:00', 'HH:mm'));
     setTimeTo(dayjs('08:00', 'HH:mm'));
@@ -63,6 +68,7 @@ const Sidebar = () => {
   };
 
   // TODO: pri setovani to, overit ze datum je po from
+
   const {
     response: dataStreets,
     loading: loadingStreets,
@@ -115,8 +121,11 @@ const Sidebar = () => {
         mode="multiple"
         allowClear
         placeholder="Please select"
-        defaultValue={['Vídeňská', 'Jihlavská']}
-        onChange={(value) => setSelected(value)}
+        // onChange={(value) => setSelected(value)}
+        onChange={(value) => {
+          console.log('value', value);
+          setSelected(value);
+        }}
         value={selected}
         options={options}
       />

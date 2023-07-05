@@ -1,11 +1,11 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Col, DatePicker, Row, Spin } from 'antd';
 import { TrafficDelay } from '../types/TrafficDelay';
 import { TrafficEvent } from '../types/TrafficEvent';
 import useAxios from '../utils/useAxios';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import LiveTile from '../Components/LiveTile';
 import * as Icons from '../utils/icons';
@@ -13,6 +13,8 @@ import '../styles/main.scss';
 import LineChart from '../Components/LineChart';
 import { prepareData } from '../utils/prepareData';
 import { filterContext } from '../utils/contexts';
+import L from 'leaflet';
+import { Geocoder, geocoders } from 'leaflet-control-geocoder';
 
 type DataDelay = {
   features: {
@@ -45,15 +47,16 @@ const rangePresets: {
 ];
 
 const LiveDashboardPage = () => {
-  const { filter, setNewFilter } = useContext(filterContext);
+  const { filter, setNewFilter, setNewStreetsFromMap, streetsFromMap } = useContext(filterContext);
 
-  console.log('filter', filter);
+  // TODO: query builder
 
   const {
     response: dataDelay,
     loading: loadingDelay,
     error: errorDelay,
   } = useAxios<DataDelay>({
+    // url: /0/query?where=(street IN('Lidicka', 'Videnska'))&outFields=*&outSR=4326&f=json
     // url: '/0/query?where=1%3D1&outFields=*&outSR=4326&f=json',
     // url: "/0/query?where=(city='Brno' AND pubMillis >= TIMESTAMP '2023-04-20T18:12:51+00:00' AND pubMillis <= TIMESTAMP '2023-04-20T23:12:51+00:00')&outFields=*&outSR=4326&f=json",
     // aaaaa
@@ -71,7 +74,25 @@ const LiveDashboardPage = () => {
     url: `/0/query?where=(city='Brno' AND pubMillis >= DATE '${filter.fromDate}' AND pubMillis <= DATE '${filter.toDate}')&outFields=*&outSR=4326&f=json`,
     api: 'event',
   });
-  console.log('🚀 ~ file: LiveDashboardPage.tsx:74 ~ LiveDashboardPage ~ dataEvent:', dataEvent);
+
+  // getting street name from click on map
+  const LocationFinderDummy = () => {
+    const map = useMapEvents({
+      click(e) {
+        const geocoder = new geocoders.Nominatim();
+
+        //TODO: zoomlevel to constants -  14 is zoom level
+        geocoder.reverse(e.latlng, 14, (result) => {
+          var r = result[0];
+          var address = r.name.split(',');
+          var street = address[1].trim();
+          setNewStreetsFromMap([...streetsFromMap, street]);
+        });
+      },
+    });
+    return null;
+  };
+
   return (
     <div>
       {loadingDelay || loadingEvent ? (
@@ -88,6 +109,7 @@ const LiveDashboardPage = () => {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+                <LocationFinderDummy />
               </MapContainer>
               <div style={{ height: 400 }}>
                 <LineChart

@@ -1,5 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { DefaultOptionType } from 'antd/es/select';
 
 export interface Filter {
   fromDate: string;
@@ -11,7 +12,9 @@ export interface Filter {
 
 export interface FilterContext {
   filter: Filter;
+  streetsFromMap: string[];
   setNewFilter: (newFilter: Filter) => void;
+  setNewStreetsFromMap: (streetValues: string[]) => void;
 }
 
 export const FILTER_DEFAULT_VALUE: FilterContext = {
@@ -22,6 +25,8 @@ export const FILTER_DEFAULT_VALUE: FilterContext = {
     toTime: dayjs('08:00', 'HH:mm').format('HH:mm'),
     streets: [],
   },
+  streetsFromMap: [],
+  setNewStreetsFromMap: () => {},
   setNewFilter: () => {},
 };
 

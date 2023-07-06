@@ -15,6 +15,8 @@ import { prepareData } from '../utils/prepareData';
 import { filterContext } from '../utils/contexts';
 import L from 'leaflet';
 import { Geocoder, geocoders } from 'leaflet-control-geocoder';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { queryBuilder } from '../utils/queryBuilder';
 
 type DataDelay = {
   features: {
@@ -49,20 +51,12 @@ const rangePresets: {
 const LiveDashboardPage = () => {
   const { filter, setNewFilter, setNewStreetsFromMap, streetsFromMap } = useContext(filterContext);
 
-  // TODO: query builder
-
   const {
     response: dataDelay,
     loading: loadingDelay,
     error: errorDelay,
   } = useAxios<DataDelay>({
-    // url: /0/query?where=(street IN('Lidicka', 'Videnska'))&outFields=*&outSR=4326&f=json
-    // url: '/0/query?where=1%3D1&outFields=*&outSR=4326&f=json',
-    // url: "/0/query?where=(city='Brno' AND pubMillis >= TIMESTAMP '2023-04-20T18:12:51+00:00' AND pubMillis <= TIMESTAMP '2023-04-20T23:12:51+00:00')&outFields=*&outSR=4326&f=json",
-    // aaaaa
-    // "/0/query?where=(city='Brno' AND pubMillis >= DATE " + dateFilter.dateFrom +"  AND pubMillis <= DATE " + dateFilter.dateTo + ")&outFields=*&outSR=4326&f=json'
-    // url: "/0/query?where=(city='Brno' AND pubMillis >= DATE '2023-04-20' AND pubMillis <= DATE '2023-04-25')&outFields=*&outSR=4326&f=json",
-    url: `/0/query?where=(city='Brno' AND pubMillis >= DATE '${filter.fromDate}' AND pubMillis <= DATE '${filter.toDate}')&outFields=*&outSR=4326&f=json`,
+    url: `query?where=(${queryBuilder(filter)})`,
     api: 'jam',
   });
 
@@ -71,7 +65,7 @@ const LiveDashboardPage = () => {
     loading: loadingEvent,
     error: errorEvent,
   } = useAxios<DataEvent>({
-    url: `/0/query?where=(city='Brno' AND pubMillis >= DATE '${filter.fromDate}' AND pubMillis <= DATE '${filter.toDate}')&outFields=*&outSR=4326&f=json`,
+    url: `query?where=(${queryBuilder(filter)})`,
     api: 'event',
   });
 

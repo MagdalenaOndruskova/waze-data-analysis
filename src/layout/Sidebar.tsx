@@ -80,7 +80,7 @@ const Sidebar = () => {
     loading: loadingStreets,
     error: errorStreets,
   } = useAxios<Streets>({
-    url: '/0/query?where=1%3D1&outFields=*&outSR=4326&f=json',
+    url: 'query?where=1%3D1',
     api: 'street',
   });
 

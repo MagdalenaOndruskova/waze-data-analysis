@@ -21,6 +21,7 @@ import {
 import PieChart from '../Components/PieChart';
 import BarChart from '../Components/BarChart';
 import { filterContext } from '../utils/contexts';
+import { queryBuilder } from '../utils/queryBuilder';
 
 type DataDelay = {
   features: {
@@ -46,7 +47,7 @@ const Dashboard = () => {
     loading: loadingDelay,
     error: errorDelay,
   } = useAxios<DataDelay>({
-    url: `/0/query?where=(city='Brno' AND pubMillis >= DATE '${filter.fromDate}' AND pubMillis <= DATE '${filter.toDate}')&outFields=*&outSR=4326&f=json`,
+    url: `query?where=(${queryBuilder(filter)})`,
     api: 'jam',
   });
 
@@ -55,7 +56,7 @@ const Dashboard = () => {
     loading: loadingEvent,
     error: errorEvent,
   } = useAxios<DataEvent>({
-    url: `/0/query?where=(city='Brno' AND pubMillis >= DATE '${filter.fromDate}' AND pubMillis <= DATE '${filter.toDate}')&outFields=*&outSR=4326&f=json`,
+    url: `query?where=(${queryBuilder(filter)})`,
     api: 'event',
   });
 

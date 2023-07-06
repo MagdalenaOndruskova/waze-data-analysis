@@ -15,9 +15,9 @@ type DateFilter = {
   dateTo: string;
 };
 
-const jamApi = `https://gis.brno.cz/ags1/rest/services/Hosted/WazeJams/FeatureServer`;
-const eventApi = `https://gis.brno.cz/ags1/rest/services/Hosted/WazeAlerts/FeatureServer`;
-const streetApi = 'https://services6.arcgis.com/fUWVlHWZNxUvTUh8/arcgis/rest/services/ulicni_sit/FeatureServer';
+const jamApi = `https://gis.brno.cz/ags1/rest/services/Hosted/WazeJams/FeatureServer/0/`;
+const eventApi = `https://gis.brno.cz/ags1/rest/services/Hosted/WazeAlerts/FeatureServer/0/`;
+const streetApi = 'https://services6.arcgis.com/fUWVlHWZNxUvTUh8/arcgis/rest/services/ulicni_sit/FeatureServer/0/';
 
 const useAxios = <T,>({ url, method = 'get', api, body, headers }: Props) => {
   const [response, setResponse] = useState<T | null>(null);
@@ -32,9 +32,8 @@ const useAxios = <T,>({ url, method = 'get', api, body, headers }: Props) => {
   } else if (api === 'street') {
     apiName = streetApi;
   }
-  console.log(`${apiName}${url}`);
   const fetchData = () => {
-    axios[method]<T>(`${apiName}${url}`, headers, body)
+    axios[method]<T>(`${apiName}${url}&outFields=*&outSR=4326&f=json`, headers, body)
       .then((res) => {
         setResponse(res.data);
       })

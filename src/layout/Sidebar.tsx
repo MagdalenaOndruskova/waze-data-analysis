@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import '../styles/layout-styles.scss';
 import { Button, DatePicker, DatePickerProps, Form, Select, SelectProps, TimePicker } from 'antd';
 import dayjs from 'dayjs';
 import { Street } from '../types/Street';
 import useAxios from '../utils/useAxios';
-import { filterContext } from '../utils/contexts';
+import { FILTER_DEFAULT_VALUE, filterContext } from '../utils/contexts';
+import { json, useSearchParams } from 'react-router-dom';
+import { Dayjs } from 'dayjs';
 
 type Streets = {
   features: {
@@ -29,15 +31,21 @@ function getOptionsFromStreet(streets: Streets | null) {
 
 const Sidebar = () => {
   var options: SelectProps['options'] = [];
-  var possibleStreets = [];
-  const [selected, setSelected] = useState([]);
-  const [dateFrom, setDateFrom] = useState(dayjs().add(-7, 'd'));
-  const [dateTo, setDateTo] = useState(dayjs());
-  const [timeFrom, setTimeFrom] = useState(dayjs('08:00', 'HH:mm'));
-  const [timeTo, setTimeTo] = useState(dayjs('08:00', 'HH:mm'));
+
+  const [selected, setSelected] = useState<string[]>([]);
+  const [dateFrom, setDateFrom] = useState<Dayjs>(dayjs().add(-7, 'd'));
+  const [dateTo, setDateTo] = useState<Dayjs>(dayjs());
+  const [timeFrom, setTimeFrom] = useState<Dayjs>(dayjs('08:00', 'HH:mm'));
+  const [timeTo, setTimeTo] = useState<Dayjs>(dayjs('08:00', 'HH:mm'));
+
+  const inicialized = useRef<Boolean>(false);
+
   const { filter, setNewFilter, streetsFromMap, setNewStreetsFromMap } = useContext(filterContext);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => {
+    var possibleStreets = [];
     possibleStreets = options.map((item) => item.value);
     var streets = streetsFromMap.filter((item) => possibleStreets.includes(item));
     const street = streets[0];
@@ -45,6 +53,63 @@ const Sidebar = () => {
     setSelected((prevState) => prevState.filter((item) => item));
   }, [streetsFromMap]);
 
+  // TODO: useRef
+  useEffect(() => {
+    // if (inicialized.current === false) {
+    if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filter)) {
+      const { fromDate, fromTime, toDate, toTime } = filter;
+      setSearchParams({
+        fromDate,
+        fromTime,
+        toDate,
+        toTime,
+        streets: `('${filter.streets.join(`', '`)}')`,
+      });
+      // inicialized.current = true;
+    } else {
+      if (inicialized.current === true) {
+        setSearchParams({});
+      }
+      // inicialized.current = true;
+    }
+    // }
+  }, [filter]);
+
+  useEffect(() => {
+    if (inicialized.current === false) {
+      if (JSON.stringify(filter) === JSON.stringify(FILTER_DEFAULT_VALUE.filter) && searchParams.toString() !== '') {
+        const fromDate = searchParams.get('fromDate');
+        const fromTime = searchParams.get('fromTime');
+        const toDate = searchParams.get('toDate');
+        const toTime = searchParams.get('toTime');
+        var streets = searchParams.get('streets');
+
+        // TODO: check when creating url params, so that when no street, dont have this url param
+        var streetsSplitted = [];
+        if (streets !== "('')") {
+          streets = streets.replaceAll("'", '');
+          streets = streets.replaceAll('(', '');
+          streets = streets.replaceAll(')', '');
+          streetsSplitted = streets.split(',');
+        }
+
+        setDateFrom(dayjs(fromDate));
+        setTimeFrom(dayjs(fromTime, 'HH:mm'));
+        setDateTo(dayjs(toDate));
+        setTimeTo(dayjs(toTime, 'HH:mm'));
+        setSelected(streetsSplitted);
+
+        streetsSplitted = streetsSplitted.map((item) => item.trim());
+
+        setNewFilter({ fromDate, fromTime, toDate, toTime, streets: streetsSplitted });
+
+        // TODO: while refresh, when loading filter from url it is called default request
+        inicialized.current = true;
+      }
+      console.log('🚀 ~ file: Sidebar.tsx:104 ~ useEffect ~ streetsSplitted:', streetsSplitted);
+    }
+  }, [searchParams, inicialized]);
+  console.log(filter);
   const clearFilters = () => {
     setSelected([]);
     setDateFrom(dayjs().add(-7, 'd'));
@@ -95,41 +160,25 @@ const Sidebar = () => {
         name="DateFrom"
         className="filterStyle"
         onChange={(value) => setDateFrom(value)}
-        defaultValue={dayjs().add(-7, 'd')}
-        value={dateFrom}
+        value={dayjs(dateFrom)}
       />
       <TimePicker
         className="filterStyle"
         onChange={(value) => setTimeFrom(value)}
-        defaultOpenValue={dayjs('08:00', 'HH:mm')}
         format="HH:mm"
         defaultValue={dayjs('08:00', 'HH:mm')}
-        value={timeFrom}
+        value={dayjs(timeFrom, 'HH:mm')}
       />
       <p>To:</p>
-      <DatePicker
-        className="filterStyle"
-        onChange={(value) => setDateTo(value)}
-        defaultValue={dayjs()}
-        value={dateTo}
-      />
-      <TimePicker
-        className="filterStyle"
-        onChange={(value) => setTimeTo(value)}
-        value={timeTo}
-        defaultOpenValue={dayjs('08:00', 'HH:mm')}
-        format="HH:mm"
-        defaultValue={dayjs('08:00', 'HH:mm')}
-      />
+      <DatePicker className="filterStyle" onChange={(value) => setDateTo(value)} value={dayjs(dateTo)} />
+      <TimePicker className="filterStyle" onChange={(value) => setTimeTo(value)} value={dayjs(timeTo)} format="HH:mm" />
       <h3>Streets:</h3>
       <Select
         className="filterStyle"
         mode="multiple"
         allowClear
         placeholder="Please select"
-        // onChange={(value) => setSelected(value)}
         onChange={(value) => {
-          console.log('value', value);
           setSelected(value);
         }}
         value={selected}

@@ -50,6 +50,7 @@ const rangePresets: {
 
 const LiveDashboardPage = () => {
   const { filter, setNewFilter, setNewStreetsFromMap, streetsFromMap } = useContext(filterContext);
+  console.log('🚀 ~ file: LiveDashboardPage.tsx:53 ~ LiveDashboardPage ~ filter:', filter);
 
   const {
     response: dataDelay,

@@ -10,6 +10,5 @@ export const queryBuilder = (filter: Filter) => {
     const streetsValues = `('${filter.streets.join(`', '`)}')`;
     finalQuery = `${finalQuery} AND street IN ${streetsValues}`;
   }
-  console.log('🚀 ~ file: LiveDashboardPage.tsx:68 ~ queryBuilder ~ finalQuery:', finalQuery);
   return finalQuery;
 };

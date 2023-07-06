@@ -121,31 +121,44 @@ const LiveDashboardPage = () => {
             <Col span={4} className="live-map-top-row">
               <LiveTile
                 icon={<Icons.WarningIcon />}
-                tileTitle={dataEvent?.features.length}
+                tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features.length)}
                 tileType="Active Alerts"
               ></LiveTile>
               <LiveTile
                 icon={<Icons.CarIcon />}
-                tileTitle={dataDelay?.features.length}
+                tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features.length)}
                 tileType="Traffic Jams"
               ></LiveTile>
               <LiveTile
                 icon={<Icons.SpeedIcon />}
-                tileTitle={(
-                  dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
-                  dataDelay?.features.length
-                ).toFixed(2)}
+                tileTitle={new Intl.NumberFormat('pt-PT', {
+                  style: 'unit',
+                  unit: 'kilometer-per-hour',
+                }).format(
+                  Number(
+                    (
+                      dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
+                      dataDelay?.features.length
+                    ).toFixed(2),
+                  ),
+                )}
                 tileType="Average speed"
               ></LiveTile>
               <LiveTile
                 icon={<Icons.CarIcon />}
-                tileTitle={dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.length, 0)}
-                tileType="Jams Length [m]"
+                tileTitle={new Intl.NumberFormat('pt-PT', {
+                  style: 'unit',
+                  unit: 'meter',
+                }).format(dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.length, 0))}
+                tileType="Jams Length"
               ></LiveTile>
               <LiveTile
                 icon={<Icons.JamDelayIcon />}
-                tileTitle={dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.delay, 0)}
-                tileType="Jams Delay [s]"
+                tileTitle={new Intl.NumberFormat('pt-PT', {
+                  style: 'unit',
+                  unit: 'second',
+                }).format(dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
+                tileType="Jams Delay"
               ></LiveTile>
               <LiveTile
                 icon={<Icons.JamLevelIcon />}

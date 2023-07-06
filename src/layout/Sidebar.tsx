@@ -29,15 +29,20 @@ function getOptionsFromStreet(streets: Streets | null) {
 
 const Sidebar = () => {
   var options: SelectProps['options'] = [];
+  var possibleStreets = [];
   const [selected, setSelected] = useState([]);
   const [dateFrom, setDateFrom] = useState(dayjs().add(-7, 'd'));
   const [dateTo, setDateTo] = useState(dayjs());
   const [timeFrom, setTimeFrom] = useState(dayjs('08:00', 'HH:mm'));
   const [timeTo, setTimeTo] = useState(dayjs('08:00', 'HH:mm'));
-  const { filter, setNewFilter, streetsFromMap } = useContext(filterContext);
+  const { filter, setNewFilter, streetsFromMap, setNewStreetsFromMap } = useContext(filterContext);
 
   useEffect(() => {
-    setSelected((prevState) => [...new Set([...prevState, ...streetsFromMap])]);
+    possibleStreets = options.map((item) => item.value);
+    var streets = streetsFromMap.filter((item) => possibleStreets.includes(item));
+    const street = streets[0];
+    setSelected((prevState) => [...new Set([...prevState, street])]);
+    setSelected((prevState) => prevState.filter((item) => item));
   }, [streetsFromMap]);
 
   const clearFilters = () => {
@@ -55,6 +60,7 @@ const Sidebar = () => {
       toTime: timeTo.format('HH:mm'),
       streets: selected,
     });
+    setNewStreetsFromMap([]);
   };
 
   const filterData = () => {

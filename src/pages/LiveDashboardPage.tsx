@@ -85,8 +85,13 @@ const LiveDashboardPage = () => {
         geocoder.reverse(e.latlng, 14, (result) => {
           var r = result[0];
           var address = r.name.split(',');
-          var street = address[1].trim();
-          setNewStreetsFromMap([...streetsFromMap, street]);
+          var possibleStreets = address.slice(0, 5);
+          possibleStreets = possibleStreets.filter((item) => isNaN(Number(item)));
+          possibleStreets = possibleStreets.map((item) => item.trim());
+          const blacklist = ['Brno', 'okres Brno-město', 'Jihomoravský kraj', 'Southeast', 'Czechia', 'Město Brno'];
+          possibleStreets = possibleStreets.filter((item) => !blacklist.includes(item));
+
+          setNewStreetsFromMap(possibleStreets);
         });
       },
     });

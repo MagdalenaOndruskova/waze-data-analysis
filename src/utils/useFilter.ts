@@ -4,6 +4,7 @@ import { FILTER_DEFAULT_VALUE, Filter, FilterContext } from './contexts';
 export const useFilter = (): FilterContext => {
   const [filter, setFilter] = React.useState<Filter>(FILTER_DEFAULT_VALUE.filter);
   const [streetsFromMap, setStreetsFromMap] = React.useState<string[]>(FILTER_DEFAULT_VALUE.streetsFromMap);
+  const filterDefaultValue = FILTER_DEFAULT_VALUE.filterDefaultValue;
 
   const setNewFilter = React.useCallback((newFilter: Filter): void => {
     setFilter(newFilter);
@@ -13,5 +14,5 @@ export const useFilter = (): FilterContext => {
     setStreetsFromMap(newStreets);
   }, []);
 
-  return { filter, setNewFilter, streetsFromMap, setNewStreetsFromMap };
+  return { filter, filterDefaultValue, setNewFilter, streetsFromMap, setNewStreetsFromMap };
 };

@@ -25,16 +25,16 @@ const MainLayout = () => {
 
   return (
     <Layout>
-      <Navbar />
-      <Layout>
-        <filterContext.Provider value={filter}>
+      <filterContext.Provider value={filter}>
+        <Navbar />
+        <Layout>
           <Sidebar />
           <Content className="content">
             <Outlet />
           </Content>
-        </filterContext.Provider>
-      </Layout>
-      {/* <Footer style={footerStyle}>Footer</Footer> */}
+        </Layout>
+        {/* <Footer style={footerStyle}>Footer</Footer> */}
+      </filterContext.Provider>
     </Layout>
   );
 };

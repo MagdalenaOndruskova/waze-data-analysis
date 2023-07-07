@@ -8,6 +8,7 @@ type Props = {
   method?: 'get' | 'post' | 'put' | 'patch' | 'delete';
   body?: object;
   headers?: object;
+  getData?: boolean;
 };
 
 type DateFilter = {
@@ -19,7 +20,7 @@ const jamApi = `https://gis.brno.cz/ags1/rest/services/Hosted/WazeJams/FeatureSe
 const eventApi = `https://gis.brno.cz/ags1/rest/services/Hosted/WazeAlerts/FeatureServer/0/`;
 const streetApi = 'https://services6.arcgis.com/fUWVlHWZNxUvTUh8/arcgis/rest/services/ulicni_sit/FeatureServer/0/';
 
-const useAxios = <T,>({ url, method = 'get', api, body, headers }: Props) => {
+const useAxios = <T,>({ url, method = 'get', api, body, headers, getData = false }: Props) => {
   const [response, setResponse] = useState<T | null>(null);
   const [error, setError] = useState('');
   const [loading, setloading] = useState(true);
@@ -32,6 +33,7 @@ const useAxios = <T,>({ url, method = 'get', api, body, headers }: Props) => {
   } else if (api === 'street') {
     apiName = streetApi;
   }
+
   const fetchData = () => {
     axios[method]<T>(`${apiName}${url}&outFields=*&outSR=4326&f=json`, headers, body)
       .then((res) => {
@@ -46,7 +48,9 @@ const useAxios = <T,>({ url, method = 'get', api, body, headers }: Props) => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (getData) {
+      fetchData();
+    }
   }, [url]);
 
   return { response, error, loading };

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import '../styles/layout-styles.scss';
-import { Button, DatePicker, DatePickerProps, Form, Select, SelectProps, TimePicker } from 'antd';
+import { Button, DatePicker, DatePickerProps, Form, Select, SelectProps, TimePicker, message } from 'antd';
 import dayjs from 'dayjs';
 import { Street } from '../types/Street';
 import useAxios from '../utils/useAxios';
 import { FILTER_DEFAULT_VALUE, filterContext } from '../utils/contexts';
-import { json, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Dayjs } from 'dayjs';
 
 type Streets = {
@@ -44,6 +44,8 @@ const Sidebar = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const [messageDate, messageDateContext] = message.useMessage();
+
   useEffect(() => {
     var possibleStreets = [];
     possibleStreets = options.map((item) => item.value);
@@ -53,10 +55,8 @@ const Sidebar = () => {
     setSelected((prevState) => prevState.filter((item) => item));
   }, [streetsFromMap]);
 
-  // TODO: useRef
   useEffect(() => {
-    // if (inicialized.current === false) {
-    if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filter)) {
+    if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filterDefaultValue) && filter !== null) {
       const { fromDate, fromTime, toDate, toTime } = filter;
       setSearchParams({
         fromDate,
@@ -65,19 +65,18 @@ const Sidebar = () => {
         toTime,
         streets: `('${filter.streets.join(`', '`)}')`,
       });
-      // inicialized.current = true;
     } else {
       if (inicialized.current === true) {
         setSearchParams({});
       }
-      // inicialized.current = true;
     }
-    // }
   }, [filter]);
 
   useEffect(() => {
+    console.log(filter);
     if (inicialized.current === false) {
-      if (JSON.stringify(filter) === JSON.stringify(FILTER_DEFAULT_VALUE.filter) && searchParams.toString() !== '') {
+      if (filter === null && searchParams.toString() !== '') {
+        console.log(searchParams.toString());
         const fromDate = searchParams.get('fromDate');
         const fromTime = searchParams.get('fromTime');
         const toDate = searchParams.get('toDate');
@@ -91,7 +90,9 @@ const Sidebar = () => {
           streets = streets.replaceAll('(', '');
           streets = streets.replaceAll(')', '');
           streetsSplitted = streets.split(',');
+          streetsSplitted = streetsSplitted.map((item) => item.trim());
         }
+        setNewFilter({ fromDate, fromTime, toDate, toTime, streets: streetsSplitted });
 
         setDateFrom(dayjs(fromDate));
         setTimeFrom(dayjs(fromTime, 'HH:mm'));
@@ -99,17 +100,15 @@ const Sidebar = () => {
         setTimeTo(dayjs(toTime, 'HH:mm'));
         setSelected(streetsSplitted);
 
-        streetsSplitted = streetsSplitted.map((item) => item.trim());
-
-        setNewFilter({ fromDate, fromTime, toDate, toTime, streets: streetsSplitted });
-
-        // TODO: while refresh, when loading filter from url it is called default request
+        // TODO: while refresh, when loading filter from url it is called default filter in request
         inicialized.current = true;
       }
-      console.log('🚀 ~ file: Sidebar.tsx:104 ~ useEffect ~ streetsSplitted:', streetsSplitted);
+      if (searchParams.toString() === '') {
+        setNewFilter(FILTER_DEFAULT_VALUE.filterDefaultValue);
+      }
     }
   }, [searchParams, inicialized]);
-  console.log(filter);
+
   const clearFilters = () => {
     setSelected([]);
     setDateFrom(dayjs().add(-7, 'd'));
@@ -129,6 +128,17 @@ const Sidebar = () => {
   };
 
   const filterData = () => {
+    if (dateTo.isBefore(dateFrom)) {
+      messageDate.open({
+        type: 'error',
+        // style: {
+        //   marginTop: '5vh',
+        // },
+        content: 'Please select date in format FROM-TO, TO can not be before FROM.',
+        duration: 10,
+      });
+      return;
+    }
     setNewFilter({
       fromDate: dateFrom.format('YYYY-MM-DD'),
       toDate: dateTo.format('YYYY-MM-DD'),
@@ -147,12 +157,14 @@ const Sidebar = () => {
   } = useAxios<Streets>({
     url: 'query?where=1%3D1',
     api: 'street',
+    getData: true,
   });
 
   options = getOptionsFromStreet(dataStreets);
 
   return (
     <div className="sidebar">
+      {messageDateContext}
       <h2>Filters</h2>
       <h3>Time range</h3>
       <p>From:</p>
@@ -166,7 +178,6 @@ const Sidebar = () => {
         className="filterStyle"
         onChange={(value) => setTimeFrom(value)}
         format="HH:mm"
-        defaultValue={dayjs('08:00', 'HH:mm')}
         value={dayjs(timeFrom, 'HH:mm')}
       />
       <p>To:</p>

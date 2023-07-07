@@ -40,15 +40,18 @@ type DateFilter = {
   dateTo: string;
 };
 const Dashboard = () => {
-  const { filter, setNewFilter } = useContext(filterContext);
+  const { filter } = useContext(filterContext);
+
+  const query = queryBuilder(filter);
 
   const {
     response: dataDelay,
     loading: loadingDelay,
     error: errorDelay,
   } = useAxios<DataDelay>({
-    url: `query?where=(${queryBuilder(filter)})`,
+    url: `query?where=(${query})`,
     api: 'jam',
+    getData: filter !== null,
   });
 
   const {
@@ -56,8 +59,9 @@ const Dashboard = () => {
     loading: loadingEvent,
     error: errorEvent,
   } = useAxios<DataEvent>({
-    url: `query?where=(${queryBuilder(filter)})`,
+    url: `query?where=(${query})`,
     api: 'event',
+    getData: filter !== null,
   });
 
   const streetsAlerts = prepareCriticalStreetsByAlerts(dataEvent);
@@ -75,14 +79,14 @@ const Dashboard = () => {
             <Col span={4} flex="auto">
               <LiveTile
                 icon={<Icons.WarningIcon />}
-                tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features.length)}
+                tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
                 tileType="Active Alerts"
               ></LiveTile>
             </Col>
             <Col span={4} flex="auto">
               <LiveTile
                 icon={<Icons.CarIcon />}
-                tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features.length)}
+                tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
                 tileType="Traffic Jams"
               ></LiveTile>
             </Col>
@@ -95,8 +99,8 @@ const Dashboard = () => {
                 }).format(
                   Number(
                     (
-                      dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
-                      dataDelay?.features.length
+                      dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
+                      dataDelay?.features?.length
                     ).toFixed(2),
                   ),
                 )}
@@ -109,7 +113,7 @@ const Dashboard = () => {
                 tileTitle={new Intl.NumberFormat('pt-PT', {
                   style: 'unit',
                   unit: 'meter',
-                }).format(dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.length, 0))}
+                }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0))}
                 tileType="Jams Length"
               ></LiveTile>
             </Col>
@@ -119,7 +123,7 @@ const Dashboard = () => {
                 tileTitle={new Intl.NumberFormat('pt-PT', {
                   style: 'unit',
                   unit: 'second',
-                }).format(dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
+                }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
                 tileType="Jams Delay"
               ></LiveTile>
             </Col>
@@ -127,8 +131,8 @@ const Dashboard = () => {
               <LiveTile
                 icon={<Icons.JamLevelIcon />}
                 tileTitle={(
-                  dataDelay?.features.reduce((sum, { attributes }) => sum + attributes.level, 0) /
-                  dataDelay?.features.length
+                  dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.level, 0) /
+                  dataDelay?.features?.length
                 ).toFixed(2)}
                 tileType="Average Jam Level"
               ></LiveTile>

@@ -1,5 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { StreetFull } from '../types/StreetFull';
 
 export interface Filter {
   fromDate: string;
@@ -13,8 +14,12 @@ export interface FilterContext {
   filter: Filter | null;
   filterDefaultValue: Filter;
   streetsFromMap: string[];
+  streetsFulls: StreetFull[];
+  streetsFromMapSelected: string;
   setNewFilter: (newFilter: Filter) => void;
   setNewStreetsFromMap: (streetValues: string[]) => void;
+  setNewStreetsFulls: (streetsFulls: StreetFull[]) => void;
+  setNewStreetsFromMapSelected: (streetsFromMapSelected: string) => void;
 }
 
 export const FILTER_DEFAULT_VALUE: FilterContext = {
@@ -27,8 +32,12 @@ export const FILTER_DEFAULT_VALUE: FilterContext = {
   },
   filter: null,
   streetsFromMap: [],
+  streetsFulls: [],
+  streetsFromMapSelected: '',
   setNewStreetsFromMap: () => {},
   setNewFilter: () => {},
+  setNewStreetsFulls: () => {},
+  setNewStreetsFromMapSelected: () => {},
 };
 
 export const filterContext = React.createContext<FilterContext>(FILTER_DEFAULT_VALUE);

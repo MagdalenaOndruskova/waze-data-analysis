@@ -1,16 +1,21 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import '../styles/layout-styles.scss';
-import { Button, DatePicker, DatePickerProps, Form, Select, SelectProps, TimePicker, message } from 'antd';
+import { Button, DatePicker, Select, SelectProps, TimePicker, message } from 'antd';
 import dayjs from 'dayjs';
 import { Street } from '../types/Street';
 import useAxios from '../utils/useAxios';
 import { FILTER_DEFAULT_VALUE, filterContext } from '../utils/contexts';
 import { useSearchParams } from 'react-router-dom';
 import { Dayjs } from 'dayjs';
+import { StreetFull } from '../types/StreetFull';
+import { GeoLocation } from '../types/GeoLocation';
 
 type Streets = {
   features: {
     attributes: Street;
+    geometry: {
+      paths: [];
+    };
   }[];
 };
 
@@ -23,14 +28,39 @@ function getOptionsFromStreet(streets: Streets | null) {
       value: attributes.nazev,
     }),
   );
+
   // sorting values
   options.sort((val1, val2) => val1?.value?.toString().localeCompare(val2?.value.toString()));
 
   return options;
 }
 
+function getStreetsLocations(streets: Streets | null) {
+  console.log('🚀 ~ file: Sidebar.tsx:39 ~ getStreetsLocations ~ streets:', streets);
+  var streetsFulls: StreetFull[] = [];
+  streets?.features?.map(({ attributes, geometry }, index) =>
+    streetsFulls.push({
+      name: attributes.nazev,
+      code: attributes.kod,
+      location: geometry?.paths?.map((a: []) => a?.map((b) => [b[1], b[0]])),
+      // location: geometry?.paths?.map((a: []) => a?.map((b: []) => b.reverse())),
+    }),
+  );
+  console.log('🚀 ~ file: Sidebar.tsx:47 ~ getStreetsLocations ~ streetsFulls:', streetsFulls);
+
+  // streetsFulls.forEach((element) => {
+  //   var location: GeoLocation = { latitude: 0, longitude: 0 };
+  //   element.location?.forEach((loc, index) => {
+  //     location = { latitude: loc[1], longitude: loc[0] };
+  //     element.location[index] = location;
+  //   });
+  // });
+  return streetsFulls;
+}
+
 const Sidebar = () => {
   var options: SelectProps['options'] = [];
+  var streetFullLocation: StreetFull[] = [];
 
   const [selected, setSelected] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState<Dayjs>(dayjs().add(-7, 'd'));
@@ -40,7 +70,14 @@ const Sidebar = () => {
 
   const inicialized = useRef<Boolean>(false);
 
-  const { filter, setNewFilter, streetsFromMap, setNewStreetsFromMap } = useContext(filterContext);
+  const {
+    filter,
+    setNewFilter,
+    streetsFromMap,
+    setNewStreetsFromMap,
+    setNewStreetsFulls,
+    setNewStreetsFromMapSelected,
+  } = useContext(filterContext);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -53,6 +90,7 @@ const Sidebar = () => {
     const street = streets[0];
     setSelected((prevState) => [...new Set([...prevState, street])]);
     setSelected((prevState) => prevState.filter((item) => item));
+    setNewStreetsFromMapSelected(street);
   }, [streetsFromMap]);
 
   useEffect(() => {
@@ -73,10 +111,8 @@ const Sidebar = () => {
   }, [filter]);
 
   useEffect(() => {
-    console.log(filter);
     if (inicialized.current === false) {
       if (filter === null && searchParams.toString() !== '') {
-        console.log(searchParams.toString());
         const fromDate = searchParams.get('fromDate');
         const fromTime = searchParams.get('fromTime');
         const toDate = searchParams.get('toDate');
@@ -137,8 +173,10 @@ const Sidebar = () => {
         content: 'Please select date in format FROM-TO, TO can not be before FROM.',
         duration: 10,
       });
+
       return;
     }
+
     setNewFilter({
       fromDate: dateFrom.format('YYYY-MM-DD'),
       toDate: dateTo.format('YYYY-MM-DD'),
@@ -147,8 +185,6 @@ const Sidebar = () => {
       streets: selected,
     });
   };
-
-  // TODO: pri setovani to, overit ze datum je po from
 
   const {
     response: dataStreets,
@@ -161,6 +197,11 @@ const Sidebar = () => {
   });
 
   options = getOptionsFromStreet(dataStreets);
+  streetFullLocation = getStreetsLocations(dataStreets);
+
+  useEffect(() => {
+    setNewStreetsFulls(streetFullLocation);
+  }, [dataStreets]);
 
   return (
     <div className="sidebar">

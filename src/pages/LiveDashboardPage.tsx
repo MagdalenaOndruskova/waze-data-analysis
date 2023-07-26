@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Col, DatePicker, Row, Spin } from 'antd';
 import { TrafficDelay } from '../types/TrafficDelay';
 import { TrafficEvent } from '../types/TrafficEvent';
@@ -15,6 +15,8 @@ import { prepareData } from '../utils/prepareData';
 import { filterContext } from '../utils/contexts';
 import { geocoders } from 'leaflet-control-geocoder';
 import { queryBuilder } from '../utils/queryBuilder';
+import L, { LatLngExpression, Map as LeafletMap } from 'leaflet';
+import simplify from 'simplify-js';
 
 type DataDelay = {
   features: {
@@ -26,11 +28,6 @@ type DataEvent = {
   features: {
     attributes: TrafficEvent;
   }[];
-};
-
-type DateFilter = {
-  dateFrom: string;
-  dateTo: string;
 };
 
 // TODO: figure this out, how to use this in app
@@ -47,8 +44,9 @@ const rangePresets: {
 ];
 
 const LiveDashboardPage = () => {
-  const { filter, setNewStreetsFromMap } = useContext(filterContext);
-  console.log('🚀 ~ file: LiveDashboardPage.tsx:51 ~ LiveDashboardPage ~ filter:', filter);
+  const { filter, setNewStreetsFromMap, streetsFulls, streetsFromMapSelected } = useContext(filterContext);
+
+  const mapRef = useRef<LeafletMap>(null);
 
   const query = queryBuilder(filter);
 
@@ -87,13 +85,21 @@ const LiveDashboardPage = () => {
           possibleStreets = possibleStreets.map((item) => item.trim());
           const blacklist = ['Brno', 'okres Brno-město', 'Jihomoravský kraj', 'Southeast', 'Czechia', 'Město Brno'];
           possibleStreets = possibleStreets.filter((item) => !blacklist.includes(item));
-
           setNewStreetsFromMap(possibleStreets);
         });
       },
     });
     return null;
   };
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const street = streetsFulls.find((item) => item.name === streetsFromMapSelected);
+    console.log('🚀 ~ file: LiveDashboardPage.tsx:98 ~ useEffect ~ street:', street);
+    street?.location?.forEach((path) => {
+      L.polyline(path, { color: 'red' }).addTo(map);
+    });
+  }, [streetsFromMapSelected]);
 
   return (
     <div>
@@ -106,7 +112,7 @@ const LiveDashboardPage = () => {
         <div>
           <Row>
             <Col span={20}>
-              <MapContainer center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true} style={{ height: 580 }}>
+              <MapContainer ref={mapRef} center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true} style={{ height: 580 }}>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

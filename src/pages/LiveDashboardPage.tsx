@@ -59,6 +59,7 @@ const LiveDashboardPage = () => {
       const control = L.Routing.control({
         waypoints: [],
         routeWhileDragging: true,
+        // @ts-ignore
         geocoder: L.Control.Geocoder.nominatim(),
       }).addTo(map);
 

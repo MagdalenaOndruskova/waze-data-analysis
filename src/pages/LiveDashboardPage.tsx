@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Col, DatePicker, Row, Spin } from 'antd';
+import { Col, Row, Spin } from 'antd';
 import { TrafficDelay } from '../types/TrafficDelay';
 import { TrafficEvent } from '../types/TrafficEvent';
 import useAxios from '../utils/useAxios';
@@ -15,8 +15,9 @@ import { prepareData } from '../utils/prepareData';
 import { filterContext } from '../utils/contexts';
 import { geocoders } from 'leaflet-control-geocoder';
 import { queryBuilder } from '../utils/queryBuilder';
-import L, { LatLngExpression, Map as LeafletMap } from 'leaflet';
-import simplify from 'simplify-js';
+import L, { Map as LeafletMap } from 'leaflet';
+import 'leaflet-routing-machine';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 
 type DataDelay = {
   features: {
@@ -50,6 +51,25 @@ const LiveDashboardPage = () => {
 
   const query = queryBuilder(filter);
 
+  const RoutingControl = () => {
+    useEffect(() => {
+      const map = mapRef.current;
+      if (!map) return;
+
+      const control = L.Routing.control({
+        waypoints: [],
+        routeWhileDragging: true,
+        geocoder: L.Control.Geocoder.nominatim(),
+      }).addTo(map);
+
+      return () => {
+        // Clean up the control when the component unmounts
+        map.removeControl(control);
+      };
+    }, []);
+
+    return null;
+  };
   const {
     response: dataDelay,
     loading: loadingDelay,
@@ -72,7 +92,7 @@ const LiveDashboardPage = () => {
 
   // getting street name from click on map
   const LocationFinderDummy = () => {
-    const map = useMapEvents({
+    useMapEvents({
       click(e) {
         const geocoder = new geocoders.Nominatim();
 
@@ -94,8 +114,8 @@ const LiveDashboardPage = () => {
 
   useEffect(() => {
     const map = mapRef.current;
+    if (!map) return;
     const street = streetsFulls.find((item) => item.name === streetsFromMapSelected);
-    console.log('🚀 ~ file: LiveDashboardPage.tsx:98 ~ useEffect ~ street:', street);
     street?.location?.forEach((path) => {
       L.polyline(path, { color: 'red' }).addTo(map);
     });
@@ -117,6 +137,7 @@ const LiveDashboardPage = () => {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+                <RoutingControl />
                 <LocationFinderDummy />
               </MapContainer>
               <div style={{ height: 400 }}>

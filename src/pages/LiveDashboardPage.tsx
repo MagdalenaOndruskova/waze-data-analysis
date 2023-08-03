@@ -12,12 +12,13 @@ import * as Icons from '../utils/icons';
 import '../styles/main.scss';
 import LineChart from '../Components/LineChart';
 import { prepareData } from '../utils/prepareData';
-import { filterContext } from '../utils/contexts';
+import { filterContext, streetContext } from '../utils/contexts';
 import { geocoders } from 'leaflet-control-geocoder';
 import { queryBuilder } from '../utils/queryBuilder';
-import L, { Map as LeafletMap } from 'leaflet';
+import L, { Map as LeafletMap, Polyline } from 'leaflet';
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+import { StreetInMap } from '../types/StreetInMap';
 
 type DataDelay = {
   features: {
@@ -45,7 +46,10 @@ const rangePresets: {
 ];
 
 const LiveDashboardPage = () => {
-  const { filter, setNewStreetsFromMap, streetsFulls, streetsFromMapSelected } = useContext(filterContext);
+  const { filter, setNewStreetsFromMap, streetsFromMapSelected, streetsInMap, setNewStreetsInMap } =
+    useContext(filterContext);
+  const { streetsWithLocation, streetsInSelected, setNewStreetsWithLocation, setNewStreetsInSelected } =
+    useContext(streetContext);
 
   const mapRef = useRef<LeafletMap>(null);
 
@@ -112,98 +116,145 @@ const LiveDashboardPage = () => {
     });
     return null;
   };
+  useEffect(() => {
+    const map = mapRef.current;
+
+    filter?.streets?.forEach((street) => {
+      const streetInMap = streetsWithLocation.find((item) => item.name === street);
+      var linesOfStreet: Polyline[] = [];
+      streetInMap?.location?.forEach((path) => {
+        const line = L.polyline(path, { color: 'red' });
+        line.addTo(map);
+        linesOfStreet.push(line);
+      });
+      if (streetInMap) {
+        const streetsInMapNew: StreetInMap[] = [...streetsInMap, { name: streetInMap.name, lines: linesOfStreet }];
+        setNewStreetsInMap(streetsInMapNew);
+      }
+    });
+  }, [filter?.streets]);
+
+  // draw streets in map based on selection (before clicking on filter button)
+  useEffect(() => {
+    const map = mapRef.current;
+
+    if (streetsWithLocation.length > 0 && streetsInSelected.length > 0) {
+      streetsInSelected?.forEach((street) => {
+        const streetInMap = streetsWithLocation.find((item) => item.name === street);
+
+        var linesOfStreet: Polyline[] = [];
+        streetInMap?.location?.forEach((path) => {
+          const line = L.polyline(path, { color: 'red' });
+          line.addTo(map);
+          linesOfStreet.push(line);
+        });
+        if (streetInMap) {
+          const streetsInMapNew: StreetInMap[] = [...streetsInMap, { name: streetInMap.name, lines: linesOfStreet }];
+          setNewStreetsInMap(streetsInMapNew);
+        }
+
+        //TODO: Not working:  remove all drawn lines from map
+        // if (streetsInSelected.length == 0) {
+        //   streetsInMap?.forEach((streetInMap) => {
+        //     streetInMap.lines?.forEach((line) => {
+        //       line.removeFrom(map);
+        //     });
+        //   });
+        //   setNewStreetsInMap([]);
+        // }
+      });
+    }
+  }, [streetsInSelected, streetsWithLocation]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    const street = streetsFulls.find((item) => item.name === streetsFromMapSelected);
+    const street = streetsWithLocation.find((item) => item.name === streetsFromMapSelected);
+    var linesOfStreet: Polyline[] = [];
     street?.location?.forEach((path) => {
-      L.polyline(path, { color: 'red' }).addTo(map);
+      const line = L.polyline(path, { color: 'red' });
+      line.addTo(map);
+      linesOfStreet.push(line);
     });
+    if (street) {
+      const streetsInMapNew: StreetInMap[] = [...streetsInMap, { name: street.name, lines: linesOfStreet }];
+      setNewStreetsInMap(streetsInMapNew);
+    }
   }, [streetsFromMapSelected]);
 
   return (
-    <div>
-      {loadingDelay || loadingEvent ? (
-        <div>
-          <h1>Loading... </h1>
-          <Spin size="large" />
-        </div>
-      ) : (
-        <div>
-          <Row>
-            <Col span={20}>
-              <MapContainer ref={mapRef} center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true} style={{ height: 580 }}>
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <RoutingControl />
-                <LocationFinderDummy />
-              </MapContainer>
-              <div style={{ height: 400 }}>
-                <LineChart
-                  data={prepareData(dataDelay, dataEvent)}
-                  xTickValues="every 12 hour"
-                  yAxisValue="count"
-                ></LineChart>
-              </div>
-            </Col>
-            <Col span={4} className="live-map-top-row">
-              <LiveTile
-                icon={<Icons.WarningIcon />}
-                tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
-                tileType="Active Alerts"
-              ></LiveTile>
-              <LiveTile
-                icon={<Icons.CarIcon />}
-                tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
-                tileType="Traffic Jams"
-              ></LiveTile>
-              <LiveTile
-                icon={<Icons.SpeedIcon />}
-                tileTitle={new Intl.NumberFormat('pt-PT', {
-                  style: 'unit',
-                  unit: 'kilometer-per-hour',
-                }).format(
-                  Number(
-                    (
-                      dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
-                      dataDelay?.features?.length
-                    ).toFixed(2),
-                  ),
-                )}
-                tileType="Average speed"
-              ></LiveTile>
-              <LiveTile
-                icon={<Icons.CarIcon />}
-                tileTitle={new Intl.NumberFormat('pt-PT', {
-                  style: 'unit',
-                  unit: 'meter',
-                }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0))}
-                tileType="Jams Length"
-              ></LiveTile>
-              <LiveTile
-                icon={<Icons.JamDelayIcon />}
-                tileTitle={new Intl.NumberFormat('pt-PT', {
-                  style: 'unit',
-                  unit: 'second',
-                }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
-                tileType="Jams Delay"
-              ></LiveTile>
-              <LiveTile
-                icon={<Icons.JamLevelIcon />}
-                tileTitle={(
-                  dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.level, 0) /
+    <Spin size="large" spinning={loadingDelay || loadingEvent}>
+      <Row>
+        <Col span={20}>
+          <MapContainer ref={mapRef} center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true} style={{ height: 580 }}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <RoutingControl />
+            <LocationFinderDummy />
+          </MapContainer>
+          <div style={{ height: 400 }}>
+            <LineChart
+              data={prepareData(dataDelay, dataEvent) ?? []}
+              xTickValues="every 12 hour"
+              yAxisValue="count"
+            ></LineChart>
+          </div>
+        </Col>
+        <Col span={4} className="live-map-top-row">
+          <LiveTile
+            icon={<Icons.WarningIcon />}
+            tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
+            tileType="Active Alerts"
+          ></LiveTile>
+          <LiveTile
+            icon={<Icons.CarIcon />}
+            tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
+            tileType="Traffic Jams"
+          ></LiveTile>
+          <LiveTile
+            icon={<Icons.SpeedIcon />}
+            tileTitle={new Intl.NumberFormat('pt-PT', {
+              style: 'unit',
+              unit: 'kilometer-per-hour',
+            }).format(
+              Number(
+                (
+                  dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
                   dataDelay?.features?.length
-                ).toFixed(2)}
-                tileType="Average Jam Level"
-              ></LiveTile>
-            </Col>
-          </Row>
-        </div>
-      )}
-    </div>
+                ).toFixed(2),
+              ),
+            )}
+            tileType="Average speed"
+          ></LiveTile>
+          <LiveTile
+            icon={<Icons.CarIcon />}
+            tileTitle={new Intl.NumberFormat('pt-PT', {
+              style: 'unit',
+              unit: 'meter',
+            }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0))}
+            tileType="Jams Length"
+          ></LiveTile>
+          <LiveTile
+            icon={<Icons.JamDelayIcon />}
+            tileTitle={new Intl.NumberFormat('pt-PT', {
+              style: 'unit',
+              unit: 'second',
+            }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
+            tileType="Jams Delay"
+          ></LiveTile>
+          <LiveTile
+            icon={<Icons.JamLevelIcon />}
+            tileTitle={(
+              dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.level, 0) /
+              dataDelay?.features?.length
+            ).toFixed(2)}
+            tileType="Average Jam Level"
+          ></LiveTile>
+        </Col>
+      </Row>
+    </Spin>
   );
 };
 

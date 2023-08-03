@@ -6,7 +6,8 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import '../styles/layout-styles.scss';
 import { useFilter } from '../utils/useFilter';
-import { filterContext } from '../utils/contexts';
+import { filterContext, streetContext } from '../utils/contexts';
+import { useStreetContext } from '../utils/useStreetContext';
 
 const footerStyle: React.CSSProperties = {
   textAlign: 'center',
@@ -22,18 +23,21 @@ const footerStyle: React.CSSProperties = {
 
 const MainLayout = () => {
   const filter = useFilter();
+  const street = useStreetContext();
 
   return (
     <Layout>
       <filterContext.Provider value={filter}>
-        <Navbar />
-        <Layout>
-          <Sidebar />
-          <Content className="content">
-            <Outlet />
-          </Content>
-        </Layout>
-        {/* <Footer style={footerStyle}>Footer</Footer> */}
+        <streetContext.Provider value={street}>
+          <Navbar />
+          <Layout>
+            <Sidebar />
+            <Content className="content">
+              <Outlet />
+            </Content>
+          </Layout>
+          {/* <Footer style={footerStyle}>Footer</Footer> */}
+        </streetContext.Provider>
       </filterContext.Provider>
     </Layout>
   );

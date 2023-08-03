@@ -4,11 +4,10 @@ import { Button, DatePicker, Select, SelectProps, TimePicker, message } from 'an
 import dayjs from 'dayjs';
 import { Street } from '../types/Street';
 import useAxios from '../utils/useAxios';
-import { FILTER_DEFAULT_VALUE, filterContext } from '../utils/contexts';
-import { useSearchParams } from 'react-router-dom';
+import { FILTER_DEFAULT_VALUE, filterContext, streetContext } from '../utils/contexts';
+import { redirect, useNavigate, useSearchParams } from 'react-router-dom';
 import { Dayjs } from 'dayjs';
 import { StreetFull } from '../types/StreetFull';
-import { GeoLocation } from '../types/GeoLocation';
 
 type Streets = {
   features: {
@@ -36,29 +35,20 @@ function getOptionsFromStreet(streets: Streets | null) {
 }
 
 function getStreetsLocations(streets: Streets | null) {
-  console.log('🚀 ~ file: Sidebar.tsx:39 ~ getStreetsLocations ~ streets:', streets);
   var streetsFulls: StreetFull[] = [];
   streets?.features?.map(({ attributes, geometry }, index) =>
     streetsFulls.push({
       name: attributes.nazev,
       code: attributes.kod,
       location: geometry?.paths?.map((a: []) => a?.map((b) => [b[1], b[0]])),
-      // location: geometry?.paths?.map((a: []) => a?.map((b: []) => b.reverse())),
     }),
   );
-  console.log('🚀 ~ file: Sidebar.tsx:47 ~ getStreetsLocations ~ streetsFulls:', streetsFulls);
-
-  // streetsFulls.forEach((element) => {
-  //   var location: GeoLocation = { latitude: 0, longitude: 0 };
-  //   element.location?.forEach((loc, index) => {
-  //     location = { latitude: loc[1], longitude: loc[0] };
-  //     element.location[index] = location;
-  //   });
-  // });
   return streetsFulls;
 }
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
   var options: SelectProps['options'] = [];
   var streetFullLocation: StreetFull[] = [];
 
@@ -75,9 +65,13 @@ const Sidebar = () => {
     setNewFilter,
     streetsFromMap,
     setNewStreetsFromMap,
-    setNewStreetsFulls,
     setNewStreetsFromMapSelected,
+    streetsInMap,
+    setNewStreetsInMap,
   } = useContext(filterContext);
+
+  const { streetsWithLocation, streetsInSelected, setNewStreetsWithLocation, setNewStreetsInSelected } =
+    useContext(streetContext);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -92,6 +86,10 @@ const Sidebar = () => {
     setSelected((prevState) => prevState.filter((item) => item));
     setNewStreetsFromMapSelected(street);
   }, [streetsFromMap]);
+
+  useEffect(() => {
+    setNewStreetsInSelected(selected);
+  }, [selected]);
 
   useEffect(() => {
     if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filterDefaultValue) && filter !== null) {
@@ -129,12 +127,12 @@ const Sidebar = () => {
           streetsSplitted = streetsSplitted.map((item) => item.trim());
         }
         setNewFilter({ fromDate, fromTime, toDate, toTime, streets: streetsSplitted });
-
         setDateFrom(dayjs(fromDate));
         setTimeFrom(dayjs(fromTime, 'HH:mm'));
         setDateTo(dayjs(toDate));
         setTimeTo(dayjs(toTime, 'HH:mm'));
         setSelected(streetsSplitted);
+        setNewStreetsInSelected(streetsSplitted);
 
         // TODO: while refresh, when loading filter from url it is called default filter in request
         inicialized.current = true;
@@ -160,7 +158,16 @@ const Sidebar = () => {
       toTime: timeTo.format('HH:mm'),
       streets: selected,
     });
+
     setNewStreetsFromMap([]);
+    streetsInMap.forEach((street) => {
+      street.lines.forEach((line) => {
+        line.remove();
+      });
+    });
+    setNewStreetsInSelected([]);
+    setNewStreetsInMap([]);
+    navigate('/waze-data-analysis/');
   };
 
   const filterData = () => {
@@ -197,10 +204,10 @@ const Sidebar = () => {
   });
 
   options = getOptionsFromStreet(dataStreets);
-  streetFullLocation = getStreetsLocations(dataStreets);
 
   useEffect(() => {
-    setNewStreetsFulls(streetFullLocation);
+    streetFullLocation = getStreetsLocations(dataStreets);
+    setNewStreetsWithLocation(streetFullLocation);
   }, [dataStreets]);
 
   return (

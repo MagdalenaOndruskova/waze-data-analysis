@@ -100,11 +100,14 @@ const LiveDashboardPage = () => {
     useMapEvents({
       click(e) {
         const geocoder = new geocoders.Nominatim();
-
         //TODO: zoomlevel to constants -  14 is zoom level
         geocoder.reverse(e.latlng, 14, (result) => {
-          var r = result[0];
-          var address = r.name.split(',');
+          const r = result[0];
+          const address = r.name.split(',');
+          if (address.length < 4) {
+            // TODO: delete, this is just debug log
+            console.log('🚀 ~ file: LiveDashboardPage.tsx:110 ~ geocoder.reverse ~ address:', address);
+          }
           var possibleStreets = address.slice(0, 5);
           possibleStreets = possibleStreets.filter((item) => isNaN(Number(item)));
           possibleStreets = possibleStreets.map((item) => item.trim());
@@ -143,7 +146,7 @@ const LiveDashboardPage = () => {
         const streetInMap = streetsWithLocation.find((item) => item.name === street);
 
         var linesOfStreet: Polyline[] = [];
-        streetInMap?.location?.forEach((path) => {
+        streetInMap?.location?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
           const line = L.polyline(path, { color: 'red' });
           line.addTo(map);
           linesOfStreet.push(line);
@@ -183,9 +186,9 @@ const LiveDashboardPage = () => {
   }, [streetsFromMapSelected]);
 
   return (
-    <Spin size="large" spinning={loadingDelay || loadingEvent}>
-      <Row>
-        <Col span={20}>
+    <Row>
+      <Col span={20}>
+        <Spin size="large" spinning={loadingDelay || loadingEvent}>
           <MapContainer ref={mapRef} center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true} style={{ height: 580 }}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -194,67 +197,67 @@ const LiveDashboardPage = () => {
             <RoutingControl />
             <LocationFinderDummy />
           </MapContainer>
-          <div style={{ height: 400 }}>
-            <LineChart
-              data={prepareData(dataDelay, dataEvent) ?? []}
-              xTickValues="every 12 hour"
-              yAxisValue="count"
-            ></LineChart>
-          </div>
-        </Col>
-        <Col span={4} className="live-map-top-row">
-          <LiveTile
-            icon={<Icons.WarningIcon />}
-            tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
-            tileType="Active Alerts"
-          ></LiveTile>
-          <LiveTile
-            icon={<Icons.CarIcon />}
-            tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
-            tileType="Traffic Jams"
-          ></LiveTile>
-          <LiveTile
-            icon={<Icons.SpeedIcon />}
-            tileTitle={new Intl.NumberFormat('pt-PT', {
-              style: 'unit',
-              unit: 'kilometer-per-hour',
-            }).format(
-              Number(
-                (
-                  dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
-                  dataDelay?.features?.length
-                ).toFixed(2),
-              ),
-            )}
-            tileType="Average speed"
-          ></LiveTile>
-          <LiveTile
-            icon={<Icons.CarIcon />}
-            tileTitle={new Intl.NumberFormat('pt-PT', {
-              style: 'unit',
-              unit: 'meter',
-            }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0))}
-            tileType="Jams Length"
-          ></LiveTile>
-          <LiveTile
-            icon={<Icons.JamDelayIcon />}
-            tileTitle={new Intl.NumberFormat('pt-PT', {
-              style: 'unit',
-              unit: 'second',
-            }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
-            tileType="Jams Delay"
-          ></LiveTile>
-          <LiveTile
-            icon={<Icons.JamLevelIcon />}
-            tileTitle={(
-              dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.level, 0) /
-              dataDelay?.features?.length
-            ).toFixed(2)}
-            tileType="Average Jam Level"
-          ></LiveTile>
-        </Col>
-      </Row>
-    </Spin>
+        </Spin>
+        <div style={{ height: 400 }}>
+          <LineChart
+            data={prepareData(dataDelay, dataEvent) ?? []}
+            xTickValues="every 12 hour"
+            yAxisValue="count"
+          ></LineChart>
+        </div>
+      </Col>
+      <Col span={4} className="live-map-top-row">
+        <LiveTile
+          icon={<Icons.WarningIcon />}
+          tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
+          tileType="Active Alerts"
+        ></LiveTile>
+        <LiveTile
+          icon={<Icons.CarIcon />}
+          tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
+          tileType="Traffic Jams"
+        ></LiveTile>
+        <LiveTile
+          icon={<Icons.SpeedIcon />}
+          tileTitle={new Intl.NumberFormat('pt-PT', {
+            style: 'unit',
+            unit: 'kilometer-per-hour',
+          }).format(
+            Number(
+              (
+                dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
+                dataDelay?.features?.length
+              ).toFixed(2),
+            ),
+          )}
+          tileType="Average speed"
+        ></LiveTile>
+        <LiveTile
+          icon={<Icons.CarIcon />}
+          tileTitle={new Intl.NumberFormat('pt-PT', {
+            style: 'unit',
+            unit: 'meter',
+          }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0))}
+          tileType="Jams Length"
+        ></LiveTile>
+        <LiveTile
+          icon={<Icons.JamDelayIcon />}
+          tileTitle={new Intl.NumberFormat('pt-PT', {
+            style: 'unit',
+            unit: 'second',
+          }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
+          tileType="Jams Delay"
+        ></LiveTile>
+        <LiveTile
+          icon={<Icons.JamLevelIcon />}
+          tileTitle={(
+            dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.level, 0) /
+            dataDelay?.features?.length
+          ).toFixed(2)}
+          tileType="Average Jam Level"
+        ></LiveTile>
+      </Col>
+    </Row>
   );
 };
 

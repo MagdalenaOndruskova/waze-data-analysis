@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 
 import LiveDashboardPage from './pages/LiveDashboardPage';
 import Layout from './layout/MainLayout';
+import './i18n/i18n';
 
 import './App.css';
 import Dashboard from './pages/Dashboard';

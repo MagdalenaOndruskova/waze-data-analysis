@@ -8,6 +8,7 @@ import { FILTER_DEFAULT_VALUE, filterContext, streetContext } from '../utils/con
 import { redirect, useNavigate, useSearchParams } from 'react-router-dom';
 import { Dayjs } from 'dayjs';
 import { StreetFull } from '../types/StreetFull';
+import { useTranslation } from 'react-i18next';
 
 type Streets = {
   features: {
@@ -48,6 +49,7 @@ function getStreetsLocations(streets: Streets | null) {
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   var options: SelectProps['options'] = [];
   var streetFullLocation: StreetFull[] = [];
@@ -215,7 +217,7 @@ const Sidebar = () => {
       {messageDateContext}
       <h2>Filters</h2>
       <h3>Time range</h3>
-      <p>From:</p>
+      <p>{t('From')}</p>
       <DatePicker
         name="DateFrom"
         className="filterStyle"

@@ -14,13 +14,7 @@ export interface Filter {
 export interface FilterContext {
   filter: Filter | null;
   filterDefaultValue: Filter;
-  streetsFromMap: string[];
-  streetsFromMapSelected: string;
-  streetsInMap: StreetInMap[];
   setNewFilter: (newFilter: Filter) => void;
-  setNewStreetsFromMap: (streetValues: string[]) => void;
-  setNewStreetsFromMapSelected: (streetsFromMapSelected: string) => void;
-  setNewStreetsInMap: (streetsInMap: StreetInMap[]) => void;
 }
 
 export const FILTER_DEFAULT_VALUE: FilterContext = {
@@ -32,13 +26,7 @@ export const FILTER_DEFAULT_VALUE: FilterContext = {
     streets: [],
   },
   filter: null,
-  streetsFromMap: [],
-  streetsFromMapSelected: '',
-  streetsInMap: [],
-  setNewStreetsFromMap: () => {},
   setNewFilter: () => {},
-  setNewStreetsFromMapSelected: () => {},
-  setNewStreetsInMap: () => {},
 };
 
 export const filterContext = React.createContext<FilterContext>(FILTER_DEFAULT_VALUE);

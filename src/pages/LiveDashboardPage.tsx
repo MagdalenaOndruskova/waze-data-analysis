@@ -19,6 +19,7 @@ import L, { Map as LeafletMap, Polyline } from 'leaflet';
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { StreetInMap } from '../types/StreetInMap';
+import { StreetFull } from '../types/StreetFull';
 
 type DataDelay = {
   features: {
@@ -45,10 +46,15 @@ const rangePresets: {
   { label: 'Last 90 Days', value: [dayjs().add(-90, 'd'), dayjs()] },
 ];
 
+function findArrayElementByName(array, name) {
+  return array?.find((element) => {
+    return element?.name === name;
+  });
+}
+
 const LiveDashboardPage = () => {
-  const { filter, setNewStreetsFromMap, streetsFromMapSelected, streetsInMap, setNewStreetsInMap } =
-    useContext(filterContext);
-  const { streetsWithLocation, streetsInSelected, setNewStreetsWithLocation, setNewStreetsInSelected } =
+  const { filter } = useContext(filterContext);
+  const { streetsWithLocation, streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap } =
     useContext(streetContext);
 
   const mapRef = useRef<LeafletMap>(null);
@@ -103,87 +109,61 @@ const LiveDashboardPage = () => {
         //TODO: zoomlevel to constants -  14 is zoom level
         geocoder.reverse(e.latlng, 14, (result) => {
           const r = result[0];
-          const address = r.name.split(',');
-          if (address.length < 4) {
-            // TODO: delete, this is just debug log
-            console.log('🚀 ~ file: LiveDashboardPage.tsx:110 ~ geocoder.reverse ~ address:', address);
-          }
+          console.log('🚀 ~ file: LiveDashboardPage.tsx:114 ~ geocoder.reverse ~ result:', result);
+          const address = r.name.split(','); // todo use adress property
+          // TODO: delete, this is just debug l og
+          console.log('🚀 ~ file: LiveDashboardPage.tsx:110 ~ geocoder.reverse ~ address:', address);
+
           var possibleStreets = address.slice(0, 5);
           possibleStreets = possibleStreets.filter((item) => isNaN(Number(item)));
           possibleStreets = possibleStreets.map((item) => item.trim());
           const blacklist = ['Brno', 'okres Brno-město', 'Jihomoravský kraj', 'Southeast', 'Czechia', 'Město Brno'];
           possibleStreets = possibleStreets.filter((item) => !blacklist.includes(item));
-          setNewStreetsFromMap(possibleStreets);
+          var streets = streetsWithLocation?.filter((item) => possibleStreets.includes(item.name));
+          if (streets.length > 0) {
+            const street = streets[0];
+            setNewStreetsInSelected([...new Set([...streetsInSelected, street?.name])]);
+          }
         });
       },
     });
     return null;
   };
-  useEffect(() => {
-    const map = mapRef.current;
-
-    filter?.streets?.forEach((street) => {
-      const streetInMap = streetsWithLocation.find((item) => item.name === street);
-      var linesOfStreet: Polyline[] = [];
-      streetInMap?.location?.forEach((path) => {
-        const line = L.polyline(path, { color: 'red' });
-        line.addTo(map);
-        linesOfStreet.push(line);
-      });
-      if (streetInMap) {
-        const streetsInMapNew: StreetInMap[] = [...streetsInMap, { name: streetInMap.name, lines: linesOfStreet }];
-        setNewStreetsInMap(streetsInMapNew);
-      }
-    });
-  }, [filter?.streets]);
 
   // draw streets in map based on selection (before clicking on filter button)
   useEffect(() => {
+    if (streetsWithLocation.length < 1 && streetsInSelected.length < 1) {
+      // Need both defined - data and also selected streets
+      return;
+    }
     const map = mapRef.current;
 
-    if (streetsWithLocation.length > 0 && streetsInSelected.length > 0) {
-      streetsInSelected?.forEach((street) => {
-        const streetInMap = streetsWithLocation.find((item) => item.name === street);
+    var streetsInMapNew: StreetInMap[] = [];
 
-        var linesOfStreet: Polyline[] = [];
-        streetInMap?.location?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-          const line = L.polyline(path, { color: 'red' });
-          line.addTo(map);
-          linesOfStreet.push(line);
+    streetsInSelected?.forEach((street: string) => {
+      const streetInSelected: StreetFull = streetsWithLocation?.find((item) => item?.name === street);
+      if (findArrayElementByName(streetsInMap, streetInSelected?.name)) {
+        // checks if street is already drawn
+        return;
+      } else {
+        // street not already drawn, so it should be drawn
+        var newStreet: StreetInMap = { name: streetInSelected?.name, lines: [] };
+        streetInSelected?.location?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
+          const line = L.polyline(path, { color: 'red' }).addTo(map);
+          newStreet.lines.push(line);
         });
-        if (streetInMap) {
-          const streetsInMapNew: StreetInMap[] = [...streetsInMap, { name: streetInMap.name, lines: linesOfStreet }];
-          setNewStreetsInMap(streetsInMapNew);
-        }
-
-        //TODO: Not working:  remove all drawn lines from map
-        // if (streetsInSelected.length == 0) {
-        //   streetsInMap?.forEach((streetInMap) => {
-        //     streetInMap.lines?.forEach((line) => {
-        //       line.removeFrom(map);
-        //     });
-        //   });
-        //   setNewStreetsInMap([]);
-        // }
-      });
-    }
-  }, [streetsInSelected, streetsWithLocation]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const street = streetsWithLocation.find((item) => item.name === streetsFromMapSelected);
-    var linesOfStreet: Polyline[] = [];
-    street?.location?.forEach((path) => {
-      const line = L.polyline(path, { color: 'red' });
-      line.addTo(map);
-      linesOfStreet.push(line);
+        streetsInMapNew.push(newStreet);
+      }
     });
-    if (street) {
-      const streetsInMapNew: StreetInMap[] = [...streetsInMap, { name: street.name, lines: linesOfStreet }];
-      setNewStreetsInMap(streetsInMapNew);
-    }
-  }, [streetsFromMapSelected]);
+    const streetsSmth = [...new Set([...streetsInMap, ...streetsInMapNew])];
+    const streetsInMapStaying = streetsSmth?.filter((street) => streetsInSelected.includes(street.name));
+    const streetsInMapToDelete = streetsSmth?.filter((street) => !streetsInSelected.includes(street.name));
+    streetsInMapToDelete?.forEach((street) => {
+      street?.lines?.forEach((line) => line.remove());
+    });
+
+    setNewStreetsInMap(streetsInMapStaying); // TODO: toto tu treba odkomentovat ale potom sa to rozbije
+  }, [streetsInSelected, streetsWithLocation]);
 
   return (
     <Row>
@@ -194,7 +174,8 @@ const LiveDashboardPage = () => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <RoutingControl />
+            {/* <RoutingControl />  */}
+            {/* TODO: Uncomment routing control for enabling routing library */}
             <LocationFinderDummy />
           </MapContainer>
         </Spin>

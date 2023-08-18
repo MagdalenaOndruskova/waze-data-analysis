@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import '../styles/layout-styles.scss';
-import { Button, DatePicker, Select, SelectProps, TimePicker, message } from 'antd';
+import { Button, DatePicker, Input, Select, SelectProps, TimePicker, message } from 'antd';
 import dayjs from 'dayjs';
 import { Street } from '../types/Street';
 import useAxios from '../utils/useAxios';
 import { FILTER_DEFAULT_VALUE, filterContext, streetContext } from '../utils/contexts';
-import { redirect, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Dayjs } from 'dayjs';
 import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
@@ -62,17 +62,9 @@ const Sidebar = () => {
 
   const inicialized = useRef<Boolean>(false);
 
-  const {
-    filter,
-    setNewFilter,
-    streetsFromMap,
-    setNewStreetsFromMap,
-    setNewStreetsFromMapSelected,
-    streetsInMap,
-    setNewStreetsInMap,
-  } = useContext(filterContext);
+  const { filter, setNewFilter } = useContext(filterContext);
 
-  const { streetsWithLocation, streetsInSelected, setNewStreetsWithLocation, setNewStreetsInSelected } =
+  const { setNewStreetsWithLocation, setNewStreetsInSelected, streetsInSelected, streetsInMap, setNewStreetsInMap } =
     useContext(streetContext);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -80,18 +72,8 @@ const Sidebar = () => {
   const [messageDate, messageDateContext] = message.useMessage();
 
   useEffect(() => {
-    var possibleStreets = [];
-    possibleStreets = options.map((item) => item.value);
-    var streets = streetsFromMap.filter((item) => possibleStreets.includes(item));
-    const street = streets[0];
-    setSelected((prevState) => [...new Set([...prevState, street])]);
-    setSelected((prevState) => prevState.filter((item) => item));
-    setNewStreetsFromMapSelected(street);
-  }, [streetsFromMap]);
-
-  useEffect(() => {
-    setNewStreetsInSelected(selected);
-  }, [selected]);
+    setSelected(streetsInSelected);
+  }, [streetsInSelected]);
 
   useEffect(() => {
     if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filterDefaultValue) && filter !== null) {
@@ -158,10 +140,9 @@ const Sidebar = () => {
       toDate: dateTo.format('YYYY-MM-DD'),
       fromTime: timeFrom.format('HH:mm'),
       toTime: timeTo.format('HH:mm'),
-      streets: selected,
+      streets: [],
     });
 
-    setNewStreetsFromMap([]);
     streetsInMap.forEach((street) => {
       street.lines.forEach((line) => {
         line.remove();
@@ -176,9 +157,6 @@ const Sidebar = () => {
     if (dateTo.isBefore(dateFrom)) {
       messageDate.open({
         type: 'error',
-        // style: {
-        //   marginTop: '5vh',
-        // },
         content: 'Please select date in format FROM-TO, TO can not be before FROM.',
         duration: 10,
       });
@@ -204,7 +182,6 @@ const Sidebar = () => {
     api: 'street',
     getData: true,
   });
-
   options = getOptionsFromStreet(dataStreets);
 
   useEffect(() => {
@@ -241,7 +218,10 @@ const Sidebar = () => {
         placeholder="Please select"
         onChange={(value) => {
           setSelected(value);
+          // setNewStreetsInSelected([...new Set([...selected, ...value])]);
+          setNewStreetsInSelected(value);
         }}
+        //  TODO: filter ignore diacritics
         value={selected}
         options={options}
       />

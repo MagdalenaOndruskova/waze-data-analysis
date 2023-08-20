@@ -4,6 +4,7 @@ import { initReactI18next } from 'react-i18next';
 
 import csTranslation from '../locales/cs.json'; // Import the JSON file
 import enTranslation from '../locales/en.json';
+import skTranslation from '../locales/sk.json';
 
 const resources = {
   en: {
@@ -12,14 +13,17 @@ const resources = {
   cs: {
     translation: csTranslation,
   },
+  sk: {
+    translation: skTranslation,
+  },
 };
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: 'cs',
+  lng: 'sk',
   fallbackLng: 'en',
   debug: true,
-  supportedLngs: ['cs', 'en'],
+  supportedLngs: ['cs', 'en', 'sk'],
   interpolation: {
     escapeValue: false,
   },

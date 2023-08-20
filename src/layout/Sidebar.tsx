@@ -157,7 +157,7 @@ const Sidebar = () => {
     if (dateTo.isBefore(dateFrom)) {
       messageDate.open({
         type: 'error',
-        content: 'Please select date in format FROM-TO, TO can not be before FROM.',
+        content: t('errorMessage.WrongDateFromTo'),
         duration: 10,
       });
 
@@ -192,8 +192,8 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       {messageDateContext}
-      <h2>Filters</h2>
-      <h3>Time range</h3>
+      <h2>{t('Filters')}</h2>
+      <h3>{t('Time Range')}</h3>
       <p>{t('From')}</p>
       <DatePicker
         name="DateFrom"
@@ -207,18 +207,17 @@ const Sidebar = () => {
         format="HH:mm"
         value={dayjs(timeFrom, 'HH:mm')}
       />
-      <p>To:</p>
+      <p>{t('To')}</p>
       <DatePicker className="filterStyle" onChange={(value) => setDateTo(value)} value={dayjs(dateTo)} />
       <TimePicker className="filterStyle" onChange={(value) => setTimeTo(value)} value={dayjs(timeTo)} format="HH:mm" />
-      <h3>Streets:</h3>
+      <h3>{t('Streets')}</h3>
       <Select
         className="filterStyle"
         mode="multiple"
         allowClear
-        placeholder="Please select"
+        placeholder={t('PleaseSelect')}
         onChange={(value) => {
           setSelected(value);
-          // setNewStreetsInSelected([...new Set([...selected, ...value])]);
           setNewStreetsInSelected(value);
         }}
         //  TODO: filter ignore diacritics
@@ -226,10 +225,10 @@ const Sidebar = () => {
         options={options}
       />
       <Button className="filterStyle" onClick={filterData}>
-        FILTER
+        {t('FILTER')}
       </Button>
       <Button className="filterStyle" onClick={clearFilters}>
-        RESET
+        {t('RESET')}
       </Button>
     </div>
   );

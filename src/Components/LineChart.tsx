@@ -1,7 +1,9 @@
 import { ResponsiveLine } from '@nivo/line';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const LineChart = ({ data, xTickValues, yAxisValue }) => {
+  const { t } = useTranslation();
   return (
     <ResponsiveLine
       data={data}
@@ -36,7 +38,7 @@ const LineChart = ({ data, xTickValues, yAxisValue }) => {
         tickRotation: -45,
         tickPadding: 5,
         tickSize: 5,
-        legend: 'Date and Time',
+        legend: t('plot.DateAndTime'),
         legendOffset: 85,
         legendPosition: 'middle',
       }}

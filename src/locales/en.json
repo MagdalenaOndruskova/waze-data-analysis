@@ -1,4 +1,43 @@
 {
-  "From": "From",
-  "To": "To"
+  "From": "From:",
+  "To": "To:",
+  "Filters": "Filters:",
+  "Time Range": "Time Range",
+  "Streets": "Streets:",
+  "PleaseSelect": "Please Select",
+  "FILTER": "FILTER",
+  "RESET": "RESET",
+  "Live Map": "Live Map",
+  "Dashboard": "Dashboard",
+
+  "tile.AverageJamLevel": "Average Jam Level",
+  "tile.JamsDelay": "Jams Delay",
+  "tile.JamsLength": "Jams Length",
+  "tile.AverageSpeed": "Average Speed",
+  "tile.TrafficJams": "Traffic Jams",
+  "tile.ActiveAlerts": "Active Alerts",
+  "tile.AlertsType": "Alerts Type",
+  "tile.JamsType": "Jams Type",
+  "tile.CriticalStreetsJams": "Most critical streets (jams)",
+  "tile.CriticalStreetsAlerts": "Most critical streets (alerts)",
+
+  "errorMessage.WrongDateFromTo": "Please select date in format FROM-TO, TO can not be before FROM.",
+
+  "alertType.WeatherHazard": "Weather Hazard",
+  "alertType.Jam": "Traffic Jam",
+  "alertTpe.RoadClosed": "Road Closed",
+  "alertType.Accident": "Accident",
+
+  "jamType.Small": "Small",
+  "jamType.Medium": "Medium",
+  "jamType.Large": "Large",
+  "jamType.Huge": "Huge",
+  "jamType.None": "None",
+
+  "plot.DateAndTime": "Date and Time",
+  "plot.Count": "Count",
+
+  "language.English": "English",
+  "language.Slovak": "Slovak",
+  "language.Czech": "Czech"
 }

@@ -11,6 +11,8 @@ import {
 } from '../types/TrafficDelay';
 import { TrafficEvent, TrafficEventStreetsPlot, TrafficEventTypePlot } from '../types/TrafficEvent';
 import { number } from 'prop-types';
+import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next/typescript/t';
 
 type DataDelay = {
   features: {
@@ -198,7 +200,6 @@ function prepareStreetsByJams(data: DataDelay | null) {
   });
 
   var arrayData = Object.entries(counts);
-  console.log('🚀 ~ file: prepareData.tsx:221 ~ prepareStreetsByJams ~ arrayData:', arrayData);
   var sortedArray = arrayData.sort(function (a, b) {
     return b[1] - a[1];
   });
@@ -297,19 +298,19 @@ export function prepareData(
   return null;
 }
 
-export function prepareDataAlertsType(data: DataEvent | null) {
+export function prepareDataAlertsType(data: DataEvent | null, t: TFunction<'translation'>) {
   const preparedData = prepareDataAlertTypePreprocessing(data);
   const plotData: Array<any> = [];
   preparedData?.forEach((item) => {
     var label = '';
     if (item[0] == 'WEATHERHAZARD') {
-      label = 'Weather Hazard';
+      label = t('alertType.WeatherHazard');
     } else if (item[0] == 'JAM') {
-      label = 'Jam';
+      label = t('alertType.Jam');
     } else if (item[0] == 'ROAD_CLOSED') {
-      label = 'Road Closed';
+      label = t('alertType.RoadClosed');
     } else if (item[0] == 'ACCIDENT') {
-      label = 'Accident';
+      label = t('alertType.Accident');
     }
     plotData.push({
       id: label,
@@ -320,22 +321,22 @@ export function prepareDataAlertsType(data: DataEvent | null) {
   return plotData;
 }
 
-export function prepareDataJamType(data: DataDelay | null) {
+export function prepareDataJamType(data: DataDelay | null, t: TFunction<'translation'>) {
   const preparedData = prepareDataJamTypePreprocessing(data);
   const plotData: Array<any> = [];
 
   preparedData?.forEach((item) => {
     var label = '';
     if (item[0] == 'SMALL') {
-      label = 'Small';
+      label = t('jamType.Small');
     } else if (item[0] == 'MEDIUM') {
-      label = 'Medium';
+      label = t('jamType.Medium');
     } else if (item[0] == 'LARGE') {
-      label = 'Large';
+      label = t('jamType.Large');
     } else if (item[0] == 'HUGE') {
-      label = 'Huge';
+      label = t('jamType.Huge');
     } else if (item[0] == 'NONE') {
-      label = 'None';
+      label = t('jamType.None');
     }
     plotData.push({
       id: label,

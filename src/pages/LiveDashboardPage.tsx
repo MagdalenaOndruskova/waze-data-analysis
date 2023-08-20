@@ -20,6 +20,7 @@ import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { StreetInMap } from '../types/StreetInMap';
 import { StreetFull } from '../types/StreetFull';
+import { useTranslation } from 'react-i18next';
 
 type DataDelay = {
   features: {
@@ -54,6 +55,8 @@ function findArrayElementByName(array, name) {
 
 const LiveDashboardPage = () => {
   const { filter } = useContext(filterContext);
+  const { t } = useTranslation();
+
   const { streetsWithLocation, streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap } =
     useContext(streetContext);
 
@@ -183,7 +186,7 @@ const LiveDashboardPage = () => {
           <LineChart
             data={prepareData(dataDelay, dataEvent) ?? []}
             xTickValues="every 12 hour"
-            yAxisValue="count"
+            yAxisValue={t('plot.Count')}
           ></LineChart>
         </div>
       </Col>
@@ -191,12 +194,12 @@ const LiveDashboardPage = () => {
         <LiveTile
           icon={<Icons.WarningIcon />}
           tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
-          tileType="Active Alerts"
+          tileType={t('tile.ActiveAlerts')}
         ></LiveTile>
         <LiveTile
           icon={<Icons.CarIcon />}
           tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
-          tileType="Traffic Jams"
+          tileType={t('tile.TrafficJams')}
         ></LiveTile>
         <LiveTile
           icon={<Icons.SpeedIcon />}
@@ -211,7 +214,7 @@ const LiveDashboardPage = () => {
               ).toFixed(2),
             ),
           )}
-          tileType="Average speed"
+          tileType={t('tile.AverageSpeed')}
         ></LiveTile>
         <LiveTile
           icon={<Icons.CarIcon />}
@@ -219,7 +222,7 @@ const LiveDashboardPage = () => {
             style: 'unit',
             unit: 'meter',
           }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0))}
-          tileType="Jams Length"
+          tileType={t('tile.JamsLength')}
         ></LiveTile>
         <LiveTile
           icon={<Icons.JamDelayIcon />}
@@ -227,7 +230,7 @@ const LiveDashboardPage = () => {
             style: 'unit',
             unit: 'second',
           }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
-          tileType="Jams Delay"
+          tileType={t('tile.JamsDelay')}
         ></LiveTile>
         <LiveTile
           icon={<Icons.JamLevelIcon />}
@@ -235,7 +238,7 @@ const LiveDashboardPage = () => {
             dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.level, 0) /
             dataDelay?.features?.length
           ).toFixed(2)}
-          tileType="Average Jam Level"
+          tileType={t('tile.AverageJamLevel')}
         ></LiveTile>
       </Col>
     </Row>

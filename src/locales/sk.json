@@ -1,0 +1,43 @@
+{
+  "From": "Od:",
+  "To": "Do:",
+  "Filters": "Filtre",
+  "Time Range": "Časové rozpätie",
+  "Streets": "Ulice:",
+  "PleaseSelect": "Vyberte ulice",
+  "FILTER": "FILTRUJ",
+  "RESET": "VYNULUJ",
+  "Live Map": "Live Mapa",
+  "Dashboard": "Dashboard",
+
+  "tile.AverageJamLevel": "Priemerný level dopr. zápchy",
+  "tile.JamsDelay": "Zdržanie v zápchach",
+  "tile.JamsLength": "Dĺžka dopravných zápch",
+  "tile.AverageSpeed": "Priemerná rýchlosť",
+  "tile.TrafficJams": "Dopravné zápchy",
+  "tile.ActiveAlerts": "Aktívne alerty",
+  "tile.AlertsType": "Typy alertov",
+  "tile.JamsType": "Typy dopravných zápch",
+  "tile.CriticalStreetsJams": "Najkritickejšie ulice (podľa dopravných zápch)",
+  "tile.CriticalStreetsAlerts": "Najkritickejšie ulice (podľa alertov)",
+
+  "errorMessage.WrongDateFromTo": "Prosím, vyberte dátum vo formáte OD-DO. DO nemôže byť pred OD.",
+
+  "alertType.WeatherHazard": "Nebezpečenstvo spôsobené počasím",
+  "alertType.Jam": "Dopravná zápcha",
+  "alertType.RoadClosed": "Uzavretá cesta",
+  "alertType.Accident": "Dopravná nehoda",
+
+  "jamType.Small": "Malá",
+  "jamType.Medium": "Stredná",
+  "jamType.Large": "Veľká",
+  "jamType.Huge": "Obrovská",
+  "jamType.None": "Neuvedené",
+
+  "plot.DateAndTime": "Dátum a čas",
+  "plot.Count": "Počet",
+
+  "language.English": "Anglicky",
+  "language.Slovak": "Slovensky",
+  "language.Czech": "Česky"
+}

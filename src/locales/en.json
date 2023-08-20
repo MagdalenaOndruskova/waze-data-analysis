@@ -9,6 +9,8 @@
   "RESET": "RESET",
   "Live Map": "Live Map",
   "Dashboard": "Dashboard",
+  "Jams": "Jams",
+  "Alerts": "Alerts",
 
   "tile.AverageJamLevel": "Average Jam Level",
   "tile.JamsDelay": "Jams Delay",

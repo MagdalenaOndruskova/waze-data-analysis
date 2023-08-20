@@ -10,8 +10,6 @@ import {
   TrafficJamTypePlot,
 } from '../types/TrafficDelay';
 import { TrafficEvent, TrafficEventStreetsPlot, TrafficEventTypePlot } from '../types/TrafficEvent';
-import { number } from 'prop-types';
-import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next/typescript/t';
 
 type DataDelay = {
@@ -211,44 +209,44 @@ function prepareStreetsByJams(data: DataDelay | null) {
   return slicedFinal;
 }
 
-export function prepareDataJamLevel(data: DataDelay | null) {
+export function prepareDataJamLevel(data: DataDelay | null, t: TFunction<'translation'>) {
   const preparedData = prepareDataJamLevelPreprocessing(data);
   const plotData = [
     {
-      id: 'Average Jam Level',
+      id: t('tile.AverageJamLevel'),
       data: preparedData,
     },
   ];
   return plotData;
 }
 
-export function prepareDataJamLength(data: DataDelay | null) {
+export function prepareDataJamLength(data: DataDelay | null, t: TFunction<'translation'>) {
   const preparedData = prepareDataJamLengthPreprocessing(data);
   const plotData = [
     {
-      id: 'Jam Length',
+      id: t('tile.JamsLength'),
       data: preparedData,
     },
   ];
   return plotData;
 }
 
-export function prepareDataAverageSpeed(data: DataDelay | null) {
+export function prepareDataAverageSpeed(data: DataDelay | null, t: TFunction<'translation'>) {
   const preparedData = prepareDataAverageSpeedPreprocessing(data);
   const plotData = [
     {
-      id: 'Jam Average Speed',
+      id: t('tile.AverageSpeed'),
       data: preparedData,
     },
   ];
   return plotData;
 }
 
-export function prepareDataDelay(data: DataDelay | null) {
+export function prepareDataDelay(data: DataDelay | null, t: TFunction<'translation'>) {
   const preparedData = prepareDataDelayPreprocessing(data);
   const plotData = [
     {
-      id: 'Delay',
+      id: t('tile.JamsDelay'),
       data: preparedData,
     },
   ];
@@ -258,18 +256,19 @@ export function prepareDataDelay(data: DataDelay | null) {
 export function prepareData(
   dataDelay: DataDelay | null,
   dataEvent: DataEvent | null,
+  t: TFunction<'translation'>,
   colorDelay: string = 'hsl(60, 70%, 50%)',
   colorEvent: string = 'hsl(227, 70%, 50%)',
 ) {
   if (dataDelay != null && dataEvent != null) {
     const plotData = [
       {
-        id: 'Jams',
+        id: t('Jams'),
         color: colorDelay,
         data: prepareDataArray(dataDelay),
       },
       {
-        id: 'Alerts',
+        id: t('Alerts'),
         color: colorEvent,
         data: prepareDataArray(dataEvent),
       },
@@ -278,7 +277,7 @@ export function prepareData(
   } else if (dataDelay != null) {
     const plotData = [
       {
-        id: 'Jams',
+        id: t('Jams'),
         color: colorDelay,
         data: prepareDataArray(dataDelay),
       },
@@ -287,7 +286,7 @@ export function prepareData(
   } else if (dataEvent != null) {
     const plotData = [
       {
-        id: 'Alerts',
+        id: t('Alerts'),
         color: colorEvent,
         data: prepareDataArray(dataEvent),
       },

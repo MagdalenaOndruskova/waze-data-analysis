@@ -145,7 +145,7 @@ const Dashboard = () => {
             <Col style={{ height: 295 }} lg={8} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>{t('tile.ActiveAlerts')}:</h3>
               <LineChart
-                data={prepareData(null, dataEvent)}
+                data={prepareData(null, dataEvent, t)}
                 xTickValues="every 12 hour"
                 yAxisValue={t('plot.Count')}
               ></LineChart>
@@ -153,7 +153,7 @@ const Dashboard = () => {
             <Col style={{ height: 295 }} lg={8} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>{t('tile.TrafficJams')}:</h3>
               <LineChart
-                data={prepareData(dataDelay, null)}
+                data={prepareData(dataDelay, null, t)}
                 xTickValues="every 12 hour"
                 yAxisValue={t('plot.Count')}
               ></LineChart>
@@ -163,7 +163,7 @@ const Dashboard = () => {
                 {t('tile.AverageJamLevel')}:
               </h3>
               <LineChart
-                data={prepareDataJamLevel(dataDelay)}
+                data={prepareDataJamLevel(dataDelay, t)}
                 xTickValues="every 12 hour"
                 yAxisValue={t('plot.Count')}
               ></LineChart>
@@ -171,7 +171,7 @@ const Dashboard = () => {
             <Col style={{ height: 295 }} lg={8} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>{t('tile.JamsLength')}:</h3>
               <LineChart
-                data={prepareDataJamLength(dataDelay)}
+                data={prepareDataJamLength(dataDelay, t)}
                 xTickValues="every 12 hour"
                 yAxisValue={t('plot.Count')}
               ></LineChart>
@@ -184,7 +184,7 @@ const Dashboard = () => {
                 {t('tile.AverageSpeed')}:
               </h3>
               <LineChart
-                data={prepareDataAverageSpeed(dataDelay)}
+                data={prepareDataAverageSpeed(dataDelay, t)}
                 xTickValues="every 12 hour"
                 yAxisValue={t('plot.Count')}
               ></LineChart>
@@ -194,7 +194,7 @@ const Dashboard = () => {
             <Col lg={8} md={12} style={{ height: 280 }}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>{t('tile.JamsDelay')}:</h3>
               <LineChart
-                data={prepareDataDelay(dataDelay)}
+                data={prepareDataDelay(dataDelay, t)}
                 xTickValues="every 12 hour"
                 yAxisValue={t('plot.Count')}
               ></LineChart>

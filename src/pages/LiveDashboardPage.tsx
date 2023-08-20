@@ -184,7 +184,7 @@ const LiveDashboardPage = () => {
         </Spin>
         <div style={{ height: 400 }}>
           <LineChart
-            data={prepareData(dataDelay, dataEvent) ?? []}
+            data={prepareData(dataDelay, dataEvent, t) ?? []}
             xTickValues="every 12 hour"
             yAxisValue={t('plot.Count')}
           ></LineChart>

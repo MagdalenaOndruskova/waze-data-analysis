@@ -41,5 +41,13 @@
 
   "language.English": "Anglicky",
   "language.Slovak": "Slovensky",
-  "language.Czech": "Česky"
+  "language.Czech": "Česky",
+
+  "app.title": "ANALÝZA A VIZUALIZÁCIA DÁT Z WAZE APLIKÁCIE",
+  "cancel": "Zrušiť",
+
+  "route.button": "Nájdi trasu",
+  "route.source": "Z ulice",
+  "route.dst": "Do ulice",
+  "route.pass": "Cez"
 }

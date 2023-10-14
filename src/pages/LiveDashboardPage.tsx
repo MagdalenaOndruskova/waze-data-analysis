@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Col, Row, Spin } from 'antd';
+import { Button, Col, Modal, Row, Select, SelectProps, Spin } from 'antd';
 import { TrafficDelay } from '../types/TrafficDelay';
 import { TrafficEvent } from '../types/TrafficEvent';
 import useAxios from '../utils/useAxios';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
-import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import LiveTile from '../Components/LiveTile';
 import * as Icons from '../utils/icons';
@@ -15,12 +15,15 @@ import { prepareData } from '../utils/prepareData';
 import { filterContext, streetContext } from '../utils/contexts';
 import { geocoders } from 'leaflet-control-geocoder';
 import { queryBuilder } from '../utils/queryBuilder';
-import L, { Map as LeafletMap, Polyline } from 'leaflet';
+import L, { Map as LeafletMap } from 'leaflet';
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { StreetInMap } from '../types/StreetInMap';
 import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+import { Street } from '../types/Street';
+import { CloseCircleOutlined } from '@ant-design/icons';
 
 type DataDelay = {
   features: {
@@ -34,18 +37,29 @@ type DataEvent = {
   }[];
 };
 
-// TODO: figure this out, how to use this in app
-const rangePresets: {
-  label: string;
-  value: [Dayjs, Dayjs];
-}[] = [
-  { label: 'Today', value: [dayjs().add(0, 'd'), dayjs()] },
-  { label: 'Yesterday', value: [dayjs().add(-1, 'd'), dayjs()] },
-  { label: 'Last 7 Days', value: [dayjs().add(-7, 'd'), dayjs()] },
-  { label: 'Last 14 Days', value: [dayjs().add(-14, 'd'), dayjs()] },
-  { label: 'Last 30 Days', value: [dayjs().add(-30, 'd'), dayjs()] },
-  { label: 'Last 90 Days', value: [dayjs().add(-90, 'd'), dayjs()] },
-];
+type Streets = {
+  features: {
+    attributes: Street;
+    geometry: {
+      paths: [];
+    };
+  }[];
+};
+
+function getOptionsFromStreet(streets: Streets | null) {
+  const options: SelectProps['options'] = [];
+  // mapping streets to Select options
+  streets?.features?.map(({ attributes }, index) =>
+    options.push({
+      label: attributes.nazev,
+      value: attributes.nazev,
+    }),
+  );
+  // sorting values
+  options.sort((val1, val2) => val1?.value?.toString().localeCompare(val2?.value.toString()));
+
+  return options;
+}
 
 function findArrayElementByName(array, name) {
   return array?.find((element) => {
@@ -60,30 +74,17 @@ const LiveDashboardPage = () => {
   const { streetsWithLocation, streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap } =
     useContext(streetContext);
 
+  const [open, setOpen] = useState(false);
+  var options: SelectProps['options'] = [];
+
+  const [sourceStreet, setSourceStreet] = useState<string>('');
+  const [dstStreet, setDstStreet] = useState<string>('');
+  const [passStreets, setPassStreets] = useState<string[]>([]);
+
   const mapRef = useRef<LeafletMap>(null);
 
   const query = queryBuilder(filter);
 
-  const RoutingControl = () => {
-    useEffect(() => {
-      const map = mapRef.current;
-      if (!map) return;
-
-      const control = L.Routing.control({
-        waypoints: [],
-        routeWhileDragging: true,
-        // @ts-ignore
-        geocoder: L.Control.Geocoder.nominatim(),
-      }).addTo(map);
-
-      return () => {
-        // Clean up the control when the component unmounts
-        map.removeControl(control);
-      };
-    }, []);
-
-    return null;
-  };
   const {
     response: dataDelay,
     loading: loadingDelay,
@@ -104,32 +105,32 @@ const LiveDashboardPage = () => {
     getData: filter !== null,
   });
 
+  const {
+    response: dataStreets,
+    loading: loadingStreets,
+    error: errorStreets,
+  } = useAxios<Streets>({
+    url: 'query?where=1%3D1',
+    api: 'street',
+    getData: true,
+  });
+
   // getting street name from click on map
   const LocationFinderDummy = () => {
     useMapEvents({
-      click(e) {
-        const geocoder = new geocoders.Nominatim();
-        //TODO: zoomlevel to constants -  14 is zoom level
-        geocoder.reverse(e.latlng, 14, (result) => {
-          const r = result[0];
-          console.log('🚀 ~ file: LiveDashboardPage.tsx:114 ~ geocoder.reverse ~ result:', result);
-          const address = r.name.split(','); // todo use adress property
-          // TODO: delete, this is just debug l og
-          console.log('🚀 ~ file: LiveDashboardPage.tsx:110 ~ geocoder.reverse ~ address:', address);
+      click: async (e) => {
+        const { data } = await axios.get(
+          `http://127.0.0.1:8000/reverse_geocode/street/?longitude=${e.latlng.lng}&latitude=${e.latlng.lat}`,
+        );
 
-          var possibleStreets = address.slice(0, 5);
-          possibleStreets = possibleStreets.filter((item) => isNaN(Number(item)));
-          possibleStreets = possibleStreets.map((item) => item.trim());
-          const blacklist = ['Brno', 'okres Brno-město', 'Jihomoravský kraj', 'Southeast', 'Czechia', 'Město Brno'];
-          possibleStreets = possibleStreets.filter((item) => !blacklist.includes(item));
-          var streets = streetsWithLocation?.filter((item) => possibleStreets.includes(item.name));
-          if (streets.length > 0) {
-            const street = streets[0];
-            setNewStreetsInSelected([...new Set([...streetsInSelected, street?.name])]);
-          }
-        });
+        var streets = streetsWithLocation?.filter((item) => item.name === data.street);
+        if (streets.length > 0) {
+          const street = streets[0];
+          setNewStreetsInSelected([...new Set([...streetsInSelected, street?.name])]);
+        }
       },
     });
+
     return null;
   };
 
@@ -168,6 +169,38 @@ const LiveDashboardPage = () => {
     setNewStreetsInMap(streetsInMapStaying); // TODO: toto tu treba odkomentovat ale potom sa to rozbije
   }, [streetsInSelected, streetsWithLocation]);
 
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const find_route = () => {
+    const data_search = {
+      src_street: sourceStreet,
+      dst_street: dstStreet,
+      src_coord: [16.7668, 45.76886],
+      dst_coord: null,
+      pass_streets: [...new Set(passStreets)],
+    };
+    axios.post(`http://127.0.0.1:8000/find_route/`, data_search).then((response) => {
+      const newSelected = [...new Set([...streetsInSelected, ...response.data.streets])];
+      setNewStreetsInSelected(newSelected);
+    });
+  };
+
+  const handleOk = (e: React.MouseEvent<HTMLElement>) => {
+    find_route();
+    setOpen(false);
+  };
+
+  const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
+    setOpen(false);
+  };
+  const addPassStreet = () => {
+    setPassStreets((prevState) => [...prevState, '']);
+  };
+
+  options = getOptionsFromStreet(dataStreets);
+
   return (
     <Row>
       <Col span={20}>
@@ -182,7 +215,91 @@ const LiveDashboardPage = () => {
             <LocationFinderDummy />
           </MapContainer>
         </Spin>
-        <div style={{ height: 400 }}>
+        <div style={{ height: 50 }} className="modalButtonOpen">
+          <Button className="filterStyle" onClick={showModal}>
+            {t('route.button')}
+          </Button>
+        </div>
+        <div style={{ height: 350 }}>
+          <Modal
+            width={350}
+            title={t('route.button')}
+            open={open}
+            onCancel={() => setOpen(false)}
+            footer={[
+              <Button className="modalButton" onClick={addPassStreet}>
+                {t('route.pass')}
+              </Button>,
+              <Button className="modalButton" onClick={handleCancel}>
+                {t('cancel')}
+              </Button>,
+              <Button className="modalButtonOk" onClick={handleOk}>
+                OK
+              </Button>,
+            ]}
+          >
+            <p>{t('route.source')}:</p>
+            <Select
+              showSearch
+              className="modalStyle"
+              allowClear
+              placeholder={t('PleaseSelect')}
+              onChange={(value) => {
+                setSourceStreet(value);
+              }}
+              //  TODO: filter ignore diacritics
+              value={sourceStreet}
+              options={options}
+            />
+            {passStreets.map((street, index) => (
+              <>
+                {index === 0 && <p>{t('route.pass')}:</p>}
+                <Select
+                  key={index.toString()}
+                  showSearch
+                  className="modalStylePass"
+                  allowClear
+                  placeholder={t('PleaseSelect')}
+                  onChange={(value) => {
+                    setPassStreets((prevState) => {
+                      const stateCopy = [...prevState];
+                      stateCopy[index] = value;
+                      return stateCopy;
+                    });
+                  }}
+                  //  TODO: filter ignore diacritics
+                  value={street}
+                  options={options}
+                />
+                <CloseCircleOutlined
+                  className="iconCancel"
+                  key={index.toString() + 'Cancel'}
+                  onClick={() => {
+                    setPassStreets((prevState) => {
+                      const stateCopy = [...prevState];
+                      stateCopy.splice(index, 1);
+                      return stateCopy;
+                    });
+                  }}
+                />
+              </>
+            ))}
+
+            <br></br>
+            <p>{t('route.dst')}:</p>
+            <Select
+              showSearch
+              className="modalStyle"
+              allowClear
+              placeholder={t('PleaseSelect')}
+              onChange={(value) => {
+                setDstStreet(value);
+              }}
+              //  TODO: filter ignore diacritics
+              value={dstStreet}
+              options={options}
+            />
+          </Modal>
           <LineChart
             data={prepareData(dataDelay, dataEvent, t) ?? []}
             xTickValues="every 12 hour"
@@ -218,18 +335,18 @@ const LiveDashboardPage = () => {
         ></LiveTile>
         <LiveTile
           icon={<Icons.CarIcon />}
-          tileTitle={new Intl.NumberFormat('pt-PT', {
+          tileTitle={new Intl.NumberFormat('cs-CZ', {
             style: 'unit',
-            unit: 'meter',
-          }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0))}
+            unit: 'kilometer',
+          }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0) / 1000)}
           tileType={t('tile.JamsLength')}
         ></LiveTile>
         <LiveTile
           icon={<Icons.JamDelayIcon />}
-          tileTitle={new Intl.NumberFormat('pt-PT', {
+          tileTitle={new Intl.NumberFormat('cs-CZ', {
             style: 'unit',
-            unit: 'second',
-          }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
+            unit: 'hour',
+          }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0) / 3600)}
           tileType={t('tile.JamsDelay')}
         ></LiveTile>
         <LiveTile

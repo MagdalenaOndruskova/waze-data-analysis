@@ -32,6 +32,7 @@ function Navbar() {
   return (
     <header>
       <img src={Brno} alt="Brno" onClick={() => navigate('/waze-data-analysis/')} />
+      <p className="title">{t('app.title')}</p>
       <nav id="header">
         <select style={{ width: 100 }} onChange={onClickLanguageChange}>
           <option value="sk">{t('language.Slovak')}</option>

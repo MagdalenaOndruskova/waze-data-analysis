@@ -41,5 +41,13 @@
 
   "language.English": "English",
   "language.Slovak": "Slovak",
-  "language.Czech": "Czech"
+  "language.Czech": "Czech",
+
+  "app.title": "WAZE DATA ANALYSIS AND VISUALIZATION",
+  "cancel": "Cancel",
+
+  "route.button": "Find route",
+  "route.source": "Source street",
+  "route.dst": "Destination street",
+  "route.pass": "Cez"
 }

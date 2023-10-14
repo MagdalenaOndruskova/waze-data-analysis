@@ -72,6 +72,13 @@ nav {
   overflow: hidden;
 }
 
+.title {
+  color: $linkColorActive;
+  letter-spacing: 5px;
+  font-size: 23px;
+  font-weight: 900;
+}
+
 .live-map-top-row {
   display: flex;
   flex-direction: column;
@@ -91,7 +98,63 @@ nav {
 }
 
 .filterStyle {
-  width: 180px;
+  min-width: 180px;
+}
+
+.modalStyle {
+  min-width: 300px;
+}
+
+.modalStylePass {
+  min-width: 270px;
+  margin-top: 5px;
+}
+
+.iconCancel {
+  margin-left: 5px;
+  font-size: 18px;
+}
+
+.modalButtonOk {
+  background-color: $linkColorActive;
+  font-weight: bold;
+  color: #d9d9d9 !important;
+}
+.modalButtonOk:hover {
+  background-color: $buttonHoverBackgroundColor;
+  color: $filterTextColor !important;
+  border: $buttonHoverBackgroundColor;
+}
+
+.modalButton {
+  color: $linkColorActive;
+  font-weight: bold;
+}
+
+.modalButton:hover {
+  color: $buttonHoverBackgroundColor !important;
+  font-weight: bold !important;
+  border: $buttonHoverBackgroundColor !important;
+}
+
+.modalButtonOpen {
+  display: flex;
+  justify-content: flex-end;
+  Button {
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 60px;
+    color: #d9d9d9;
+    letter-spacing: 2px;
+    font-weight: bold;
+    background-color: $linkColorActive;
+    font-weight: bold;
+  }
+  Button:hover {
+    background-color: $buttonHoverBackgroundColor;
+    color: $filterTextColor !important;
+    border: $buttonHoverBackgroundColor;
+  }
 }
 
 .ant-select-selector {

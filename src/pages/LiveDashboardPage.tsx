@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Col, Modal, Row, Select, SelectProps, Spin } from 'antd';
+import { Button, Col, Modal, Row, Select, SelectProps, Spin, message } from 'antd';
 import { TrafficDelay } from '../types/TrafficDelay';
 import { TrafficEvent } from '../types/TrafficEvent';
 import useAxios from '../utils/useAxios';
-import dayjs from 'dayjs';
-import type { Dayjs } from 'dayjs';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import LiveTile from '../Components/LiveTile';
@@ -13,7 +11,6 @@ import '../styles/main.scss';
 import LineChart from '../Components/LineChart';
 import { prepareData } from '../utils/prepareData';
 import { filterContext, streetContext } from '../utils/contexts';
-import { geocoders } from 'leaflet-control-geocoder';
 import { queryBuilder } from '../utils/queryBuilder';
 import L, { Map as LeafletMap } from 'leaflet';
 import 'leaflet-routing-machine';
@@ -23,7 +20,7 @@ import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { Street } from '../types/Street';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
 
 type DataDelay = {
   features: {
@@ -80,6 +77,9 @@ const LiveDashboardPage = () => {
   const [sourceStreet, setSourceStreet] = useState<string>('');
   const [dstStreet, setDstStreet] = useState<string>('');
   const [passStreets, setPassStreets] = useState<string[]>([]);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [statusFromStreet, setStatusFromStreet] = useState<'' | 'warning' | 'error'>('error');
+  const [statusToStreet, setStatusToStreet] = useState<'' | 'warning' | 'error'>('error');
 
   const mapRef = useRef<LeafletMap>(null);
 
@@ -181,18 +181,49 @@ const LiveDashboardPage = () => {
       dst_coord: null,
       pass_streets: [...new Set(passStreets)],
     };
-    axios.post(`http://127.0.0.1:8000/find_route/`, data_search).then((response) => {
-      const newSelected = [...new Set([...streetsInSelected, ...response.data.streets])];
-      setNewStreetsInSelected(newSelected);
-    });
+    axios
+      .post(`http://127.0.0.1:8000/find_route/`, data_search)
+      .then((response) => {
+        const newSelected = [...new Set([...streetsInSelected, ...response.data.streets])];
+        setNewStreetsInSelected(newSelected);
+        setOpen(false);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response.data['detail']); // => the response payload
+          messageApi.open({
+            type: 'error',
+            content: t('route.notfound'),
+          });
+        }
+      });
   };
 
-  const handleOk = (e: React.MouseEvent<HTMLElement>) => {
-    find_route();
-    setOpen(false);
+  const handleOk = () => {
+    if (!sourceStreet) {
+      setStatusFromStreet('error');
+      messageApi.open({
+        type: 'error',
+        content: t('route.source.missing'),
+      });
+    } else {
+      setStatusFromStreet('');
+    }
+    if (!dstStreet) {
+      setStatusToStreet('error');
+      messageApi.open({
+        type: 'error',
+        content: t('route.dst.missing'),
+      });
+    } else {
+      setStatusToStreet('');
+    }
+    if (sourceStreet && dstStreet) {
+      find_route();
+    }
   };
 
-  const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
+  const handleCancel = () => {
     setOpen(false);
   };
   const addPassStreet = () => {
@@ -210,8 +241,6 @@ const LiveDashboardPage = () => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {/* <RoutingControl />  */}
-            {/* TODO: Uncomment routing control for enabling routing library */}
             <LocationFinderDummy />
           </MapContainer>
         </Spin>
@@ -221,41 +250,49 @@ const LiveDashboardPage = () => {
           </Button>
         </div>
         <div style={{ height: 350 }}>
+          {contextHolder}
           <Modal
             width={350}
             title={t('route.button')}
             open={open}
             onCancel={() => setOpen(false)}
             footer={[
-              <Button className="modalButton" onClick={addPassStreet}>
-                {t('route.pass')}
-              </Button>,
-              <Button className="modalButton" onClick={handleCancel}>
-                {t('cancel')}
-              </Button>,
-              <Button className="modalButtonOk" onClick={handleOk}>
-                OK
-              </Button>,
+              <div key={'top'} className="buttonsModal">
+                <Button key="Pass" className="modalButton" onClick={addPassStreet}>
+                  {t('route.pass')}
+                </Button>
+
+                <div key={'right'} className="rightButtons">
+                  <Button key="Cancel" className="modalButton" onClick={handleCancel}>
+                    {t('cancel')}
+                  </Button>
+                  <Button key="Ok" className="modalButtonOk" onClick={handleOk}>
+                    OK
+                  </Button>
+                </div>
+              </div>,
             ]}
           >
             <p>{t('route.source')}:</p>
             <Select
               showSearch
+              key={'FromStreet'}
+              status={statusFromStreet}
               className="modalStyle"
               allowClear
               placeholder={t('PleaseSelect')}
               onChange={(value) => {
                 setSourceStreet(value);
+                setStatusFromStreet('');
               }}
               //  TODO: filter ignore diacritics
               value={sourceStreet}
               options={options}
             />
             {passStreets.map((street, index) => (
-              <>
+              <div key={index.toString()}>
                 {index === 0 && <p>{t('route.pass')}:</p>}
                 <Select
-                  key={index.toString()}
                   showSearch
                   className="modalStylePass"
                   allowClear
@@ -271,9 +308,9 @@ const LiveDashboardPage = () => {
                   value={street}
                   options={options}
                 />
-                <CloseCircleOutlined
+
+                <CloseOutlined
                   className="iconCancel"
-                  key={index.toString() + 'Cancel'}
                   onClick={() => {
                     setPassStreets((prevState) => {
                       const stateCopy = [...prevState];
@@ -282,18 +319,21 @@ const LiveDashboardPage = () => {
                     });
                   }}
                 />
-              </>
+              </div>
             ))}
 
             <br></br>
             <p>{t('route.dst')}:</p>
             <Select
               showSearch
+              key={'endStreet'}
+              status={statusToStreet}
               className="modalStyle"
               allowClear
               placeholder={t('PleaseSelect')}
               onChange={(value) => {
                 setDstStreet(value);
+                setStatusToStreet('');
               }}
               //  TODO: filter ignore diacritics
               value={dstStreet}

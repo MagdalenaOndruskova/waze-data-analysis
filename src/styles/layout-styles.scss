@@ -36,9 +36,14 @@ nav {
   color: $linkColorActive !important;
 }
 
+.text-left {
+  text-align: left;
+  margin-left: 15px;
+  font-weight: bold;
+}
 .sidebar {
   text-align: center;
-  line-height: 40px;
+  line-height: 30px;
   color: $filterTextColor;
   background-color: $linkColorActive;
   height: 100%;
@@ -99,6 +104,7 @@ nav {
 
 .filterStyle {
   min-width: 180px;
+  margin-top: 5px;
 }
 
 .modalStyle {
@@ -106,13 +112,17 @@ nav {
 }
 
 .modalStylePass {
-  min-width: 270px;
+  min-width: 280px;
   margin-top: 5px;
 }
 
 .iconCancel {
   margin-left: 5px;
-  font-size: 18px;
+  font-size: 12px;
+  color: grey;
+}
+.iconCancel:hover {
+  color: black;
 }
 
 .modalButtonOk {
@@ -135,6 +145,15 @@ nav {
   color: $buttonHoverBackgroundColor !important;
   font-weight: bold !important;
   border: $buttonHoverBackgroundColor !important;
+}
+
+.buttonsModal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rightButtons {
+  display: flex;
 }
 
 .modalButtonOpen {

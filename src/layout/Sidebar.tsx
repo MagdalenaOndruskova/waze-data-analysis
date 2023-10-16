@@ -193,8 +193,8 @@ const Sidebar = () => {
     <div className="sidebar">
       {messageDateContext}
       <h2>{t('Filters')}</h2>
-      <h3>{t('Time Range')}</h3>
-      <p>{t('From')}</p>
+      <h3 className="text-left">{t('Time Range')}</h3>
+      <p className="text-left">{t('From')}</p>
       <DatePicker
         name="DateFrom"
         className="filterStyle"
@@ -207,10 +207,10 @@ const Sidebar = () => {
         format="HH:mm"
         value={dayjs(timeFrom, 'HH:mm')}
       />
-      <p>{t('To')}</p>
+      <p className="text-left">{t('To')}</p>
       <DatePicker className="filterStyle" onChange={(value) => setDateTo(value)} value={dayjs(dateTo)} />
       <TimePicker className="filterStyle" onChange={(value) => setTimeTo(value)} value={dayjs(timeTo)} format="HH:mm" />
-      <h3>{t('Streets')}</h3>
+      <h3 className="text-left">{t('Streets')}</h3>
       <Select
         className="filterStyle"
         mode="multiple"

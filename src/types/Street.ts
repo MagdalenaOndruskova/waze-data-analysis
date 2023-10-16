@@ -3,3 +3,8 @@ export type Street = {
   kod: number;
   Shape__length: number;
 };
+
+export type StreetDelayCount = {
+  name: string;
+  count: number;
+};

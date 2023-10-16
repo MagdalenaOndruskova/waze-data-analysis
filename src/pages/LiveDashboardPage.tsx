@@ -19,7 +19,7 @@ import { StreetInMap } from '../types/StreetInMap';
 import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { Street } from '../types/Street';
+import { Street, StreetDelayCount } from '../types/Street';
 import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
 
 type DataDelay = {
@@ -80,6 +80,7 @@ const LiveDashboardPage = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [statusFromStreet, setStatusFromStreet] = useState<'' | 'warning' | 'error'>('error');
   const [statusToStreet, setStatusToStreet] = useState<'' | 'warning' | 'error'>('error');
+  const [streetDelayCount, setStreetDelayCount] = useState<StreetDelayCount[]>([]);
 
   const mapRef = useRef<LeafletMap>(null);
 
@@ -114,6 +115,20 @@ const LiveDashboardPage = () => {
     api: 'street',
     getData: true,
   });
+
+  useEffect(() => {
+    var delayCount: StreetDelayCount[] = [];
+    if (dataStreets) {
+      dataStreets?.features?.forEach((street) => {
+        const count = dataDelay?.features?.reduce(
+          (acc, cur) => (cur.attributes.street === street.attributes.nazev ? ++acc : acc),
+          0,
+        );
+        delayCount.push({ name: street.attributes.nazev, count: count });
+      });
+      setStreetDelayCount(delayCount);
+    }
+  }, [dataDelay]);
 
   // getting street name from click on map
   const LocationFinderDummy = () => {
@@ -153,7 +168,16 @@ const LiveDashboardPage = () => {
         // street not already drawn, so it should be drawn
         var newStreet: StreetInMap = { name: streetInSelected?.name, lines: [] };
         streetInSelected?.location?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-          const line = L.polyline(path, { color: 'red' }).addTo(map);
+          const streetCount = streetDelayCount.filter((street) => street.name === streetInSelected.name)[0].count;
+          var color = 'green';
+          if (streetCount <= 15) {
+            color = 'green';
+          } else if (streetCount > 15 && streetCount <= 40) {
+            color = 'orange';
+          } else {
+            color = 'red';
+          }
+          const line = L.polyline(path, { color: color }).addTo(map);
           newStreet.lines.push(line);
         });
         streetsInMapNew.push(newStreet);

@@ -1221,6 +1221,13 @@ delayed-stream@~1.0.0:
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==
 
+devextreme-react@^23.1.6:
+  version "23.1.6"
+  resolved "https://registry.yarnpkg.com/devextreme-react/-/devextreme-react-23.1.6.tgz#dd0899cb5862dfa9e1ff9ed0921dcca9749829e4"
+  integrity sha512-HuyomQbg/FrPV5oaH4idE22HvLPdBeb40QyHZZVEwgV66+gQGIK4tmOCe35xnuigGWDn0h2f7iU9wuhXFkarZw==
+  dependencies:
+    prop-types "^15.8.1"
+
 dom-align@^1.7.0:
   version "1.12.4"
   resolved "https://registry.yarnpkg.com/dom-align/-/dom-align-1.12.4.tgz#3503992eb2a7cfcb2ed3b2a6d21e0b9c00d54511"

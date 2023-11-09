@@ -11,6 +11,7 @@ const LineChart = ({ data, xTickValues, yAxisValue }) => {
       xScale={{
         type: 'time',
         format: '%Y-%m-%d %H:%M',
+        precision: 'hour',
       }}
       xFormat="time:%Y-%m-%d %H:%M"
       yScale={{

@@ -9,7 +9,7 @@ import LiveTile from '../Components/LiveTile';
 import * as Icons from '../utils/icons';
 import '../styles/main.scss';
 import LineChart from '../Components/LineChart';
-import { prepareData } from '../utils/prepareData';
+import { prepareData, prepareDataArray } from '../utils/prepareData';
 import { filterContext, streetContext } from '../utils/contexts';
 import { queryBuilder } from '../utils/queryBuilder';
 import L, { Map as LeafletMap } from 'leaflet';
@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { Street, StreetDelayCount } from '../types/Street';
 import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import { element } from 'prop-types';
 
 type DataDelay = {
   features: {
@@ -81,6 +82,7 @@ const LiveDashboardPage = () => {
   const [statusFromStreet, setStatusFromStreet] = useState<'' | 'warning' | 'error'>('error');
   const [statusToStreet, setStatusToStreet] = useState<'' | 'warning' | 'error'>('error');
   const [streetDelayCount, setStreetDelayCount] = useState<StreetDelayCount[]>([]);
+  const [routeStreets, setRouteStreets] = useState<any>([]);
 
   const mapRef = useRef<LeafletMap>(null);
 
@@ -132,66 +134,112 @@ const LiveDashboardPage = () => {
 
   // getting street name from click on map
   const LocationFinderDummy = () => {
+    const map = mapRef.current;
+
     useMapEvents({
       click: async (e) => {
-        const { data } = await axios.get(
-          `http://127.0.0.1:8000/reverse_geocode/street/?longitude=${e.latlng.lng}&latitude=${e.latlng.lat}`,
-        );
-
-        var streets = streetsWithLocation?.filter((item) => item.name === data.street);
-        if (streets.length > 0) {
-          const street = streets[0];
-          setNewStreetsInSelected([...new Set([...streetsInSelected, street?.name])]);
-        }
+        axios
+          .get(`http://127.0.0.1:8000/reverse_geocode/street/?longitude=${e.latlng.lng}&latitude=${e.latlng.lat}`)
+          .then((response) => {
+            const name = response.data.street;
+            const path = response.data.path;
+            const streetInSelected = streetsInSelected.filter((label) => label === name);
+            if (streetInSelected.length > 0) {
+              // the street (part of it?) might be drawn -> remove it all
+              const streetsInMapToDelete = streetsInMap.filter((street) => street.name === name);
+              streetsInMapToDelete?.forEach((street) => {
+                street?.lines?.forEach((line) => line.remove());
+                console.log('mazem');
+              });
+              var newStreetsInMap = streetsInMap.filter((street) => street.name !== name); // keeping everything but the one i deleted
+              setNewStreetsInMap(newStreetsInMap);
+            }
+            var streetInMapNew: StreetInMap = { name: name, lines: [] };
+            path?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
+              console.log('kreslim sem');
+              const line = L.polyline(path, { color: 'green' }).addTo(map);
+              streetInMapNew.lines.push(line);
+            });
+            setNewStreetsInMap([...streetsInMap, streetInMapNew]);
+            // add street to selected
+            setNewStreetsInSelected([...new Set([...streetsInSelected, name])]);
+          });
       },
     });
 
     return null;
   };
 
-  // draw streets in map based on selection (before clicking on filter button)
   useEffect(() => {
-    if (streetsWithLocation.length < 1 && streetsInSelected.length < 1) {
-      // Need both defined - data and also selected streets
-      return;
-    }
     const map = mapRef.current;
+    let newStreetsInMap = streetsInMap;
+    // drawing/removing streets in selected
+    streetsInSelected?.forEach((element) => {
+      const streetInSelected: StreetFull = streetsWithLocation?.find((item) => item?.name === element);
 
-    var streetsInMapNew: StreetInMap[] = [];
-
-    streetsInSelected?.forEach((street: string) => {
-      const streetInSelected: StreetFull = streetsWithLocation?.find((item) => item?.name === street);
-      if (findArrayElementByName(streetsInMap, streetInSelected?.name)) {
-        // checks if street is already drawn
-        return;
-      } else {
-        // street not already drawn, so it should be drawn
+      if (!findArrayElementByName(newStreetsInMap, streetInSelected?.name)) {
         var newStreet: StreetInMap = { name: streetInSelected?.name, lines: [] };
         streetInSelected?.location?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-          const streetCount = streetDelayCount.filter((street) => street.name === streetInSelected.name)[0].count;
-          var color = 'green';
-          if (streetCount <= 15) {
-            color = 'green';
-          } else if (streetCount > 15 && streetCount <= 40) {
-            color = 'orange';
-          } else {
-            color = 'red';
-          }
-          const line = L.polyline(path, { color: color }).addTo(map);
+          console.log('kreslim');
+          const line = L.polyline(path, { color: 'green' }).addTo(map);
           newStreet.lines.push(line);
         });
-        streetsInMapNew.push(newStreet);
+        console.log(streetInSelected);
+        newStreetsInMap.push(newStreet);
       }
     });
-    const streetsSmth = [...new Set([...streetsInMap, ...streetsInMapNew])];
-    const streetsInMapStaying = streetsSmth?.filter((street) => streetsInSelected.includes(street.name));
-    const streetsInMapToDelete = streetsSmth?.filter((street) => !streetsInSelected.includes(street.name));
+    const streetsInMapToDelete = newStreetsInMap?.filter((street) => !streetsInSelected.includes(street.name));
+    const streetsInMapStaying = newStreetsInMap?.filter((street) => streetsInSelected.includes(street.name));
     streetsInMapToDelete?.forEach((street) => {
       street?.lines?.forEach((line) => line.remove());
     });
+    setNewStreetsInMap(streetsInMapStaying);
+  }, [streetsInSelected]);
 
-    setNewStreetsInMap(streetsInMapStaying); // TODO: toto tu treba odkomentovat ale potom sa to rozbije
-  }, [streetsInSelected, streetsWithLocation]);
+  // draw streets in map based on selection (before clicking on filter button)
+  // useEffect(() => {
+  //   if (streetsWithLocation.length < 1 && streetsInSelected.length < 1) {
+  //     // Need both defined - data and also selected streets
+  //     return;
+  //   }
+  //   const map = mapRef.current;
+
+  //   var streetsInMapNew: StreetInMap[] = [];
+
+  //   streetsInSelected?.forEach((street: string) => {
+  //     const streetInSelected: StreetFull = streetsWithLocation?.find((item) => item?.name === street);
+  //     if (findArrayElementByName(streetsInMap, streetInSelected?.name)) {
+  //       // checks if street is already drawn
+  //       return;
+  //     } else {
+  //       // street not already drawn, so it should be drawn
+  //       var newStreet: StreetInMap = { name: streetInSelected?.name, lines: [] };
+  //       streetInSelected?.location?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
+  //         // const streetCount = streetDelayCount.filter((street) => street.name === streetInSelected.name)[0].count;
+  //         var color = 'green';
+  //         // if (streetCount <= 15) {
+  //         //   color = 'green';
+  //         // } else if (streetCount > 15 && streetCount <= 40) {
+  //         //   color = 'orange';
+  //         // } else {
+  //         //   color = 'red';
+  //         // }
+  //         const line = L.polyline(path, { color: color }).addTo(map);
+  //         newStreet.lines.push(line);
+  //       });
+
+  //       streetsInMapNew.push(newStreet);
+  //     }
+  //   });
+  //   const streetsSmth = [...new Set([...streetsInMap, ...streetsInMapNew])];
+  //   const streetsInMapStaying = streetsSmth?.filter((street) => streetsInSelected.includes(street.name));
+  //   const streetsInMapToDelete = streetsSmth?.filter((street) => !streetsInSelected.includes(street.name));
+  //   streetsInMapToDelete?.forEach((street) => {
+  //     street?.lines?.forEach((line) => line.remove());
+  //   });
+
+  //   setNewStreetsInMap(streetsInMapStaying);
+  // }, [streetsInSelected, streetsWithLocation]);
 
   const showModal = () => {
     setOpen(true);
@@ -208,8 +256,7 @@ const LiveDashboardPage = () => {
     axios
       .post(`http://127.0.0.1:8000/find_route/`, data_search)
       .then((response) => {
-        const newSelected = [...new Set([...streetsInSelected, ...response.data.streets])];
-        setNewStreetsInSelected(newSelected);
+        setRouteStreets(response.data.streets_coord);
         setOpen(false);
       })
       .catch((error) => {
@@ -222,6 +269,27 @@ const LiveDashboardPage = () => {
         }
       });
   };
+
+  useEffect(() => {
+    const map = mapRef.current;
+    var newStreetsInMap: StreetInMap[] = [];
+    var newSelected: string[] = streetsInSelected;
+    routeStreets?.forEach((element) => {
+      // todo elemenet uz je vykresleny - remove z streets In map aj zo selected
+      newSelected = newSelected.filter((selected) => selected !== element.street_name);
+      newStreetsInMap = newStreetsInMap.filter((street) => street.name !== element.street_name);
+      var streetInMapNew: StreetInMap = { name: element.street_name, lines: [] };
+      element?.path?.forEach((coord: L.LatLngExpression[] | L.LatLngExpression[][]) => {
+        console.log('kreslim tu');
+        const line = L.polyline(coord, { color: 'red' }).addTo(map);
+        streetInMapNew.lines.push(line);
+      });
+      newStreetsInMap.push(streetInMapNew);
+      newSelected.push(element.street_name);
+    });
+    setNewStreetsInMap(newStreetsInMap);
+    setNewStreetsInSelected(newSelected);
+  }, [routeStreets]);
 
   const handleOk = () => {
     if (!sourceStreet) {
@@ -255,7 +323,8 @@ const LiveDashboardPage = () => {
   };
 
   options = getOptionsFromStreet(dataStreets);
-
+  // const visualRange = { startValue: filter.fromDate, endValue: filter.toDate };
+  // console.log(prepareData(dataDelay, dataEvent, t));
   return (
     <Row>
       <Col span={20}>

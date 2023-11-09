@@ -25,7 +25,7 @@ type DataEvent = {
 };
 
 // TODO: Refactor this shit
-function prepareDataArray(data: DataDelay | DataEvent | null) {
+export function prepareDataArray(data: DataDelay | DataEvent | null) {
   var preparedData = data?.features?.map((item) => new TrafficDelayPlot(item.attributes));
 
   const counts = {};

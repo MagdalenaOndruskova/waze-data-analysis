@@ -1,15 +1,10 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext } from 'react';
 import Brno from '../assets/Brno.png';
 import { useNavigate, NavLink, useSearchParams } from 'react-router-dom';
 import '../styles/layout-styles.scss';
 import { FILTER_DEFAULT_VALUE, filterContext } from '../utils/contexts';
 import { useTranslation } from 'react-i18next';
-
-const languages = [
-  { name: 'English', code: 'en' },
-  { name: 'Čeština', code: 'cs' },
-  { name: 'Slovenčina', code: 'sk' },
-];
+import LanguageSwitcher from '../Components/LanguageSwitcher';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -24,21 +19,12 @@ function Navbar() {
     searchParamsQuery = `?${searchParams.toString()}`;
   }
 
-  const onClickLanguageChange = (e: any) => {
-    const lang = e.target.value;
-    i18n.changeLanguage(lang);
-  };
-
   return (
     <header className="header">
       <img src={Brno} alt="Brno" onClick={() => navigate('/waze-data-analysis/')} />
       <p className="title">{t('app.title')}</p>
       <nav>
-        <select style={{ width: 100 }} onChange={onClickLanguageChange}>
-          <option value="sk">{t('language.Slovak')}</option>
-          <option value="en">{t('language.English')}</option>
-          <option value="cs">{t('language.Czech')}</option>
-        </select>
+        <LanguageSwitcher i18n={i18n} t={t}></LanguageSwitcher>
         <NavLink to={`/waze-data-analysis/${searchParamsQuery}`}>{t('Live Map')}</NavLink>
         <NavLink to={`dashboard${searchParamsQuery}`}>{t('Dashboard')}</NavLink>
       </nav>

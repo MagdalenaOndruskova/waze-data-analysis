@@ -273,14 +273,14 @@ const LiveDashboardPage = () => {
   useEffect(() => {
     const map = mapRef.current;
     var newStreetsInMap: StreetInMap[] = [];
-    var newSelected: string[] = streetsInSelected;
+    var newSelected: string[] = [];
+    // removing existing streets drawed
+    streetsInMap?.forEach((street) => {
+      street?.lines?.forEach((line) => line.remove());
+    });
     routeStreets?.forEach((element) => {
-      // todo elemenet uz je vykresleny - remove z streets In map aj zo selected
-      newSelected = newSelected.filter((selected) => selected !== element.street_name);
-      newStreetsInMap = newStreetsInMap.filter((street) => street.name !== element.street_name);
       var streetInMapNew: StreetInMap = { name: element.street_name, lines: [] };
       element?.path?.forEach((coord: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-        console.log('kreslim tu');
         const line = L.polyline(coord, { color: 'red' }).addTo(map);
         streetInMapNew.lines.push(line);
       });

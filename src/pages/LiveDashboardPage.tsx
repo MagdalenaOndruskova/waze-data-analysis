@@ -22,6 +22,8 @@ import axios from 'axios';
 import { Street, StreetDelayCount } from '../types/Street';
 import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { element } from 'prop-types';
+import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
+import LiveTilesColumn from '../Components/LiveTilesColumn';
 
 type DataDelay = {
   features: {
@@ -59,7 +61,7 @@ function getOptionsFromStreet(streets: Streets | null) {
   return options;
 }
 
-function findArrayElementByName(array, name) {
+function findArrayElementByName(array: StreetInMap[], name: string) {
   return array?.find((element) => {
     return element?.name === name;
   });
@@ -134,34 +136,26 @@ const LiveDashboardPage = () => {
 
   // getting street name from click on map
   const LocationFinderDummy = () => {
-    const map = mapRef.current;
+    const map: L.Map = mapRef.current;
+    const handleContextMenu = (e) => {
+      e.originalEvent.preventDefault();
+      //TODO: handle right click
+      // console.log(e);
+    };
 
     useMapEvents({
+      contextmenu: handleContextMenu,
       click: async (e) => {
         axios
           .get(`http://127.0.0.1:8000/reverse_geocode/street/?longitude=${e.latlng.lng}&latitude=${e.latlng.lat}`)
           .then((response) => {
             const name = response.data.street;
             const path = response.data.path;
-            const streetInSelected = streetsInSelected.filter((label) => label === name);
-            if (streetInSelected.length > 0) {
-              // the street (part of it?) might be drawn -> remove it all
-              const streetsInMapToDelete = streetsInMap.filter((street) => street.name === name);
-              streetsInMapToDelete?.forEach((street) => {
-                street?.lines?.forEach((line) => line.remove());
-                console.log('mazem');
-              });
-              var newStreetsInMap = streetsInMap.filter((street) => street.name !== name); // keeping everything but the one i deleted
-              setNewStreetsInMap(newStreetsInMap);
-            }
-            var streetInMapNew: StreetInMap = { name: name, lines: [] };
-            path?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-              console.log('kreslim sem');
-              const line = L.polyline(path, { color: 'green' }).addTo(map);
-              streetInMapNew.lines.push(line);
-            });
-            setNewStreetsInMap([...streetsInMap, streetInMapNew]);
-            // add street to selected
+            deleteFromMap(streetsInMap, name);
+            var streetsInMapStaying = streetsInMap.filter((street) => street.name !== name); // keeping everything but the one i deleted
+            const newDrawedStreet: StreetInMap = drawOnMap(map, name, path, 'green');
+            streetsInMapStaying.push(newDrawedStreet);
+            setNewStreetsInMap(streetsInMapStaying);
             setNewStreetsInSelected([...new Set([...streetsInSelected, name])]);
           });
       },
@@ -176,70 +170,14 @@ const LiveDashboardPage = () => {
     // drawing/removing streets in selected
     streetsInSelected?.forEach((element) => {
       const streetInSelected: StreetFull = streetsWithLocation?.find((item) => item?.name === element);
-
       if (!findArrayElementByName(newStreetsInMap, streetInSelected?.name)) {
-        var newStreet: StreetInMap = { name: streetInSelected?.name, lines: [] };
-        streetInSelected?.location?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-          console.log('kreslim');
-          const line = L.polyline(path, { color: 'green' }).addTo(map);
-          newStreet.lines.push(line);
-        });
-        console.log(streetInSelected);
-        newStreetsInMap.push(newStreet);
+        const newDrawedStreet = drawOnMap(map, streetInSelected?.name, streetInSelected?.location, 'green');
+        newStreetsInMap.push(newDrawedStreet);
       }
     });
-    const streetsInMapToDelete = newStreetsInMap?.filter((street) => !streetsInSelected.includes(street.name));
-    const streetsInMapStaying = newStreetsInMap?.filter((street) => streetsInSelected.includes(street.name));
-    streetsInMapToDelete?.forEach((street) => {
-      street?.lines?.forEach((line) => line.remove());
-    });
+    const streetsInMapStaying = deleteMultipleFromMap(newStreetsInMap, streetsInSelected);
     setNewStreetsInMap(streetsInMapStaying);
   }, [streetsInSelected]);
-
-  // draw streets in map based on selection (before clicking on filter button)
-  // useEffect(() => {
-  //   if (streetsWithLocation.length < 1 && streetsInSelected.length < 1) {
-  //     // Need both defined - data and also selected streets
-  //     return;
-  //   }
-  //   const map = mapRef.current;
-
-  //   var streetsInMapNew: StreetInMap[] = [];
-
-  //   streetsInSelected?.forEach((street: string) => {
-  //     const streetInSelected: StreetFull = streetsWithLocation?.find((item) => item?.name === street);
-  //     if (findArrayElementByName(streetsInMap, streetInSelected?.name)) {
-  //       // checks if street is already drawn
-  //       return;
-  //     } else {
-  //       // street not already drawn, so it should be drawn
-  //       var newStreet: StreetInMap = { name: streetInSelected?.name, lines: [] };
-  //       streetInSelected?.location?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-  //         // const streetCount = streetDelayCount.filter((street) => street.name === streetInSelected.name)[0].count;
-  //         var color = 'green';
-  //         // if (streetCount <= 15) {
-  //         //   color = 'green';
-  //         // } else if (streetCount > 15 && streetCount <= 40) {
-  //         //   color = 'orange';
-  //         // } else {
-  //         //   color = 'red';
-  //         // }
-  //         const line = L.polyline(path, { color: color }).addTo(map);
-  //         newStreet.lines.push(line);
-  //       });
-
-  //       streetsInMapNew.push(newStreet);
-  //     }
-  //   });
-  //   const streetsSmth = [...new Set([...streetsInMap, ...streetsInMapNew])];
-  //   const streetsInMapStaying = streetsSmth?.filter((street) => streetsInSelected.includes(street.name));
-  //   const streetsInMapToDelete = streetsSmth?.filter((street) => !streetsInSelected.includes(street.name));
-  //   streetsInMapToDelete?.forEach((street) => {
-  //     street?.lines?.forEach((line) => line.remove());
-  //   });
-
-  //   setNewStreetsInMap(streetsInMapStaying);
-  // }, [streetsInSelected, streetsWithLocation]);
 
   const showModal = () => {
     setOpen(true);
@@ -261,7 +199,6 @@ const LiveDashboardPage = () => {
       })
       .catch((error) => {
         if (error.response) {
-          console.log(error.response.data['detail']); // => the response payload
           messageApi.open({
             type: 'error',
             content: t('route.notfound'),
@@ -274,16 +211,12 @@ const LiveDashboardPage = () => {
     const map = mapRef.current;
     var newStreetsInMap: StreetInMap[] = [];
     var newSelected: string[] = [];
+
     // removing existing streets drawed
-    streetsInMap?.forEach((street) => {
-      street?.lines?.forEach((line) => line.remove());
-    });
+    deleteMultipleFromMap(streetsInMap, []);
+
     routeStreets?.forEach((element) => {
-      var streetInMapNew: StreetInMap = { name: element.street_name, lines: [] };
-      element?.path?.forEach((coord: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-        const line = L.polyline(coord, { color: 'red' }).addTo(map);
-        streetInMapNew.lines.push(line);
-      });
+      const streetInMapNew: StreetInMap = drawOnMap(map, element.street_name, element?.path, 'red');
       newStreetsInMap.push(streetInMapNew);
       newSelected.push(element.street_name);
     });
@@ -323,8 +256,6 @@ const LiveDashboardPage = () => {
   };
 
   options = getOptionsFromStreet(dataStreets);
-  // const visualRange = { startValue: filter.fromDate, endValue: filter.toDate };
-  // console.log(prepareData(dataDelay, dataEvent, t));
   return (
     <Row>
       <Col span={20}>
@@ -441,55 +372,7 @@ const LiveDashboardPage = () => {
         </div>
       </Col>
       <Col span={4} className="live-map-top-row">
-        <LiveTile
-          icon={<Icons.WarningIcon />}
-          tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
-          tileType={t('tile.ActiveAlerts')}
-        ></LiveTile>
-        <LiveTile
-          icon={<Icons.CarIcon />}
-          tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
-          tileType={t('tile.TrafficJams')}
-        ></LiveTile>
-        <LiveTile
-          icon={<Icons.SpeedIcon />}
-          tileTitle={new Intl.NumberFormat('pt-PT', {
-            style: 'unit',
-            unit: 'kilometer-per-hour',
-          }).format(
-            Number(
-              (
-                dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
-                dataDelay?.features?.length
-              ).toFixed(2),
-            ),
-          )}
-          tileType={t('tile.AverageSpeed')}
-        ></LiveTile>
-        <LiveTile
-          icon={<Icons.CarIcon />}
-          tileTitle={new Intl.NumberFormat('cs-CZ', {
-            style: 'unit',
-            unit: 'kilometer',
-          }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0) / 1000)}
-          tileType={t('tile.JamsLength')}
-        ></LiveTile>
-        <LiveTile
-          icon={<Icons.JamDelayIcon />}
-          tileTitle={new Intl.NumberFormat('cs-CZ', {
-            style: 'unit',
-            unit: 'hour',
-          }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0) / 3600)}
-          tileType={t('tile.JamsDelay')}
-        ></LiveTile>
-        <LiveTile
-          icon={<Icons.JamLevelIcon />}
-          tileTitle={(
-            dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.level, 0) /
-            dataDelay?.features?.length
-          ).toFixed(2)}
-          tileType={t('tile.AverageJamLevel')}
-        ></LiveTile>
+        <LiveTilesColumn dataDelay={dataDelay} dataEvent={dataEvent} t={t}></LiveTilesColumn>
       </Col>
     </Row>
   );

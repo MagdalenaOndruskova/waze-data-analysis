@@ -13,7 +13,7 @@ const LanguageSwitcher = ({ i18n, t }) => {
   };
 
   return (
-    <Select style={{ width: 100 }} onChange={onClickLanguageChange} defaultValue="sk">
+    <Select style={{ minWidth: 120 }} onChange={onClickLanguageChange} defaultValue="sk">
       {languageOptions.map((option) => (
         <Select.Option key={option.value} value={option.value}>
           <img src={option.flag} alt={option.value} style={{ marginRight: 8, width: 24, height: 16 }} />

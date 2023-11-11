@@ -14,6 +14,7 @@ export const streetApi: AxiosInstance = axios.create({
 });
 
 let backendApi: AxiosInstance;
+//@ts-ignore
 if (process.env.NODE_ENV !== 'production') {
   backendApi = axios.create({
     baseURL: 'http://127.0.0.1:8000/', // Dev env

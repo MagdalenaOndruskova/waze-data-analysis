@@ -5,10 +5,7 @@ import { TrafficEvent } from '../types/TrafficEvent';
 import useAxios from '../utils/useAxios';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import LiveTile from '../Components/LiveTile';
-import * as Icons from '../utils/icons';
 import '../styles/main.scss';
-import LineChart from '../Components/LineChart';
 import { prepareData, prepareDataArray } from '../utils/prepareData';
 import { filterContext, streetContext } from '../utils/contexts';
 import { queryBuilder } from '../utils/queryBuilder';
@@ -24,6 +21,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import LiveTilesColumn from '../Components/LiveTilesColumn';
 import backendApi from '../utils/api';
+import LineChart from '../Components/LineChart';
 
 type DataDelay = {
   features: {

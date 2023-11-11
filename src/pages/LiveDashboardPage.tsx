@@ -6,7 +6,7 @@ import useAxios from '../utils/useAxios';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/main.scss';
-import { prepareData, prepareDataArray } from '../utils/prepareData';
+import { prepareData } from '../utils/prepareData';
 import { filterContext, streetContext } from '../utils/contexts';
 import { queryBuilder } from '../utils/queryBuilder';
 import L, { Map as LeafletMap } from 'leaflet';
@@ -15,7 +15,6 @@ import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { StreetInMap } from '../types/StreetInMap';
 import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import { Street, StreetDelayCount } from '../types/Street';
 import { CloseOutlined } from '@ant-design/icons';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
@@ -150,9 +149,11 @@ const LiveDashboardPage = () => {
           .then((response) => {
             const name = response.data.street;
             const path = response.data.path;
+            const color = response.data.color;
+            console.log(response.data);
             deleteFromMap(streetsInMap, name);
             var streetsInMapStaying = streetsInMap.filter((street) => street.name !== name); // keeping everything but the one i deleted
-            const newDrawedStreet: StreetInMap = drawOnMap(map, name, path, 'green');
+            const newDrawedStreet: StreetInMap = drawOnMap(map, name, path, color);
             streetsInMapStaying.push(newDrawedStreet);
             setNewStreetsInMap(streetsInMapStaying);
             setNewStreetsInSelected([...new Set([...streetsInSelected, name])]);
@@ -215,7 +216,7 @@ const LiveDashboardPage = () => {
     deleteMultipleFromMap(streetsInMap, []);
 
     routeStreets?.forEach((element) => {
-      const streetInMapNew: StreetInMap = drawOnMap(map, element.street_name, element?.path, 'red');
+      const streetInMapNew: StreetInMap = drawOnMap(map, element.street_name, element?.path, element?.color);
       newStreetsInMap.push(streetInMapNew);
       newSelected.push(element.street_name);
     });

@@ -20,10 +20,10 @@ import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { Street, StreetDelayCount } from '../types/Street';
-import { CloseCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { element } from 'prop-types';
+import { CloseOutlined } from '@ant-design/icons';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import LiveTilesColumn from '../Components/LiveTilesColumn';
+import backendApi from '../utils/api';
 
 type DataDelay = {
   features: {
@@ -89,6 +89,7 @@ const LiveDashboardPage = () => {
   const mapRef = useRef<LeafletMap>(null);
 
   const query = queryBuilder(filter);
+  console.log('🚀 ~ file: LiveDashboardPage.tsx:92 ~ LiveDashboardPage ~ query:', query);
 
   const {
     response: dataDelay,
@@ -146,8 +147,8 @@ const LiveDashboardPage = () => {
     useMapEvents({
       contextmenu: handleContextMenu,
       click: async (e) => {
-        axios
-          .get(`http://127.0.0.1:8000/reverse_geocode/street/?longitude=${e.latlng.lng}&latitude=${e.latlng.lat}`)
+        backendApi
+          .get(`reverse_geocode/street/?longitude=${e.latlng.lng}&latitude=${e.latlng.lat}`)
           .then((response) => {
             const name = response.data.street;
             const path = response.data.path;
@@ -191,8 +192,8 @@ const LiveDashboardPage = () => {
       dst_coord: null,
       pass_streets: [...new Set(passStreets)],
     };
-    axios
-      .post(`http://127.0.0.1:8000/find_route/`, data_search)
+    backendApi
+      .post('find_route/', data_search)
       .then((response) => {
         setRouteStreets(response.data.streets_coord);
         setOpen(false);

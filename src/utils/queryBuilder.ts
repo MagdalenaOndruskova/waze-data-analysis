@@ -15,3 +15,15 @@ export const queryBuilder = (filter: Filter) => {
   }
   return '';
 };
+
+export const queryFindStreet = (e: L.LeafletMouseEvent, filter: Filter) => {
+  if (filter !== null && e !== null) {
+    var finalQuery = `longitude=${e.latlng.lng}&latitude=${e.latlng.lat}`;
+    const dateFromFinal = `&fromTime=${filter.fromDate} ${filter.fromTime}:00`;
+    const dateToFinal = `&toTime=${filter.toDate} ${filter.toTime}:00`;
+    finalQuery = `${finalQuery}${dateFromFinal}${dateToFinal}`;
+    console.log(finalQuery);
+    return finalQuery;
+  }
+  return '';
+};

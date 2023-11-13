@@ -8,7 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import '../styles/main.scss';
 import { prepareData } from '../utils/prepareData';
 import { filterContext, streetContext } from '../utils/contexts';
-import { queryBuilder } from '../utils/queryBuilder';
+import { queryBuilder, queryFindStreet } from '../utils/queryBuilder';
 import L, { Map as LeafletMap } from 'leaflet';
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
@@ -86,7 +86,6 @@ const LiveDashboardPage = () => {
   const mapRef = useRef<LeafletMap>(null);
 
   const query = queryBuilder(filter);
-  console.log('🚀 ~ file: LiveDashboardPage.tsx:92 ~ LiveDashboardPage ~ query:', query);
 
   const {
     response: dataDelay,
@@ -138,26 +137,23 @@ const LiveDashboardPage = () => {
     const handleContextMenu = (e) => {
       e.originalEvent.preventDefault();
       //TODO: handle right click
-      // console.log(e);
     };
 
     useMapEvents({
       contextmenu: handleContextMenu,
       click: async (e) => {
-        backendApi
-          .get(`reverse_geocode/street/?longitude=${e.latlng.lng}&latitude=${e.latlng.lat}`)
-          .then((response) => {
-            const name = response.data.street;
-            const path = response.data.path;
-            const color = response.data.color;
-            console.log(response.data);
-            deleteFromMap(streetsInMap, name);
-            var streetsInMapStaying = streetsInMap.filter((street) => street.name !== name); // keeping everything but the one i deleted
-            const newDrawedStreet: StreetInMap = drawOnMap(map, name, path, color);
-            streetsInMapStaying.push(newDrawedStreet);
-            setNewStreetsInMap(streetsInMapStaying);
-            setNewStreetsInSelected([...new Set([...streetsInSelected, name])]);
-          });
+        console.log(queryFindStreet(e, filter));
+        backendApi.get(`reverse_geocode/street/?${queryFindStreet(e, filter)}`).then((response) => {
+          const name = response.data.street;
+          const path = response.data.path;
+          const color = response.data.color;
+          deleteFromMap(streetsInMap, name);
+          var streetsInMapStaying = streetsInMap.filter((street) => street.name !== name); // keeping everything but the one i deleted
+          const newDrawedStreet: StreetInMap = drawOnMap(map, name, path, color);
+          streetsInMapStaying.push(newDrawedStreet);
+          setNewStreetsInMap(streetsInMapStaying);
+          setNewStreetsInSelected([...new Set([...streetsInSelected, name])]);
+        });
       },
     });
 

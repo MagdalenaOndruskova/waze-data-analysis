@@ -21,6 +21,7 @@ import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import LiveTilesColumn from '../Components/LiveTilesColumn';
 import backendApi from '../utils/api';
 import LineChart from '../Components/LineChart';
+import LineChartComponent from '../Components/LineChartComponent';
 
 type DataDelay = {
   features: {
@@ -186,6 +187,8 @@ const LiveDashboardPage = () => {
       src_coord: [16.7668, 45.76886],
       dst_coord: null,
       pass_streets: [...new Set(passStreets)],
+      from_time: `${filter.fromDate} ${filter.fromTime}:00`,
+      to_time: `${filter.toDate} ${filter.toTime}:00`,
     };
     backendApi
       .post('find_route/', data_search)
@@ -269,7 +272,7 @@ const LiveDashboardPage = () => {
             {t('route.button')}
           </Button>
         </div>
-        <div style={{ height: 350 }}>
+        <div>
           {contextHolder}
           <Modal
             width={350}
@@ -360,11 +363,15 @@ const LiveDashboardPage = () => {
               options={options}
             />
           </Modal>
-          <LineChart
+
+          {/* <LineChart
             data={prepareData(dataDelay, dataEvent, t) ?? []}
             xTickValues="every 12 hour"
             yAxisValue={t('plot.Count')}
-          ></LineChart>
+          ></LineChart> */}
+        </div>
+        <div>
+          <LineChartComponent></LineChartComponent>
         </div>
       </Col>
       <Col span={4} className="live-map-top-row">

@@ -3,6 +3,8 @@ import { Button, Col, Modal, Row, Select, SelectProps, Spin, message } from 'ant
 import useAxios from '../utils/useAxios';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import dayjs from 'dayjs';
+
 import '../styles/main.scss';
 import { filterContext, streetContext } from '../utils/contexts';
 import { queryBuilder, queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
@@ -26,6 +28,12 @@ function findArrayElementByName(array: StreetInMap[], name: string) {
   });
 }
 
+function getXMinDate(toDate) {
+  return dayjs(`${toDate}, 08:00:00`, { format: 'YYYY-MM-DD, HH:mm:ss' })
+    .subtract(1, 'day')
+    .format('YYYY-MM-DD, HH:mm:ss');
+}
+
 const LiveDashboardPage = () => {
   const { filter } = useContext(filterContext);
   const { t } = useTranslation();
@@ -42,6 +50,8 @@ const LiveDashboardPage = () => {
   const [statusFromStreet, setStatusFromStreet] = useState<'' | 'warning' | 'error'>('error');
   const [statusToStreet, setStatusToStreet] = useState<'' | 'warning' | 'error'>('error');
   const [routeStreets, setRouteStreets] = useState<any>([]);
+
+  const [previousDate, setPreviousDate] = useState<string>(() => getXMinDate(filter?.toDate));
 
   const [plotData, setPlotData] = useState<PlotData>(null);
 
@@ -183,6 +193,7 @@ const LiveDashboardPage = () => {
       backendApi.post('data_for_plot/', body).then((response) => {
         const responsePlotData: PlotData = response.data;
         setPlotData(responsePlotData);
+        setPreviousDate(getXMinDate(filter?.toDate));
       });
     }
   }, [filter]);
@@ -333,7 +344,7 @@ const LiveDashboardPage = () => {
             <LineChartComponent
               dataJams={plotData?.jams}
               dataAlerts={plotData?.alerts}
-              xaxis_min_selected={`${filter?.fromDate}, ${filter?.toTime}:00`}
+              xaxis_min_selected={`${previousDate}`}
               xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
             />
           </div>

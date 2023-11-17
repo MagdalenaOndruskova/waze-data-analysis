@@ -22,7 +22,14 @@ export const queryFindStreet = (e: L.LeafletMouseEvent, filter: Filter) => {
     const dateFromFinal = `&fromTime=${filter.fromDate} ${filter.fromTime}:00`;
     const dateToFinal = `&toTime=${filter.toDate} ${filter.toTime}:00`;
     finalQuery = `${finalQuery}${dateFromFinal}${dateToFinal}`;
-    console.log(finalQuery);
+    return finalQuery;
+  }
+  return '';
+};
+
+export const queryStreetCoord = (filter: Filter, street: string) => {
+  if (filter != null) {
+    const finalQuery = `street=${street}&fromTime=${filter.fromDate} ${filter.fromTime}:00&toTime=${filter.toDate} ${filter.toTime}:00`;
     return finalQuery;
   }
   return '';

@@ -5,12 +5,11 @@ import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/main.scss';
 import { filterContext, streetContext } from '../utils/contexts';
-import { queryBuilder, queryFindStreet } from '../utils/queryBuilder';
+import { queryBuilder, queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
 import L, { Map as LeafletMap } from 'leaflet';
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { StreetInMap } from '../types/StreetInMap';
-import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
 import { StreetDelayCount } from '../types/Street';
 import { CloseOutlined } from '@ant-design/icons';
@@ -18,22 +17,8 @@ import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import LiveTilesColumn from '../Components/LiveTilesColumn';
 import backendApi from '../utils/api';
 import LineChartComponent from '../Components/LineChartComponent';
-import { DataDelay, DataEvent, Streets } from '../types/baseTypes';
-
-function getOptionsFromStreet(streets: Streets | null) {
-  const options: SelectProps['options'] = [];
-  // mapping streets to Select options
-  streets?.features?.map(({ attributes }, index) =>
-    options.push({
-      label: attributes.nazev,
-      value: attributes.nazev,
-    }),
-  );
-  // sorting values
-  options.sort((val1, val2) => val1?.value?.toString().localeCompare(val2?.value.toString()));
-
-  return options;
-}
+import { DataDelay, DataEvent, PlotData, Streets } from '../types/baseTypes';
+import { getOptionsFromStreet } from '../utils/util';
 
 function findArrayElementByName(array: StreetInMap[], name: string) {
   return array?.find((element) => {
@@ -41,17 +26,11 @@ function findArrayElementByName(array: StreetInMap[], name: string) {
   });
 }
 
-type PlotData = {
-  jams: [[]];
-  alerts: [[]];
-};
-
 const LiveDashboardPage = () => {
   const { filter } = useContext(filterContext);
   const { t } = useTranslation();
 
-  const { streetsWithLocation, streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap } =
-    useContext(streetContext);
+  const { streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap } = useContext(streetContext);
 
   const [open, setOpen] = useState(false);
   var options: SelectProps['options'] = [];
@@ -62,7 +41,6 @@ const LiveDashboardPage = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [statusFromStreet, setStatusFromStreet] = useState<'' | 'warning' | 'error'>('error');
   const [statusToStreet, setStatusToStreet] = useState<'' | 'warning' | 'error'>('error');
-  const [streetDelayCount, setStreetDelayCount] = useState<StreetDelayCount[]>([]);
   const [routeStreets, setRouteStreets] = useState<any>([]);
 
   const [plotData, setPlotData] = useState<PlotData>(null);
@@ -101,20 +79,6 @@ const LiveDashboardPage = () => {
     getData: true,
   });
 
-  useEffect(() => {
-    var delayCount: StreetDelayCount[] = [];
-    if (dataStreets) {
-      dataStreets?.features?.forEach((street) => {
-        const count = dataDelay?.features?.reduce(
-          (acc, cur) => (cur.attributes.street === street.attributes.nazev ? ++acc : acc),
-          0,
-        );
-        delayCount.push({ name: street.attributes.nazev, count: count });
-      });
-      setStreetDelayCount(delayCount);
-    }
-  }, [dataDelay]);
-
   // getting street name from click on map
   const LocationFinderDummy = () => {
     const map: L.Map = mapRef.current;
@@ -125,7 +89,6 @@ const LiveDashboardPage = () => {
     useMapEvents({
       contextmenu: handleContextMenu,
       click: async (e) => {
-        console.log(queryFindStreet(e, filter));
         backendApi.get(`reverse_geocode/street/?${queryFindStreet(e, filter)}`).then((response) => {
           const name = response.data.street;
           const path = response.data.path;
@@ -148,11 +111,15 @@ const LiveDashboardPage = () => {
     let newStreetsInMap = streetsInMap;
     // drawing/removing streets in selected
     streetsInSelected?.forEach((element) => {
-      const streetInSelected: StreetFull = streetsWithLocation?.find((item) => item?.name === element);
-      if (!findArrayElementByName(newStreetsInMap, streetInSelected?.name)) {
-        const newDrawedStreet = drawOnMap(map, streetInSelected?.name, streetInSelected?.location, 'green');
-        newStreetsInMap.push(newDrawedStreet);
-      }
+      backendApi.get(`/street_coord/?${queryStreetCoord(filter, element)}`).then((response) => {
+        const name = response.data.street;
+        const path = response.data.path;
+        const color = response.data.color;
+        if (!findArrayElementByName(newStreetsInMap, name)) {
+          const newDrawedStreet = drawOnMap(map, name, path, color);
+          newStreetsInMap.push(newDrawedStreet);
+        }
+      });
     });
     const streetsInMapStaying = deleteMultipleFromMap(newStreetsInMap, streetsInSelected);
     setNewStreetsInMap(streetsInMapStaying);
@@ -166,7 +133,7 @@ const LiveDashboardPage = () => {
     const data_search = {
       src_street: sourceStreet,
       dst_street: dstStreet,
-      src_coord: [16.7668, 45.76886],
+      src_coord: null,
       dst_coord: null,
       pass_streets: [...new Set(passStreets)],
       from_time: `${filter.fromDate} ${filter.fromTime}:00`,
@@ -212,11 +179,9 @@ const LiveDashboardPage = () => {
         to_date_time: `${filter.toDate} ${filter.toTime}:00`,
         streets: filter.streets,
       };
-      console.log(body);
 
       backendApi.post('data_for_plot/', body).then((response) => {
         const responsePlotData: PlotData = response.data;
-        console.log('responsePlotData:', responsePlotData);
         setPlotData(responsePlotData);
       });
     }
@@ -254,7 +219,6 @@ const LiveDashboardPage = () => {
   };
 
   options = getOptionsFromStreet(dataStreets);
-  console.log('plotData', plotData);
   return (
     <Row>
       <Col span={20}>

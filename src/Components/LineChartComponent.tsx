@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ApexOptions } from 'apexcharts';
 import ReactApexChart from 'react-apexcharts';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 // TODO: otypovat?
 
@@ -34,6 +35,11 @@ const LineChartComponent = ({ dataJams, dataAlerts, xaxis_min_selected, xaxis_ma
       x: {
         format: 'dd MMM yyyy hh:mm:ss',
         show: true,
+        formatter: function (value) {
+          const date = new Date(value);
+          const formattedTime = dayjs(date).format('HH:mm:ss');
+          return formattedTime;
+        },
       },
     },
     legend: {

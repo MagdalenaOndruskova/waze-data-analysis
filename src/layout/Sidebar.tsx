@@ -9,6 +9,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Dayjs } from 'dayjs';
 import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
+import { RangePickerProps } from 'antd/es/date-picker';
 
 type Streets = {
   features: {
@@ -56,6 +57,7 @@ const Sidebar = () => {
 
   const [selected, setSelected] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState<Dayjs>(dayjs().add(-7, 'd'));
+
   const [dateTo, setDateTo] = useState<Dayjs>(dayjs());
   const [timeFrom, setTimeFrom] = useState<Dayjs>(dayjs('08:00', 'HH:mm'));
   const [timeTo, setTimeTo] = useState<Dayjs>(dayjs('08:00', 'HH:mm'));
@@ -159,6 +161,10 @@ const Sidebar = () => {
         type: 'error',
         content: t('errorMessage.WrongDateFromTo'),
         duration: 10,
+        className: 'messageError',
+        style: {
+          marginTop: '40px',
+        },
       });
 
       return;
@@ -189,6 +195,19 @@ const Sidebar = () => {
     setNewStreetsWithLocation(streetFullLocation);
   }, [dataStreets]);
 
+  const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+    // Disable dates after today
+    if (current && current > dayjs().endOf('day')) {
+      return true;
+    }
+    // Disable dates older than 1 year from today
+    if (current && current < dayjs().subtract(1, 'year').subtract(1, 'day')) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <div className="sidebar">
       {messageDateContext}
@@ -198,18 +217,35 @@ const Sidebar = () => {
       <DatePicker
         name="DateFrom"
         className="filterStyle"
-        onChange={(value) => setDateFrom(value)}
+        disabledDate={disabledDate}
+        allowClear={false}
+        onChange={(value) => {
+          setDateFrom(value);
+        }}
         value={dayjs(dateFrom)}
       />
       <TimePicker
         className="filterStyle"
         onChange={(value) => setTimeFrom(value)}
         format="HH:mm"
+        allowClear={false}
         value={dayjs(timeFrom, 'HH:mm')}
       />
       <p className="text-left">{t('To')}</p>
-      <DatePicker className="filterStyle" onChange={(value) => setDateTo(value)} value={dayjs(dateTo)} />
-      <TimePicker className="filterStyle" onChange={(value) => setTimeTo(value)} value={dayjs(timeTo)} format="HH:mm" />
+      <DatePicker
+        className="filterStyle"
+        onChange={(value) => setDateTo(value)}
+        value={dayjs(dateTo)}
+        allowClear={false}
+        disabledDate={disabledDate}
+      />
+      <TimePicker
+        className="filterStyle"
+        onChange={(value) => setTimeTo(value)}
+        value={dayjs(timeTo)}
+        allowClear={false}
+        format="HH:mm"
+      />
       <h3 className="text-left">{t('Streets')}</h3>
       <Select
         className="filterStyle"

@@ -1,12 +1,9 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Col, Modal, Row, Select, SelectProps, Spin, message } from 'antd';
-import { TrafficDelay } from '../types/TrafficDelay';
-import { TrafficEvent } from '../types/TrafficEvent';
 import useAxios from '../utils/useAxios';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/main.scss';
-import { prepareData } from '../utils/prepareData';
 import { filterContext, streetContext } from '../utils/contexts';
 import { queryBuilder, queryFindStreet } from '../utils/queryBuilder';
 import L, { Map as LeafletMap } from 'leaflet';
@@ -15,34 +12,13 @@ import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { StreetInMap } from '../types/StreetInMap';
 import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
-import { Street, StreetDelayCount } from '../types/Street';
+import { StreetDelayCount } from '../types/Street';
 import { CloseOutlined } from '@ant-design/icons';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import LiveTilesColumn from '../Components/LiveTilesColumn';
 import backendApi from '../utils/api';
-import LineChart from '../Components/LineChart';
 import LineChartComponent from '../Components/LineChartComponent';
-
-type DataDelay = {
-  features: {
-    attributes: TrafficDelay;
-  }[];
-};
-
-type DataEvent = {
-  features: {
-    attributes: TrafficEvent;
-  }[];
-};
-
-type Streets = {
-  features: {
-    attributes: Street;
-    geometry: {
-      paths: [];
-    };
-  }[];
-};
+import { DataDelay, DataEvent, Streets } from '../types/baseTypes';
 
 function getOptionsFromStreet(streets: Streets | null) {
   const options: SelectProps['options'] = [];
@@ -65,6 +41,11 @@ function findArrayElementByName(array: StreetInMap[], name: string) {
   });
 }
 
+type PlotData = {
+  jams: [[]];
+  alerts: [[]];
+};
+
 const LiveDashboardPage = () => {
   const { filter } = useContext(filterContext);
   const { t } = useTranslation();
@@ -83,6 +64,8 @@ const LiveDashboardPage = () => {
   const [statusToStreet, setStatusToStreet] = useState<'' | 'warning' | 'error'>('error');
   const [streetDelayCount, setStreetDelayCount] = useState<StreetDelayCount[]>([]);
   const [routeStreets, setRouteStreets] = useState<any>([]);
+
+  const [plotData, setPlotData] = useState<PlotData>(null);
 
   const mapRef = useRef<LeafletMap>(null);
 
@@ -139,7 +122,6 @@ const LiveDashboardPage = () => {
       e.originalEvent.preventDefault();
       //TODO: handle right click
     };
-
     useMapEvents({
       contextmenu: handleContextMenu,
       click: async (e) => {
@@ -223,6 +205,23 @@ const LiveDashboardPage = () => {
     setNewStreetsInSelected(newSelected);
   }, [routeStreets]);
 
+  useEffect(() => {
+    if (filter) {
+      const body = {
+        from_date_time: `${filter.fromDate} ${filter.fromTime}:00`,
+        to_date_time: `${filter.toDate} ${filter.toTime}:00`,
+        streets: filter.streets,
+      };
+      console.log(body);
+
+      backendApi.post('data_for_plot/', body).then((response) => {
+        const responsePlotData: PlotData = response.data;
+        console.log('responsePlotData:', responsePlotData);
+        setPlotData(responsePlotData);
+      });
+    }
+  }, [filter]);
+
   const handleOk = () => {
     if (!sourceStreet) {
       setStatusFromStreet('error');
@@ -255,6 +254,7 @@ const LiveDashboardPage = () => {
   };
 
   options = getOptionsFromStreet(dataStreets);
+  console.log('plotData', plotData);
   return (
     <Row>
       <Col span={20}>
@@ -363,15 +363,16 @@ const LiveDashboardPage = () => {
               options={options}
             />
           </Modal>
-
-          {/* <LineChart
-            data={prepareData(dataDelay, dataEvent, t) ?? []}
-            xTickValues="every 12 hour"
-            yAxisValue={t('plot.Count')}
-          ></LineChart> */}
         </div>
         <div>
-          <LineChartComponent></LineChartComponent>
+          <div>
+            <LineChartComponent
+              dataJams={plotData?.jams}
+              dataAlerts={plotData?.alerts}
+              xaxis_min_selected={`${filter?.fromDate}, ${filter?.toTime}:00`}
+              xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
+            />
+          </div>
         </div>
       </Col>
       <Col span={4} className="live-map-top-row">

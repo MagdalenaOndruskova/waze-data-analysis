@@ -116,7 +116,8 @@ const LiveDashboardPage = () => {
           const newDrawedStreet: StreetInMap = drawOnMap(map, name, path, color);
           streetsInMapStaying.push(newDrawedStreet);
           setNewStreetsInMap(streetsInMapStaying);
-          setNewStreetsInSelected([...new Set([...streetsInSelected, name])]);
+          const newStreetsInSelected = [...new Set([...streetsInSelected, name])];
+          setNewStreetsInSelected(newStreetsInSelected);
         });
       },
     });

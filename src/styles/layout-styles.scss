@@ -73,7 +73,6 @@ nav {
   color: $contentTextColor;
   background-color: $backgroundColor;
   padding-top: 60px;
-  padding-left: 200px;
   overflow: hidden;
 }
 
@@ -176,6 +175,40 @@ nav {
   }
 }
 
+.plot-live-page {
+  width: 100%;
+}
+
+.sidebar-drawer {
+  z-index: 100000;
+}
+
+.ant-drawer-content-wrapper {
+  max-width: 200px;
+}
+.ant-drawer-body {
+  text-align: center;
+  line-height: 30px;
+  color: $filterTextColor;
+  background-color: $linkColorActive;
+  height: 100%;
+  // position: fixed;
+  overflow-x: hidden;
+  top: 50px;
+  left: 0;
+  padding: 0px !important;
+
+  Button {
+    color: $linkColorActive;
+    letter-spacing: 2px;
+    font-weight: bold;
+  }
+  Button:hover {
+    background-color: $buttonHoverBackgroundColor;
+    color: $filterTextColor !important;
+    border: $buttonHoverBackgroundColor;
+  }
+}
 .ant-select-selector {
   max-height: 280px;
   overflow: auto;

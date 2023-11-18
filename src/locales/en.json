@@ -52,5 +52,7 @@
   "route.pass": "Cez",
   "route.source.missing": "Please, ill in source street.",
   "route.dst.missing": "Please, fill in destination street.",
-  "route.notfound": "Path not found. Please add some pass streets."
+  "route.notfound": "Path not found. Please add some pass streets.",
+
+  "open.filters": "Open filters"
 }

@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+
 import '../styles/layout-styles.scss';
-import { Button, DatePicker, Input, Select, SelectProps, TimePicker, message } from 'antd';
+import { Button, DatePicker, Drawer, Input, Select, SelectProps, TimePicker, message } from 'antd';
 import dayjs from 'dayjs';
-import { Street } from '../types/Street';
 import useAxios from '../utils/useAxios';
 import { FILTER_DEFAULT_VALUE, filterContext, streetContext } from '../utils/contexts';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -11,15 +11,8 @@ import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
 import { RangePickerProps } from 'antd/es/date-picker';
 import { getOptionsFromStreet } from '../utils/util';
-
-type Streets = {
-  features: {
-    attributes: Street;
-    geometry: {
-      paths: [];
-    };
-  }[];
-};
+import { Streets } from '../types/baseTypes';
+import locale from 'antd/es/date-picker/locale/cs_CZ';
 
 function getStreetsLocations(streets: Streets | null) {
   var streetsFulls: StreetFull[] = [];
@@ -33,26 +26,24 @@ function getStreetsLocations(streets: Streets | null) {
   return streetsFulls;
 }
 
-const Sidebar = () => {
+const SidebarDrawer = ({ open, onCloseDrawer }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   var options: SelectProps['options'] = [];
-  var streetFullLocation: StreetFull[] = [];
 
   const [selected, setSelected] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState<Dayjs>(dayjs().add(-7, 'd'));
 
   const [dateTo, setDateTo] = useState<Dayjs>(dayjs());
-  const [timeFrom, setTimeFrom] = useState<Dayjs>(dayjs('08:00', 'HH:mm'));
-  const [timeTo, setTimeTo] = useState<Dayjs>(dayjs('08:00', 'HH:mm'));
+  const [timeFrom, setTimeFrom] = useState<Dayjs>(dayjs('06:00', 'HH:mm'));
+  const [timeTo, setTimeTo] = useState<Dayjs>(dayjs());
 
   const inicialized = useRef<Boolean>(false);
 
   const { filter, setNewFilter } = useContext(filterContext);
 
-  const { setNewStreetsWithLocation, setNewStreetsInSelected, streetsInSelected, streetsInMap, setNewStreetsInMap } =
-    useContext(streetContext);
+  const { setNewStreetsInSelected, streetsInSelected, streetsInMap, setNewStreetsInMap } = useContext(streetContext);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -120,8 +111,9 @@ const Sidebar = () => {
     setDateTo(dayjs());
 
     //TODO: funguje iba aj ked sa date zmeni?
-    setTimeFrom(dayjs('08:00', 'HH:mm'));
-    setTimeTo(dayjs('08:00', 'HH:mm'));
+    setTimeFrom(dayjs('06:00', 'HH:mm'));
+    // setTimeFrom(dayjs().format('HH:mm'));
+    setTimeTo(dayjs());
     setNewFilter({
       fromDate: dateFrom.format('YYYY-MM-DD'),
       toDate: dateTo.format('YYYY-MM-DD'),
@@ -175,11 +167,6 @@ const Sidebar = () => {
   });
   options = getOptionsFromStreet(dataStreets);
 
-  useEffect(() => {
-    streetFullLocation = getStreetsLocations(dataStreets);
-    setNewStreetsWithLocation(streetFullLocation);
-  }, [dataStreets]);
-
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
     // Disable dates after today
     if (current && current > dayjs().endOf('day')) {
@@ -194,13 +181,14 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="sidebar">
+    <Drawer className="sidebar-drawer" title="Basic Drawer" placement="left" onClose={onCloseDrawer} open={open}>
       {messageDateContext}
       <h2>{t('Filters')}</h2>
       <h3 className="text-left">{t('Time Range')}</h3>
       <p className="text-left">{t('From')}</p>
       <DatePicker
         name="DateFrom"
+        locale={locale}
         className="filterStyle"
         disabledDate={disabledDate}
         allowClear={false}
@@ -211,6 +199,7 @@ const Sidebar = () => {
       />
       <TimePicker
         className="filterStyle"
+        locale={locale}
         onChange={(value) => setTimeFrom(value)}
         format="HH:mm"
         allowClear={false}
@@ -219,6 +208,7 @@ const Sidebar = () => {
       <p className="text-left">{t('To')}</p>
       <DatePicker
         className="filterStyle"
+        locale={locale}
         onChange={(value) => setDateTo(value)}
         value={dayjs(dateTo)}
         allowClear={false}
@@ -226,6 +216,7 @@ const Sidebar = () => {
       />
       <TimePicker
         className="filterStyle"
+        locale={locale}
         onChange={(value) => setTimeTo(value)}
         value={dayjs(timeTo)}
         allowClear={false}
@@ -251,8 +242,8 @@ const Sidebar = () => {
       <Button className="filterStyle" onClick={clearFilters}>
         {t('RESET')}
       </Button>
-    </div>
+    </Drawer>
   );
 };
 
-export default Sidebar;
+export default SidebarDrawer;

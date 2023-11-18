@@ -3,6 +3,7 @@ import { ApexOptions } from 'apexcharts';
 import ReactApexChart from 'react-apexcharts';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
+import '../styles/layout-styles.scss';
 
 // TODO: otypovat?
 
@@ -18,11 +19,6 @@ const LineChartComponent = ({ dataJams, dataAlerts, xaxis_min_selected, xaxis_ma
         autoSelected: 'pan',
         show: false,
       },
-      //   zoom: {
-      //     type: 'x',
-      //     enabled: true,
-      //     autoScaleYaxis: true,
-      //   },
     },
     colors: ['#00E396', '#0090FF'],
     stroke: {
@@ -37,7 +33,7 @@ const LineChartComponent = ({ dataJams, dataAlerts, xaxis_min_selected, xaxis_ma
         show: true,
         formatter: function (value) {
           const date = new Date(value);
-          const formattedTime = dayjs(date).format('HH:mm:ss');
+          const formattedTime = dayjs(date).format('DD MMM YYYY HH:mm:ss');
           return formattedTime;
         },
       },
@@ -69,7 +65,6 @@ const LineChartComponent = ({ dataJams, dataAlerts, xaxis_min_selected, xaxis_ma
       },
     },
   };
-
   const series = [
     {
       name: t('Alerts'),
@@ -118,7 +113,7 @@ const LineChartComponent = ({ dataJams, dataAlerts, xaxis_min_selected, xaxis_ma
   };
 
   return (
-    <div id="wrapper">
+    <div className="plot-live-page">
       <div id="chart-line2">
         <ReactApexChart options={options} series={series} type="line" height={230} />
       </div>

@@ -12,7 +12,6 @@ import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { StreetInMap } from '../types/StreetInMap';
 import { useTranslation } from 'react-i18next';
-import { StreetDelayCount } from '../types/Street';
 import { CloseOutlined } from '@ant-design/icons';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import LiveTilesColumn from '../Components/LiveTilesColumn';
@@ -20,6 +19,7 @@ import backendApi from '../utils/api';
 import LineChartComponent from '../Components/LineChartComponent';
 import { DataDelay, DataEvent, PlotData, Streets } from '../types/baseTypes';
 import { getOptionsFromStreet } from '../utils/util';
+import SidebarDrawer from '../layout/SidebarDrawer';
 
 function findArrayElementByName(array: StreetInMap[], name: string) {
   return array?.find((element) => {
@@ -28,7 +28,7 @@ function findArrayElementByName(array: StreetInMap[], name: string) {
 }
 
 function getXMinDate(toDate) {
-  return dayjs(`${toDate}, 08:00:00`, { format: 'YYYY-MM-DD, HH:mm:ss' })
+  return dayjs(`${toDate}, 06:00:00`, { format: 'YYYY-MM-DD, HH:mm:ss' })
     .subtract(1, 'day')
     .format('YYYY-MM-DD, HH:mm:ss');
 }
@@ -53,6 +53,15 @@ const LiveDashboardPage = () => {
   const [previousDate, setPreviousDate] = useState<string>(() => getXMinDate(filter?.toDate));
 
   const [plotData, setPlotData] = useState<PlotData>(null);
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  const showDrawer = () => {
+    setOpenDrawer(true);
+  };
+
+  const onCloseDrawer = () => {
+    setOpenDrawer(false);
+  };
 
   const mapRef = useRef<LeafletMap>(null);
 
@@ -230,129 +239,140 @@ const LiveDashboardPage = () => {
 
   options = getOptionsFromStreet(dataStreets);
   return (
-    <Row>
-      <Col span={20}>
-        <Spin size="large" spinning={loadingDelay || loadingEvent}>
-          <MapContainer ref={mapRef} center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true} style={{ height: 580 }}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <LocationFinderDummy />
-          </MapContainer>
-        </Spin>
-        <div style={{ height: 50 }} className="modalButtonOpen">
-          <Button className="filterStyle" onClick={showModal}>
-            {t('route.button')}
-          </Button>
-        </div>
-        <div>
-          {contextHolder}
-          <Modal
-            width={350}
-            title={t('route.button')}
-            open={open}
-            onCancel={() => setOpen(false)}
-            footer={[
-              <div key={'top'} className="buttonsModal">
-                <Button key="Pass" className="modalButton" onClick={addPassStreet}>
-                  {t('route.pass')}
-                </Button>
-
-                <div key={'right'} className="rightButtons">
-                  <Button key="Cancel" className="modalButton" onClick={handleCancel}>
-                    {t('cancel')}
-                  </Button>
-                  <Button key="Ok" className="modalButtonOk" onClick={handleOk}>
-                    OK
-                  </Button>
-                </div>
-              </div>,
-            ]}
-          >
-            <p>{t('route.source')}:</p>
-            <Select
-              showSearch
-              key={'FromStreet'}
-              status={statusFromStreet}
-              className="modalStyle"
-              allowClear
-              placeholder={t('PleaseSelect')}
-              onChange={(value) => {
-                setSourceStreet(value);
-                setStatusFromStreet('');
-              }}
-              //  TODO: filter ignore diacritics
-              value={sourceStreet}
-              options={options}
-            />
-            {passStreets.map((street, index) => (
-              <div key={index.toString()}>
-                {index === 0 && <p>{t('route.pass')}:</p>}
-                <Select
-                  showSearch
-                  className="modalStylePass"
-                  allowClear
-                  placeholder={t('PleaseSelect')}
-                  onChange={(value) => {
-                    setPassStreets((prevState) => {
-                      const stateCopy = [...prevState];
-                      stateCopy[index] = value;
-                      return stateCopy;
-                    });
-                  }}
-                  //  TODO: filter ignore diacritics
-                  value={street}
-                  options={options}
-                />
-
-                <CloseOutlined
-                  className="iconCancel"
-                  onClick={() => {
-                    setPassStreets((prevState) => {
-                      const stateCopy = [...prevState];
-                      stateCopy.splice(index, 1);
-                      return stateCopy;
-                    });
-                  }}
-                />
-              </div>
-            ))}
-
-            <br></br>
-            <p>{t('route.dst')}:</p>
-            <Select
-              showSearch
-              key={'endStreet'}
-              status={statusToStreet}
-              className="modalStyle"
-              allowClear
-              placeholder={t('PleaseSelect')}
-              onChange={(value) => {
-                setDstStreet(value);
-                setStatusToStreet('');
-              }}
-              //  TODO: filter ignore diacritics
-              value={dstStreet}
-              options={options}
-            />
-          </Modal>
-        </div>
-        <div>
+    <>
+      <Row>
+        <Col span={20}>
+          <Spin size="large" spinning={loadingDelay || loadingEvent}>
+            <MapContainer ref={mapRef} center={[49.2, 16.6]} zoom={14} scrollWheelZoom={true} style={{ height: 580 }}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <LocationFinderDummy />
+            </MapContainer>
+          </Spin>
+          <div style={{ height: 50 }} className="modalButtonOpen">
+            <Button className="filterStyle" onClick={showModal}>
+              {t('route.button')}
+            </Button>
+            <Button type="primary" onClick={showDrawer}>
+              {t('open.filters')}
+            </Button>
+            <SidebarDrawer open={openDrawer} onCloseDrawer={onCloseDrawer}></SidebarDrawer>
+          </div>
           <div>
-            <LineChartComponent
+            {contextHolder}
+            <Modal
+              width={350}
+              title={t('route.button')}
+              open={open}
+              onCancel={() => setOpen(false)}
+              footer={[
+                <div key={'top'} className="buttonsModal">
+                  <Button key="Pass" className="modalButton" onClick={addPassStreet}>
+                    {t('route.pass')}
+                  </Button>
+
+                  <div key={'right'} className="rightButtons">
+                    <Button key="Cancel" className="modalButton" onClick={handleCancel}>
+                      {t('cancel')}
+                    </Button>
+                    <Button key="Ok" className="modalButtonOk" onClick={handleOk}>
+                      OK
+                    </Button>
+                  </div>
+                </div>,
+              ]}
+            >
+              <p>{t('route.source')}:</p>
+              <Select
+                showSearch
+                key={'FromStreet'}
+                status={statusFromStreet}
+                className="modalStyle"
+                allowClear
+                placeholder={t('PleaseSelect')}
+                onChange={(value) => {
+                  setSourceStreet(value);
+                  setStatusFromStreet('');
+                }}
+                //  TODO: filter ignore diacritics
+                value={sourceStreet}
+                options={options}
+              />
+              {passStreets.map((street, index) => (
+                <div key={index.toString()}>
+                  {index === 0 && <p>{t('route.pass')}:</p>}
+                  <Select
+                    showSearch
+                    className="modalStylePass"
+                    allowClear
+                    placeholder={t('PleaseSelect')}
+                    onChange={(value) => {
+                      setPassStreets((prevState) => {
+                        const stateCopy = [...prevState];
+                        stateCopy[index] = value;
+                        return stateCopy;
+                      });
+                    }}
+                    //  TODO: filter ignore diacritics
+                    value={street}
+                    options={options}
+                  />
+
+                  <CloseOutlined
+                    className="iconCancel"
+                    onClick={() => {
+                      setPassStreets((prevState) => {
+                        const stateCopy = [...prevState];
+                        stateCopy.splice(index, 1);
+                        return stateCopy;
+                      });
+                    }}
+                  />
+                </div>
+              ))}
+
+              <br></br>
+              <p>{t('route.dst')}:</p>
+              <Select
+                showSearch
+                key={'endStreet'}
+                status={statusToStreet}
+                className="modalStyle"
+                allowClear
+                placeholder={t('PleaseSelect')}
+                onChange={(value) => {
+                  setDstStreet(value);
+                  setStatusToStreet('');
+                }}
+                //  TODO: filter ignore diacritics
+                value={dstStreet}
+                options={options}
+              />
+            </Modal>
+          </div>
+
+          {/* <LineChartComponent
               dataJams={plotData?.jams}
               dataAlerts={plotData?.alerts}
               xaxis_min_selected={`${previousDate}`}
               xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
-            />
-          </div>
-        </div>
-      </Col>
-      <Col span={4} className="live-map-top-row">
-        <LiveTilesColumn dataDelay={dataDelay} dataEvent={dataEvent} t={t}></LiveTilesColumn>
-      </Col>
-    </Row>
+            /> */}
+        </Col>
+        <Col span={4} className="live-map-top-row">
+          <LiveTilesColumn dataDelay={dataDelay} dataEvent={dataEvent} t={t}></LiveTilesColumn>
+        </Col>
+      </Row>
+      <Row>
+        <LineChartComponent
+          dataJams={plotData?.jams}
+          dataAlerts={plotData?.alerts}
+          xaxis_min_selected={`${previousDate}`}
+          xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
+        />
+      </Row>
+    </>
   );
 };
 

@@ -3,7 +3,6 @@ import { Link, Outlet } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import { Content, Footer } from 'antd/es/layout/layout';
 import Navbar from './Navbar';
-import Sidebar from './Sidebar';
 import '../styles/layout-styles.scss';
 import { useFilter } from '../utils/useFilter';
 import { filterContext, streetContext } from '../utils/contexts';
@@ -31,7 +30,6 @@ const MainLayout = () => {
         <streetContext.Provider value={street}>
           <Navbar />
           <Layout>
-            <Sidebar />
             <Content className="content">
               <Outlet />
             </Content>

@@ -52,5 +52,7 @@
   "route.pass": "Cez",
   "route.source.missing": "Prosím vyplň začiatočnú ulicu.",
   "route.dst.missing": "Prisím vyplň cieľovú ulicu.",
-  "route.notfound": "Cesta sa nenašla. Prosím, doplň ulice, cez ktoré by cesta mala viesť."
+  "route.notfound": "Cesta sa nenašla. Prosím, doplň ulice, cez ktoré by cesta mala viesť.",
+
+  "open.filters": "Otvorit filtre"
 }

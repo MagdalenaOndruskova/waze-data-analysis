@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import useAxios from '../utils/useAxios';
-import { TrafficDelay, TrafficDelayPlot } from '../types/TrafficDelay';
-import { TrafficEvent, TrafficEventPlot } from '../types/TrafficEvent';
+import { TrafficDelay } from '../types/TrafficDelay';
+import { TrafficEvent } from '../types/TrafficEvent';
 import { Col, Row, Spin } from 'antd';
 import LineChart from '../Components/LineChart';
 import {
@@ -17,10 +17,11 @@ import {
 } from '../utils/prepareData';
 import PieChart from '../Components/PieChart';
 import BarChart from '../Components/BarChart';
-import { filterContext } from '../utils/contexts';
 import { queryBuilder } from '../utils/queryBuilder';
 import { useTranslation } from 'react-i18next';
 import LiveTilesRow from '../Components/LiveTilesRow';
+import { dataContext, filterContext } from '../utils/contexts';
+import LineChartComponent from '../Components/GraphComponents/LineChartComponent';
 
 type DataDelay = {
   features: {
@@ -38,6 +39,20 @@ const Dashboard = () => {
   const { filter } = useContext(filterContext);
   const { t } = useTranslation();
   const query = queryBuilder(filter);
+
+  const {
+    xAxisData,
+    jamsData,
+    alertData,
+    previousDate,
+    setXAxisData,
+    setJamsData,
+    setAlertData,
+    dateTimeFrom,
+    dateTimeTo,
+    setDateTimeFrom,
+    setDateTimeTo,
+  } = useContext(dataContext);
 
   const {
     response: dataDelay,
@@ -72,22 +87,16 @@ const Dashboard = () => {
         <div>
           <LiveTilesRow dataDelay={dataDelay} dataEvent={dataEvent} t={t}></LiveTilesRow>
           <Row>
-            <Col style={{ height: 295 }} lg={8} md={12}>
-              <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>{t('tile.ActiveAlerts')}:</h3>
-              <LineChart
-                data={prepareData(null, dataEvent, t)}
-                xTickValues="every 12 hour"
-                yAxisValue={t('plot.Count')}
-              ></LineChart>
+            <Col lg={8} md={12}>
+              <LineChartComponent
+                dataJams={jamsData}
+                dataAlerts={alertData}
+                xAxis={xAxisData}
+                xaxis_min_selected={`${previousDate}`}
+                xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
+              />
             </Col>
-            <Col style={{ height: 295 }} lg={8} md={12}>
-              <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>{t('tile.TrafficJams')}:</h3>
-              <LineChart
-                data={prepareData(dataDelay, null, t)}
-                xTickValues="every 12 hour"
-                yAxisValue={t('plot.Count')}
-              ></LineChart>
-            </Col>
+
             <Col style={{ height: 295 }} lg={8} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>
                 {t('tile.AverageJamLevel')}:

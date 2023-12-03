@@ -1,7 +1,6 @@
 import React from 'react';
 import { StreetInMap } from '../types/StreetInMap';
 import { STREET_CONTEXT_DEFAULT_VALUE, StreetContext } from './contexts';
-import { StreetFull } from '../types/StreetFull';
 
 export const useStreetContext = (): StreetContext => {
   const [streetsInMap, setStreetsInMap] = React.useState<StreetInMap[]>(STREET_CONTEXT_DEFAULT_VALUE.streetsInMap);

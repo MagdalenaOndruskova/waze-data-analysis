@@ -24,6 +24,7 @@ export type Streets = {
 };
 
 export type PlotData = {
-  jams: [[]];
-  alerts: [[]];
+  jams: [];
+  alerts: [];
+  xaxis: [];
 };

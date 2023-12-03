@@ -46,3 +46,52 @@ export const STREET_CONTEXT_DEFAULT_VALUE: StreetContext = {
 };
 
 export const streetContext = React.createContext<StreetContext>(STREET_CONTEXT_DEFAULT_VALUE);
+
+export interface DataContext {
+  dateTimeFrom: string;
+  dateTimeTo: string;
+  previousDate: string;
+  xAxisData: [];
+  jamsData: [];
+  alertData: [];
+  levelData: [];
+  speedData: [];
+  lengthData: [];
+  timeData: [];
+
+  setDateTimeFrom: (dateTime: string) => void;
+  setDateTimeTo: (dateTime: string) => void;
+  setPreviousDate: (date: string) => void;
+  setXAxisData: (xAxisData: []) => void;
+  setJamsData: (data: []) => void;
+  setAlertData: (data: []) => void;
+  setLevelData: (data: []) => void;
+  setSpeedData: (data: []) => void;
+  setLengthData: (data: []) => void;
+  setTimeData: (data: []) => void;
+}
+
+export const DATA_CONTEXT_DEFAULT_VALUE: DataContext = {
+  dateTimeFrom: '',
+  dateTimeTo: '',
+  previousDate: '',
+  xAxisData: [],
+  jamsData: [],
+  alertData: [],
+  levelData: [],
+  speedData: [],
+  lengthData: [],
+  timeData: [],
+  setDateTimeFrom: () => {},
+  setDateTimeTo: () => {},
+  setPreviousDate: () => {},
+  setXAxisData: () => {},
+  setJamsData: () => {},
+  setAlertData: () => {},
+  setLevelData: () => {},
+  setSpeedData: () => {},
+  setLengthData: () => {},
+  setTimeData: () => {},
+};
+
+export const dataContext = React.createContext<DataContext>(DATA_CONTEXT_DEFAULT_VALUE);

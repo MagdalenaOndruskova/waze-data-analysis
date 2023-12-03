@@ -1,8 +1,10 @@
 import React from 'react';
 import LiveTile from './LiveTile';
 import * as Icons from '../utils/icons';
+import { useTranslation } from 'react-i18next';
 
-const LiveTilesColumn = ({ dataEvent, dataDelay, t }) => {
+const LiveTilesColumn = ({ dataEvent, dataDelay }) => {
+  const { t } = useTranslation();
   return (
     <div>
       <LiveTile

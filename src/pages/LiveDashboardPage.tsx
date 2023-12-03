@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import dayjs from 'dayjs';
 import '../styles/main.scss';
-import { filterContext, streetContext } from '../utils/contexts';
+import { dataContext, filterContext, streetContext } from '../utils/contexts';
 import { queryBuilder, queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
 import L, { Map as LeafletMap } from 'leaflet';
 import 'leaflet-routing-machine';
@@ -16,8 +16,8 @@ import { CloseOutlined } from '@ant-design/icons';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import LiveTilesColumn from '../Components/LiveTilesColumn';
 import backendApi from '../utils/api';
-import LineChartComponent from '../Components/LineChartComponent';
-import { DataDelay, DataEvent, PlotData, Streets } from '../types/baseTypes';
+import LineChartComponent from '../Components/GraphComponents/LineChartComponent';
+import { DataDelay, DataEvent, Streets } from '../types/baseTypes';
 import { getOptionsFromStreet } from '../utils/util';
 import SidebarDrawer from '../layout/SidebarDrawer';
 
@@ -39,6 +39,21 @@ const LiveDashboardPage = () => {
 
   const { streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap } = useContext(streetContext);
 
+  const {
+    xAxisData,
+    jamsData,
+    alertData,
+    previousDate,
+    setXAxisData,
+    setJamsData,
+    setAlertData,
+    dateTimeFrom,
+    dateTimeTo,
+    setDateTimeFrom,
+    setDateTimeTo,
+    setPreviousDate,
+  } = useContext(dataContext);
+
   const [open, setOpen] = useState(false);
   var options: SelectProps['options'] = [];
 
@@ -50,9 +65,8 @@ const LiveDashboardPage = () => {
   const [statusToStreet, setStatusToStreet] = useState<'' | 'warning' | 'error'>('error');
   const [routeStreets, setRouteStreets] = useState<any>([]);
 
-  const [previousDate, setPreviousDate] = useState<string>(() => getXMinDate(filter?.toDate));
+  // const [previousDate, setPreviousDate] = useState<string>(() => getXMinDate(filter?.toDate));
 
-  const [plotData, setPlotData] = useState<PlotData>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const showDrawer = () => {
@@ -192,16 +206,27 @@ const LiveDashboardPage = () => {
   }, [routeStreets]);
 
   useEffect(() => {
+    // already have the data, not necessary to call again - unless street changed! TODO
+    if (
+      dateTimeFrom === `${filter?.fromDate} ${filter?.fromTime}:00` &&
+      dateTimeTo === `${filter?.toDate} ${filter?.toTime}:00`
+    ) {
+      return;
+    } // todo compare dates not string
+
     if (filter) {
       const body = {
-        from_date_time: `${filter.fromDate} ${filter.fromTime}:00`,
-        to_date_time: `${filter.toDate} ${filter.toTime}:00`,
+        from_date_time: `${filter?.fromDate} ${filter?.fromTime}:00`,
+        to_date_time: `${filter?.toDate} ${filter?.toTime}:00`,
         streets: filter.streets,
       };
 
       backendApi.post('data_for_plot/', body).then((response) => {
-        const responsePlotData: PlotData = response.data;
-        setPlotData(responsePlotData);
+        setJamsData(response.data.jams);
+        setAlertData(response.data.alerts);
+        setXAxisData(response.data.xaxis);
+        setDateTimeFrom(`${filter.fromDate} ${filter.fromTime}:00`);
+        setDateTimeTo(`${filter.toDate} ${filter.toTime}:00`);
         setPreviousDate(getXMinDate(filter?.toDate));
       });
     }
@@ -353,22 +378,16 @@ const LiveDashboardPage = () => {
               />
             </Modal>
           </div>
-
-          {/* <LineChartComponent
-              dataJams={plotData?.jams}
-              dataAlerts={plotData?.alerts}
-              xaxis_min_selected={`${previousDate}`}
-              xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
-            /> */}
         </Col>
         <Col span={4} className="live-map-top-row">
-          <LiveTilesColumn dataDelay={dataDelay} dataEvent={dataEvent} t={t}></LiveTilesColumn>
+          <LiveTilesColumn dataDelay={dataDelay} dataEvent={dataEvent}></LiveTilesColumn>
         </Col>
       </Row>
       <Row>
         <LineChartComponent
-          dataJams={plotData?.jams}
-          dataAlerts={plotData?.alerts}
+          dataJams={jamsData}
+          dataAlerts={alertData}
+          xAxis={xAxisData}
           xaxis_min_selected={`${previousDate}`}
           xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
         />

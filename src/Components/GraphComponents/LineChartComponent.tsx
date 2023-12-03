@@ -3,11 +3,11 @@ import { ApexOptions } from 'apexcharts';
 import ReactApexChart from 'react-apexcharts';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import '../styles/layout-styles.scss';
+import '../../styles/layout-styles.scss';
 
 // TODO: otypovat?
 
-const LineChartComponent = ({ dataJams, dataAlerts, xaxis_min_selected, xaxis_max_selected }) => {
+const LineChartComponent = ({ dataJams, dataAlerts, xAxis, xaxis_min_selected, xaxis_max_selected }) => {
   const { t } = useTranslation();
 
   const options: ApexOptions = {
@@ -63,6 +63,7 @@ const LineChartComponent = ({ dataJams, dataAlerts, xaxis_min_selected, xaxis_ma
       labels: {
         show: true,
       },
+      categories: xAxis,
     },
   };
   const series = [
@@ -106,6 +107,7 @@ const LineChartComponent = ({ dataJams, dataAlerts, xaxis_min_selected, xaxis_ma
       tooltip: {
         enabled: false,
       },
+      categories: xAxis,
     },
     yaxis: {
       tickAmount: 2,

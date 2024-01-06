@@ -183,14 +183,14 @@ const SidebarDrawer = ({ open, onCloseDrawer }) => {
   return (
     <Drawer
       className="sidebar-drawer"
-      title="Basic Drawer"
+      title={t('Filters')}
       placement="left"
       onClose={onCloseDrawer}
       open={open}
+      closable={false}
       zIndex={10000}
     >
       {messageDateContext}
-      <h2>{t('Filters')}</h2>
       <h3 className="text-left">{t('Time Range')}</h3>
       <p className="text-left">{t('From')}</p>
       <DatePicker

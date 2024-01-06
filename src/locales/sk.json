@@ -54,5 +54,10 @@
   "route.dst.missing": "Prosím vyplň cieľovú ulicu.",
   "route.notfound": "Cesta sa nenašla. Prosím, doplň ulice, cez ktoré by cesta mala viesť.",
 
-  "open.filters": "Otvor filtre"
+  "open.filters": "Otvor filtre",
+
+  "graph.countInMetres": "Dĺžka v metroch",
+  "graph.delayInMinutes": "Zdržanie v minútach",
+  "graph.level": "Priemerný level",
+  "graph.speed": "Priemerná rýchlosť v km/hod"
 }

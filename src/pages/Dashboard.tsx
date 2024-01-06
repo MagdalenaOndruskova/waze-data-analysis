@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { TrafficDelay } from '../types/TrafficDelay';
 import { TrafficEvent } from '../types/TrafficEvent';
@@ -7,11 +7,8 @@ import LineChart from '../Components/LineChart';
 import {
   prepareCriticalStreetsByAlerts,
   prepareCriticalStreetsByJams,
-  prepareData,
   prepareDataAlertsType,
   prepareDataAverageSpeed,
-  prepareDataDelay,
-  prepareDataJamLength,
   prepareDataJamLevel,
   prepareDataJamType,
 } from '../utils/prepareData';
@@ -22,6 +19,9 @@ import { useTranslation } from 'react-i18next';
 import LiveTilesRow from '../Components/LiveTilesRow';
 import { dataContext, filterContext } from '../utils/contexts';
 import LineChartComponent from '../Components/GraphComponents/LineChartComponent';
+import MultipleYChartComponent from '../Components/GraphComponents/MultipleYChartComponent';
+import backendApi from '../utils/api';
+import BarChartComponent from '../Components/GraphComponents/BarChartComponent';
 
 type DataDelay = {
   features: {
@@ -35,15 +35,27 @@ type DataEvent = {
   }[];
 };
 
+type BarChartData = {
+  streets: [];
+  values: [];
+};
+
 const Dashboard = () => {
   const { filter } = useContext(filterContext);
   const { t } = useTranslation();
   const query = queryBuilder(filter);
 
+  const [criticalStreetsAlerts, setCriticalStreetsAlerts] = useState<BarChartData>({ streets: [], values: [] });
+  const [criticalStreetsJams, setCriticalStreetsJams] = useState<BarChartData>({ streets: [], values: [] });
+
   const {
     xAxisData,
     jamsData,
     alertData,
+    lengthData,
+    timeData,
+    levelData,
+    speedData,
     previousDate,
     setXAxisData,
     setJamsData,
@@ -74,6 +86,21 @@ const Dashboard = () => {
     getData: filter !== null,
   });
 
+  useEffect(() => {
+    console.log('tam');
+    if (filter) {
+      console.log('tu');
+      const body = {
+        from_date_time: `${filter?.fromDate} ${filter?.fromTime}:00`,
+        to_date_time: `${filter?.toDate} ${filter?.toTime}:00`,
+        streets: filter.streets,
+      };
+      backendApi.post('data_for_plot_streets/', body).then((response) => {
+        setCriticalStreetsJams({ streets: response.data.streets_jams, values: response.data.values_jams });
+        setCriticalStreetsAlerts({ streets: response.data.streets_alerts, values: response.data.values_alerts });
+      });
+    }
+  }, [filter]);
   const streetsAlerts = prepareCriticalStreetsByAlerts(dataEvent);
 
   return (
@@ -87,7 +114,7 @@ const Dashboard = () => {
         <div>
           <LiveTilesRow dataDelay={dataDelay} dataEvent={dataEvent} t={t}></LiveTilesRow>
           <Row>
-            <Col lg={8} md={12}>
+            <Col lg={12} md={12}>
               <LineChartComponent
                 dataJams={jamsData}
                 dataAlerts={alertData}
@@ -96,48 +123,41 @@ const Dashboard = () => {
                 xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
               />
             </Col>
+            <Col lg={12} md={12}>
+              <MultipleYChartComponent
+                dataFirst={timeData}
+                dataSecond={lengthData}
+                xAxis={xAxisData}
+                yAxisFirst={'graph.delayInMinutes'}
+                yAxisSecond={'graph.countInMetres'}
+                labelFirst={'tile.JamsDelay'}
+                labelSecond={'tile.JamsLength'}
+              ></MultipleYChartComponent>
+            </Col>
+            <Col lg={12} md={12}>
+              <MultipleYChartComponent
+                dataFirst={levelData}
+                dataSecond={speedData}
+                labelFirst={'tile.AverageJamLevel'}
+                labelSecond={'tile.AverageSpeed'}
+                yAxisFirst={'graph.level'}
+                yAxisSecond={'graph.speed'}
+                xAxis={xAxisData}
+              ></MultipleYChartComponent>
+            </Col>
+            {/* <Col lg={8} md={12}>
+              <BarChartComponent
+                streets={criticalStreetsAlerts.streets}
+                values={criticalStreetsAlerts.values}
+              ></BarChartComponent>
+            </Col>
+            <Col lg={8} md={12}>
+              <BarChartComponent
+                streets={criticalStreetsJams.streets}
+                values={criticalStreetsJams.values}
+              ></BarChartComponent>
+            </Col> */}
 
-            <Col style={{ height: 295 }} lg={8} md={12}>
-              <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>
-                {t('tile.AverageJamLevel')}:
-              </h3>
-              <LineChart
-                data={prepareDataJamLevel(dataDelay, t)}
-                xTickValues="every 12 hour"
-                yAxisValue={t('plot.Count')}
-              ></LineChart>
-            </Col>
-            <Col style={{ height: 295 }} lg={8} md={12}>
-              <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>{t('tile.JamsLength')}:</h3>
-              <LineChart
-                data={prepareDataJamLength(dataDelay, t)}
-                xTickValues="every 12 hour"
-                yAxisValue={t('plot.Count')}
-              ></LineChart>
-            </Col>
-            {/* </Row>
-
-          <Row className="graphs-row"> */}
-            <Col lg={8} style={{ height: 280 }} md={12}>
-              <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
-                {t('tile.AverageSpeed')}:
-              </h3>
-              <LineChart
-                data={prepareDataAverageSpeed(dataDelay, t)}
-                xTickValues="every 12 hour"
-                yAxisValue={t('plot.Count')}
-              ></LineChart>
-              {/* <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>Jam Delay:</h3>
-              <LineChart data={prepareDataDelay(dataDelay)} xTickValues="every 12 hour" yAxisValue="Count"></LineChart> */}
-            </Col>
-            <Col lg={8} md={12} style={{ height: 280 }}>
-              <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px' }}>{t('tile.JamsDelay')}:</h3>
-              <LineChart
-                data={prepareDataDelay(dataDelay, t)}
-                xTickValues="every 12 hour"
-                yAxisValue={t('plot.Count')}
-              ></LineChart>
-            </Col>
             <Col lg={8} style={{ height: 280 }} md={12}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
                 {t('tile.AlertsType')}:

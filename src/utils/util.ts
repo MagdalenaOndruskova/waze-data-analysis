@@ -12,6 +12,5 @@ export function getOptionsFromStreet(streets: Streets | null) {
   );
   // sorting values
   options.sort((val1, val2) => val1?.value?.toString().localeCompare(val2?.value.toString()));
-
   return options;
 }

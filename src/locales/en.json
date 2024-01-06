@@ -54,5 +54,10 @@
   "route.dst.missing": "Please, fill in destination street.",
   "route.notfound": "Path not found. Please add some pass streets.",
 
-  "open.filters": "Open filters"
+  "open.filters": "Open filters",
+
+  "graph.countInMetres": "Length in metres",
+  "graph.delayInMinutes": "Delay in minutes",
+  "graph.level": "Average level",
+  "graph.speed": "Average speed in km/h"
 }

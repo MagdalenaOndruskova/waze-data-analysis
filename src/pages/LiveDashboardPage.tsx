@@ -52,6 +52,10 @@ const LiveDashboardPage = () => {
     setDateTimeFrom,
     setDateTimeTo,
     setPreviousDate,
+    setLengthData,
+    setLevelData,
+    setSpeedData,
+    setTimeData,
   } = useContext(dataContext);
 
   const [open, setOpen] = useState(false);
@@ -221,13 +225,19 @@ const LiveDashboardPage = () => {
         streets: filter.streets,
       };
 
+      setDateTimeFrom(`${filter.fromDate} ${filter.fromTime}:00`);
+      setDateTimeTo(`${filter.toDate} ${filter.toTime}:00`);
+      setPreviousDate(getXMinDate(filter?.toDate));
+
       backendApi.post('data_for_plot/', body).then((response) => {
         setJamsData(response.data.jams);
         setAlertData(response.data.alerts);
         setXAxisData(response.data.xaxis);
-        setDateTimeFrom(`${filter.fromDate} ${filter.fromTime}:00`);
-        setDateTimeTo(`${filter.toDate} ${filter.toTime}:00`);
-        setPreviousDate(getXMinDate(filter?.toDate));
+        setSpeedData(response.data.speedKMH);
+        setTimeData(response.data.delay);
+        setLevelData(response.data.level);
+        setLengthData(response.data.length);
+        console.log(response);
       });
     }
   }, [filter]);

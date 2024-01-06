@@ -135,6 +135,29 @@ nav {
   border: $buttonHoverBackgroundColor;
 }
 
+.ant-picker-dropdown {
+  z-index: 10000;
+}
+
+.ant-select-dropdown {
+  z-index: 10000;
+}
+
+.ant-drawer .ant-drawer-header {
+  background-color: $linkColorActive;
+  border-bottom: none;
+  padding-left: 16px;
+  padding-bottom: 8px;
+}
+
+.ant-drawer .ant-drawer-title {
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  text-transform: uppercase;
+  text-align: left;
+}
+
 .modalButton {
   color: $linkColorActive;
   font-weight: bold;
@@ -169,7 +192,7 @@ nav {
     font-weight: bold;
   }
   Button:hover {
-    background-color: $buttonHoverBackgroundColor;
+    background-color: $buttonHoverBackgroundColor !important;
     color: $filterTextColor !important;
     border: $buttonHoverBackgroundColor;
   }

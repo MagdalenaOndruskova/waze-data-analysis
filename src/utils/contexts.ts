@@ -58,6 +58,7 @@ export interface DataContext {
   speedData: [];
   lengthData: [];
   timeData: [];
+  alertTypes: {};
 
   setDateTimeFrom: (dateTime: string) => void;
   setDateTimeTo: (dateTime: string) => void;
@@ -69,6 +70,7 @@ export interface DataContext {
   setSpeedData: (data: []) => void;
   setLengthData: (data: []) => void;
   setTimeData: (data: []) => void;
+  setAlertTypes: (data: {}) => void;
 }
 
 export const DATA_CONTEXT_DEFAULT_VALUE: DataContext = {
@@ -82,6 +84,8 @@ export const DATA_CONTEXT_DEFAULT_VALUE: DataContext = {
   speedData: [],
   lengthData: [],
   timeData: [],
+  alertTypes: {},
+
   setDateTimeFrom: () => {},
   setDateTimeTo: () => {},
   setPreviousDate: () => {},
@@ -92,6 +96,7 @@ export const DATA_CONTEXT_DEFAULT_VALUE: DataContext = {
   setSpeedData: () => {},
   setLengthData: () => {},
   setTimeData: () => {},
+  setAlertTypes: () => {},
 };
 
 export const dataContext = React.createContext<DataContext>(DATA_CONTEXT_DEFAULT_VALUE);

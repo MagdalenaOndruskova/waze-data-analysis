@@ -7,7 +7,14 @@ import '../../styles/layout-styles.scss';
 
 // TODO: otypovat?
 
-const LineChartComponent = ({ dataJams, dataAlerts, xAxis, xaxis_min_selected, xaxis_max_selected }) => {
+const LineChartComponent = ({
+  dataJams,
+  dataAlerts,
+  xAxis,
+  xaxis_min_selected,
+  xaxis_max_selected,
+  with_timeline = true,
+}) => {
   const { t } = useTranslation();
 
   const options: ApexOptions = {
@@ -119,8 +126,14 @@ const LineChartComponent = ({ dataJams, dataAlerts, xAxis, xaxis_min_selected, x
       <div id="chart-line2">
         <ReactApexChart options={options} series={series} type="line" height={230} />
       </div>
-      <div id="chart-line">
-        <ReactApexChart options={optionsLine} series={series} type="area" height={130} />
+      <div>
+        {with_timeline ? (
+          <div id="chart-line">
+            <ReactApexChart options={optionsLine} series={series} type="area" height={130} />
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

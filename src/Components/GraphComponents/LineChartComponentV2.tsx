@@ -4,25 +4,14 @@ import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import ReactApexChart from 'react-apexcharts';
 
-type Props = {};
-
-const MultipleYChartComponent = ({
-  dataFirst,
-  dataSecond,
-  labelFirst,
-  labelSecond,
-  yAxisFirst,
-  yAxisSecond,
-  xAxis,
-  chartId,
-}) => {
+const LineChartComponentV2 = ({ dataFirst, dataSecond, labelFirst, labelSecond, yAxisFirst, xAxis, chartId }) => {
   const { t } = useTranslation();
   const colorBlue = '#247BA0';
   const colorRed = '#d4041c';
 
   const options: ApexOptions = {
     chart: {
-      height: 300,
+      height: 350,
       type: 'line',
       stacked: false,
       id: chartId,
@@ -69,36 +58,15 @@ const MultipleYChartComponent = ({
           show: true,
           color: colorRed,
         },
-        labels: {
-          style: {
-            colors: colorRed,
-          },
-        },
+        // labels: {
+        //   style: {
+        //     colors: colorRed,
+        //   },
+        // },
         title: {
           text: t(`${yAxisFirst}`),
           style: {
             color: colorRed,
-          },
-        },
-      },
-      {
-        opposite: true,
-        axisTicks: {
-          show: true,
-        },
-        axisBorder: {
-          show: true,
-          color: colorBlue,
-        },
-        labels: {
-          style: {
-            colors: colorBlue,
-          },
-        },
-        title: {
-          text: t(`${yAxisSecond}`),
-          style: {
-            color: colorBlue,
           },
         },
       },
@@ -129,4 +97,4 @@ const MultipleYChartComponent = ({
   );
 };
 
-export default MultipleYChartComponent;
+export default LineChartComponentV2;

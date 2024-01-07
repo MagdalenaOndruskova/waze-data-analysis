@@ -12,6 +12,7 @@ export const useDataContext = (): DataContext => {
   const [lengthData, setNewLengthData] = React.useState<[]>(DATA_CONTEXT_DEFAULT_VALUE.lengthData);
   const [timeData, setNewTimeData] = React.useState<[]>(DATA_CONTEXT_DEFAULT_VALUE.timeData);
   const [previousDate, setNewPreviousDate] = React.useState<string>(DATA_CONTEXT_DEFAULT_VALUE.previousDate);
+  const [alertTypes, setNewAlertTypes] = React.useState<{}>(DATA_CONTEXT_DEFAULT_VALUE.alertTypes);
 
   const setDateTimeFrom = React.useCallback((dateTime: string): void => {
     setNewDateTimeFrom(dateTime);
@@ -53,6 +54,10 @@ export const useDataContext = (): DataContext => {
     setNewPreviousDate(date);
   }, []);
 
+  const setAlertTypes = React.useCallback((data: {}): void => {
+    setNewAlertTypes(data);
+  }, []);
+
   return {
     dateTimeFrom,
     dateTimeTo,
@@ -64,6 +69,8 @@ export const useDataContext = (): DataContext => {
     speedData,
     lengthData,
     timeData,
+    alertTypes,
+
     setDateTimeFrom,
     setDateTimeTo,
     setPreviousDate,
@@ -74,5 +81,6 @@ export const useDataContext = (): DataContext => {
     setSpeedData,
     setLengthData,
     setTimeData,
+    setAlertTypes,
   };
 };

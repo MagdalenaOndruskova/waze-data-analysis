@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { TrafficDelay } from '../types/TrafficDelay';
 import { TrafficEvent } from '../types/TrafficEvent';
-import { Col, Row, Spin } from 'antd';
+import { Card, Col, Row, Select, Spin } from 'antd';
 import LineChart from '../Components/LineChart';
 import {
   prepareCriticalStreetsByAlerts,
@@ -22,6 +22,9 @@ import LineChartComponent from '../Components/GraphComponents/LineChartComponent
 import MultipleYChartComponent from '../Components/GraphComponents/MultipleYChartComponent';
 import backendApi from '../utils/api';
 import BarChartComponent from '../Components/GraphComponents/BarChartComponent';
+import ChartTimelineComponent from '../Components/GraphComponents/ChartTimelineComponent';
+import LineChartComponentV2 from '../Components/GraphComponents/LineChartComponentV2';
+import PieChartComponent from '../Components/GraphComponents/PieChartComponent';
 
 type DataDelay = {
   features: {
@@ -48,6 +51,9 @@ const Dashboard = () => {
   const [criticalStreetsAlerts, setCriticalStreetsAlerts] = useState<BarChartData>({ streets: [], values: [] });
   const [criticalStreetsJams, setCriticalStreetsJams] = useState<BarChartData>({ streets: [], values: [] });
 
+  const [options, setOptions] = useState([]);
+  const [selected, setSelected] = useState<string>('ACCIDENT');
+
   const {
     xAxisData,
     jamsData,
@@ -64,6 +70,8 @@ const Dashboard = () => {
     dateTimeTo,
     setDateTimeFrom,
     setDateTimeTo,
+    alertTypes,
+    setAlertTypes,
   } = useContext(dataContext);
 
   const {
@@ -85,6 +93,18 @@ const Dashboard = () => {
     api: 'event',
     getData: filter !== null,
   });
+
+  useEffect(() => {
+    // Update options when alertTypes or t changes
+    if (alertTypes && alertTypes['basic_types_labels']) {
+      const updatedOptions = alertTypes['basic_types_labels']?.map((value) => ({
+        value,
+        label: t(value),
+      }));
+      console.log('🚀 ~ file: Dashboard.tsx:104 ~ updatedOptions ~ updatedOptions:', updatedOptions);
+      setOptions(updatedOptions);
+    }
+  }, [alertTypes]);
 
   useEffect(() => {
     console.log('tam');
@@ -113,38 +133,77 @@ const Dashboard = () => {
       ) : (
         <div>
           <LiveTilesRow dataDelay={dataDelay} dataEvent={dataEvent} t={t}></LiveTilesRow>
+          <Row className="dashboard-row" gutter={24}>
+            <Col span={5}>
+              <Card title={t('tile.AlertsType')}>
+                <PieChartComponent
+                  values={alertTypes['basic_types_values']}
+                  labels={alertTypes['basic_types_labels']}
+                  chartId="chart5"
+                ></PieChartComponent>
+                <Select
+                  className="filterStyle"
+                  // defaultValue={options.length > 0 ? options[0] : null}
+                  value={selected}
+                  style={{ width: 120 }}
+                  onChange={(value) => {
+                    setSelected(value);
+                  }}
+                  options={options}
+                />
+                <PieChartComponent
+                  values={alertTypes[selected]?.subtype_values}
+                  labels={alertTypes[selected]?.subtype_labels}
+                  chartId="chart6"
+                ></PieChartComponent>
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card title={t('graphs.title')}>
+                <ChartTimelineComponent
+                  dataJams={jamsData}
+                  dataAlerts={alertData}
+                  xAxis={xAxisData}
+                  xaxis_min_selected={`${previousDate}`}
+                  xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
+                  targets={'chart3'}
+                />
+                <LineChartComponentV2
+                  dataFirst={jamsData}
+                  dataSecond={alertData}
+                  xAxis={xAxisData}
+                  labelFirst={'Jams'}
+                  labelSecond={'Alerts'}
+                  yAxisFirst={'plot.Count'}
+                  chartId={'chart2'}
+                />
+                <MultipleYChartComponent
+                  dataFirst={timeData}
+                  dataSecond={lengthData}
+                  xAxis={xAxisData}
+                  yAxisFirst={'graph.delayInMinutes'}
+                  yAxisSecond={'graph.countInMetres'}
+                  labelFirst={'tile.JamsDelay'}
+                  labelSecond={'tile.JamsLength'}
+                  chartId={'chart3'}
+                ></MultipleYChartComponent>
+                <MultipleYChartComponent
+                  dataFirst={levelData}
+                  dataSecond={speedData}
+                  labelFirst={'tile.AverageJamLevel'}
+                  labelSecond={'tile.AverageSpeed'}
+                  yAxisFirst={'graph.level'}
+                  yAxisSecond={'graph.speed'}
+                  xAxis={xAxisData}
+                  chartId={'chart4'}
+                ></MultipleYChartComponent>
+              </Card>
+            </Col>
+            <Col span={7}>
+              <Card title={t('graph.tiles.title')}></Card>
+            </Col>
+          </Row>
           <Row>
-            <Col lg={12} md={12}>
-              <LineChartComponent
-                dataJams={jamsData}
-                dataAlerts={alertData}
-                xAxis={xAxisData}
-                xaxis_min_selected={`${previousDate}`}
-                xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
-              />
-            </Col>
-            <Col lg={12} md={12}>
-              <MultipleYChartComponent
-                dataFirst={timeData}
-                dataSecond={lengthData}
-                xAxis={xAxisData}
-                yAxisFirst={'graph.delayInMinutes'}
-                yAxisSecond={'graph.countInMetres'}
-                labelFirst={'tile.JamsDelay'}
-                labelSecond={'tile.JamsLength'}
-              ></MultipleYChartComponent>
-            </Col>
-            <Col lg={12} md={12}>
-              <MultipleYChartComponent
-                dataFirst={levelData}
-                dataSecond={speedData}
-                labelFirst={'tile.AverageJamLevel'}
-                labelSecond={'tile.AverageSpeed'}
-                yAxisFirst={'graph.level'}
-                yAxisSecond={'graph.speed'}
-                xAxis={xAxisData}
-              ></MultipleYChartComponent>
-            </Col>
             {/* <Col lg={8} md={12}>
               <BarChartComponent
                 streets={criticalStreetsAlerts.streets}
@@ -158,12 +217,6 @@ const Dashboard = () => {
               ></BarChartComponent>
             </Col> */}
 
-            <Col lg={8} style={{ height: 280 }} md={12}>
-              <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
-                {t('tile.AlertsType')}:
-              </h3>
-              <PieChart values={prepareDataAlertsType(dataEvent, t)} />
-            </Col>
             <Col lg={8} md={12} style={{ height: 280 }}>
               <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
                 {t('tile.JamsType')}:

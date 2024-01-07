@@ -24,9 +24,9 @@ function Navbar() {
       <img src={Brno} alt="Brno" onClick={() => navigate('/waze-data-analysis/')} />
       <p className="title">{t('app.title')}</p>
       <nav>
-        <LanguageSwitcher i18n={i18n} t={t}></LanguageSwitcher>
         <NavLink to={`/waze-data-analysis/${searchParamsQuery}`}>{t('Live Map')}</NavLink>
         <NavLink to={`dashboard${searchParamsQuery}`}>{t('Dashboard')}</NavLink>
+        <LanguageSwitcher i18n={i18n} t={t}></LanguageSwitcher>
       </nav>
     </header>
   );

@@ -56,6 +56,8 @@ const LiveDashboardPage = () => {
     setLevelData,
     setSpeedData,
     setTimeData,
+    alertTypes,
+    setAlertTypes,
   } = useContext(dataContext);
 
   const [open, setOpen] = useState(false);
@@ -238,6 +240,10 @@ const LiveDashboardPage = () => {
         setLevelData(response.data.level);
         setLengthData(response.data.length);
         console.log(response);
+      });
+      backendApi.post('data_for_plot_alerts/', body).then((response) => {
+        console.log(response.data);
+        setAlertTypes(response.data);
       });
     }
   }, [filter]);

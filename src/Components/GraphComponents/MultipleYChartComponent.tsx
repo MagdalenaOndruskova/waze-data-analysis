@@ -3,6 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import ReactApexChart from 'react-apexcharts';
+import { colorBlue, colorRed } from '../../utils/constants';
 
 type Props = {};
 
@@ -17,8 +18,6 @@ const MultipleYChartComponent = ({
   chartId,
 }) => {
   const { t } = useTranslation();
-  const colorBlue = '#247BA0';
-  const colorRed = '#d4041c';
 
   const options: ApexOptions = {
     chart: {

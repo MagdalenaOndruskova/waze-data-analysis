@@ -5,22 +5,22 @@ import * as Icons from '../utils/icons';
 
 const LiveTilesRow = ({ dataEvent, dataDelay, t }) => {
   return (
-    <Row gutter={8} className="top-row">
-      <Col span={4} flex="auto">
+    <Row gutter={8} className="top-row" style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div>
         <LiveTile
           icon={<Icons.WarningIcon />}
           tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
           tileType={t('tile.ActiveAlerts')}
         ></LiveTile>
-      </Col>
-      <Col span={4} flex="auto">
+      </div>
+      <div>
         <LiveTile
           icon={<Icons.CarIcon />}
           tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
           tileType={t('tile.TrafficJams')}
         ></LiveTile>
-      </Col>
-      <Col span={4} flex="auto">
+      </div>
+      <div>
         <LiveTile
           icon={<Icons.SpeedIcon />}
           tileTitle={new Intl.NumberFormat('pt-PT', {
@@ -36,8 +36,8 @@ const LiveTilesRow = ({ dataEvent, dataDelay, t }) => {
           )}
           tileType={t('tile.AverageSpeed')}
         ></LiveTile>
-      </Col>
-      <Col span={4} flex="auto">
+      </div>
+      <div>
         <LiveTile
           icon={<Icons.CarIcon />}
           tileTitle={new Intl.NumberFormat('pt-PT', {
@@ -46,8 +46,8 @@ const LiveTilesRow = ({ dataEvent, dataDelay, t }) => {
           }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0))}
           tileType={t('tile.JamsLength')}
         ></LiveTile>
-      </Col>
-      <Col span={4} flex="auto">
+      </div>
+      <div>
         <LiveTile
           icon={<Icons.JamDelayIcon />}
           tileTitle={new Intl.NumberFormat('pt-PT', {
@@ -56,8 +56,8 @@ const LiveTilesRow = ({ dataEvent, dataDelay, t }) => {
           }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0))}
           tileType={t('tile.JamsDelay')}
         ></LiveTile>
-      </Col>
-      <Col span={4} flex="auto">
+      </div>
+      <div>
         <LiveTile
           icon={<Icons.JamLevelIcon />}
           tileTitle={(
@@ -66,7 +66,7 @@ const LiveTilesRow = ({ dataEvent, dataDelay, t }) => {
           ).toFixed(2)}
           tileType={t('tile.AverageJamLevel')}
         ></LiveTile>
-      </Col>
+      </div>
     </Row>
   );
 };

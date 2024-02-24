@@ -3,7 +3,6 @@ import useAxios from '../utils/useAxios';
 import { TrafficDelay } from '../types/TrafficDelay';
 import { TrafficEvent } from '../types/TrafficEvent';
 import { Card, Col, Row, Select, Spin } from 'antd';
-import LineChart from '../Components/LineChart';
 import {
   prepareCriticalStreetsByAlerts,
   prepareCriticalStreetsByJams,
@@ -12,19 +11,15 @@ import {
   prepareDataJamLevel,
   prepareDataJamType,
 } from '../utils/prepareData';
-import PieChart from '../Components/PieChart';
-import BarChart from '../Components/BarChart';
 import { queryBuilder } from '../utils/queryBuilder';
 import { useTranslation } from 'react-i18next';
 import LiveTilesRow from '../Components/LiveTilesRow';
 import { dataContext, filterContext } from '../utils/contexts';
-import LineChartComponent from '../Components/GraphComponents/LineChartComponent';
 import MultipleYChartComponent from '../Components/GraphComponents/MultipleYChartComponent';
 import backendApi from '../utils/api';
 import BarChartComponent from '../Components/GraphComponents/BarChartComponent';
 import ChartTimelineComponent from '../Components/GraphComponents/ChartTimelineComponent';
 import LineChartComponentV2 from '../Components/GraphComponents/LineChartComponentV2';
-import PieChartComponent from '../Components/GraphComponents/PieChartComponent';
 
 type DataDelay = {
   features: {
@@ -116,6 +111,8 @@ const Dashboard = () => {
         streets: filter.streets,
       };
       backendApi.post('data_for_plot_streets/', body).then((response) => {
+        console.log('🚀 ~ backendApi.post ~ response:', response);
+
         setCriticalStreetsJams({ streets: response.data.streets_jams, values: response.data.values_jams });
         setCriticalStreetsAlerts({ streets: response.data.streets_alerts, values: response.data.values_alerts });
       });
@@ -136,14 +133,19 @@ const Dashboard = () => {
           <Row className="dashboard-row" gutter={24}>
             <Col span={5}>
               <Card title={t('tile.AlertsType')}>
-                <PieChartComponent
+                {/* <PieChartComponent
                   values={alertTypes['basic_types_values']}
                   labels={alertTypes['basic_types_labels']}
                   chartId="chart5"
-                ></PieChartComponent>
+                ></PieChartComponent> */}
+                <BarChartComponent
+                  streets={alertTypes['basic_types_labels'].map((value) => t(value))}
+                  values={alertTypes['basic_types_values']}
+                  id="chart-bar3"
+                  title={''}
+                ></BarChartComponent>
                 <Select
                   className="filterStyle"
-                  // defaultValue={options.length > 0 ? options[0] : null}
                   value={selected}
                   style={{ width: 120 }}
                   onChange={(value) => {
@@ -151,11 +153,12 @@ const Dashboard = () => {
                   }}
                   options={options}
                 />
-                <PieChartComponent
+                <BarChartComponent
+                  streets={alertTypes[selected]?.subtype_labels.map((value) => t(value))}
                   values={alertTypes[selected]?.subtype_values}
-                  labels={alertTypes[selected]?.subtype_labels}
-                  chartId="chart6"
-                ></PieChartComponent>
+                  id="chart-bar4"
+                  title={''}
+                ></BarChartComponent>
               </Card>
             </Col>
             <Col span={12}>
@@ -166,7 +169,7 @@ const Dashboard = () => {
                   xAxis={xAxisData}
                   xaxis_min_selected={`${previousDate}`}
                   xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
-                  targets={'chart3'}
+                  targets={['chart3', 'chart2', 'chart4']}
                 />
                 <LineChartComponentV2
                   dataFirst={jamsData}
@@ -200,56 +203,20 @@ const Dashboard = () => {
               </Card>
             </Col>
             <Col span={7}>
-              <Card title={t('graph.tiles.title')}></Card>
-            </Col>
-          </Row>
-          <Row>
-            {/* <Col lg={8} md={12}>
-              <BarChartComponent
-                streets={criticalStreetsAlerts.streets}
-                values={criticalStreetsAlerts.values}
-              ></BarChartComponent>
-            </Col>
-            <Col lg={8} md={12}>
-              <BarChartComponent
-                streets={criticalStreetsJams.streets}
-                values={criticalStreetsJams.values}
-              ></BarChartComponent>
-            </Col> */}
-
-            <Col lg={8} md={12} style={{ height: 280 }}>
-              <h3 style={{ lineHeight: '15px', textAlign: 'left', paddingLeft: '10px', paddingTop: '10px' }}>
-                {t('tile.JamsType')}:
-              </h3>
-              <PieChart values={prepareDataJamType(dataDelay, t)}></PieChart>
-            </Col>
-            <Col lg={8} style={{ height: 280 }} md={12}>
-              <h3
-                style={{
-                  lineHeight: '15px',
-                  textAlign: 'left',
-                  paddingLeft: '10px',
-                  paddingTop: '10px',
-                  paddingBottom: '0px',
-                }}
-              >
-                {t('tile.CriticalStreetsAlerts')}:
-              </h3>
-              <BarChart values={prepareCriticalStreetsByAlerts(dataEvent)} legend="alerts"></BarChart>
-            </Col>
-            <Col lg={8} style={{ height: 280 }} md={12}>
-              <h3
-                style={{
-                  lineHeight: '15px',
-                  textAlign: 'left',
-                  paddingLeft: '10px',
-                  paddingTop: '10px',
-                  paddingBottom: '0px',
-                }}
-              >
-                {t('tile.CriticalStreetsJams')}:
-              </h3>
-              <BarChart values={prepareCriticalStreetsByJams(dataDelay)} legend="jams"></BarChart>
+              <Card title={t('graph.tiles.title')}>
+                <BarChartComponent
+                  streets={criticalStreetsAlerts.streets}
+                  values={criticalStreetsAlerts.values}
+                  id="chart-bar1"
+                  title={t('tile.CriticalStreetsAlerts')}
+                ></BarChartComponent>
+                <BarChartComponent
+                  streets={criticalStreetsJams.streets}
+                  values={criticalStreetsJams.values}
+                  id="chart-bar2"
+                  title={t('tile.CriticalStreetsJams')}
+                ></BarChartComponent>
+              </Card>
             </Col>
           </Row>
         </div>

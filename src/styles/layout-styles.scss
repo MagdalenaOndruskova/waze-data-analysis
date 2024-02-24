@@ -87,8 +87,12 @@ nav {
   letter-spacing: 5px;
   font-size: 23px;
   font-weight: 900;
+  text-wrap: balance;
 }
 
+.header-nav {
+  min-width: 40px;
+}
 .live-map-top-row {
   display: flex;
   flex-direction: column;
@@ -150,19 +154,23 @@ nav {
   z-index: 10000;
 }
 
-.ant-drawer .ant-drawer-header {
-  background-color: $linkColorActive;
-  border-bottom: none;
-  padding-left: 16px;
-  padding-bottom: 8px;
-}
-
-.ant-drawer .ant-drawer-title {
-  color: white;
-  font-weight: bold;
-  font-size: 20px;
-  text-transform: uppercase;
-  text-align: left;
+.ant-drawer {
+  .ant-drawer-header {
+    background-color: $linkColorActive;
+    border-bottom: none;
+    padding-left: 16px;
+    padding-bottom: 8px;
+  }
+  .ant-drawer-wrapper-body {
+    width: 200px;
+  }
+  .ant-drawer-title {
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    text-transform: uppercase;
+    text-align: left;
+  }
 }
 
 .modalButton {
@@ -218,8 +226,9 @@ nav {
 }
 
 .ant-drawer-content-wrapper {
-  max-width: 200px;
+  width: 200px !important;
 }
+
 .ant-drawer-body {
   text-align: center;
   line-height: 30px;

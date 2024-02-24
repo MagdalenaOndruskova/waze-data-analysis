@@ -6,16 +6,14 @@ const Icon = <WarningOutlined />;
 
 const LiveTile = ({ icon, tileTitle, tileType }) => {
   return (
-    <Card className="cardbody">
+    <div className="cardbody" style={{ minWidth: 250 }}>
       {/* <Meta avatar={icon} title={tileTitle} description={tileType} /> */}
-      <Row>
-        <Col lg={12}>{icon}</Col>
-        <Col lg={12}>
-          <h3>{tileTitle}</h3>
-        </Col>
-      </Row>
-      <Row>{tileType}</Row>
-    </Card>
+      <div>
+        {icon}
+        <h3>{tileTitle}</h3>
+      </div>
+      <div>{tileType}</div>
+    </div>
   );
 };
 

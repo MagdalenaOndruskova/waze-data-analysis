@@ -4,6 +4,7 @@ import ReactApexChart from 'react-apexcharts';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import '../../styles/layout-styles.scss';
+import { colorBlue, colorRed } from '../../utils/constants';
 
 // TODO: otypovat?
 
@@ -27,7 +28,7 @@ const LineChartComponent = ({
         show: false,
       },
     },
-    colors: ['#00E396', '#0090FF'],
+    colors: [colorBlue, colorRed],
     stroke: {
       width: 3,
     },
@@ -101,7 +102,7 @@ const LineChartComponent = ({
         },
       },
     },
-    colors: ['#00E396', '#0090FF'],
+    colors: [colorBlue, colorRed],
     fill: {
       type: 'gradient',
       gradient: {

@@ -19,7 +19,7 @@
     "@nivo/pie": "^0.83.0",
     "@react-frontend-developer/buffers": "^2.0.1",
     "antd": "^5.4.4",
-    "apexcharts": "^3.45.1",
+    "apexcharts": "^3.45.2",
     "axios": "^1.3.6",
     "devextreme-react": "^23.1.6",
     "encoding": "^0.1.13",
@@ -30,7 +30,9 @@
     "js-yaml": "^4.1.0",
     "leaflet": "^1.9.4",
     "leaflet-control-geocoder": "^2.4.0",
+    "leaflet-easybutton": "^2.4.0",
     "leaflet-routing-machine": "^3.2.12",
+    "leaflet-sidebar-v2": "^3.2.3",
     "papaparse": "^5.4.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -53,8 +55,5 @@
     "typescript": "^5.2.2",
     "vite": "^4.2.0"
   },
-  "packageManager": "yarn@3.6.4",
-  "resolutions": {
-    "apexcharts@^3.45.1": "patch:apexcharts@npm%3A3.45.1#./.yarn/patches/apexcharts-npm-3.45.1-7be2d0b799.patch"
-  }
+  "packageManager": "yarn@3.6.4"
 }

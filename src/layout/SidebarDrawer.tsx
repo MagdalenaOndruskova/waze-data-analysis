@@ -187,7 +187,7 @@ const SidebarDrawer = ({ open, onCloseDrawer }) => {
       placement="left"
       onClose={onCloseDrawer}
       open={open}
-      closable={false}
+      closable={true}
       zIndex={10000}
     >
       {messageDateContext}

@@ -84,7 +84,13 @@ const LiveDashboardPage = () => {
   };
 
   const mapRef = useRef<LeafletMap>(null);
+  // const map: L.Map = mapRef.current
 
+  // var helloPopup = L.popup().setContent('Hello World!');
+
+  // L.easyButton('fa-globe', function(btn, map){
+  //     helloPopup.setLatLng(map.getCenter()).openOn(map);
+  // }).addTo( YOUR_LEAFLET_MAP );
   const query = queryBuilder(filter);
 
   const {

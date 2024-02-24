@@ -26,7 +26,7 @@ const ChartTimelineComponent = ({ dataJams, dataAlerts, xAxis, xaxis_min_selecte
       type: 'area',
       brush: {
         enabled: true,
-        target: targets,
+        targets: targets,
       },
       selection: {
         enabled: true,

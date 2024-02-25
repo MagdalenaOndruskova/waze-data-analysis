@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import StatsDrawer from '../Components/StatsDrawer';
 import SidebarDrawer from '../layout/SidebarDrawer';
+import PlotDrawer from '../Components/PlotDrawer';
 
 type Props = {};
 
@@ -23,6 +24,7 @@ const FullMap = (props: Props) => {
   const [openInfoModalState, setOpenInfoModalState] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openDrawerFilter, setOpenDrawerFilter] = useState(false);
+  const [openDrawerPlot, setOpenDrawerPlot] = useState(false);
 
   const openFilters = () => {
     console.log('hi filters');
@@ -73,7 +75,12 @@ const FullMap = (props: Props) => {
             <p>{t('graph.tiles.title')}</p>
           </div>
 
-          <div onClick={openFilters} style={{ paddingBottom: 10 }}>
+          <div
+            onClick={() => {
+              setOpenDrawerPlot(true);
+            }}
+            style={{ paddingBottom: 10 }}
+          >
             <LineChartOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
 
             <p>{t('graph.priebeh')}</p>
@@ -132,6 +139,7 @@ const FullMap = (props: Props) => {
           }}
         ></StatsDrawer>
         <SidebarDrawer open={openDrawerFilter} onCloseDrawer={() => setOpenDrawerFilter(false)}></SidebarDrawer>
+        <PlotDrawer open={openDrawerPlot} onCloseDrawer={() => setOpenDrawerPlot(false)}></PlotDrawer>
       </Row>
     </div>
   );

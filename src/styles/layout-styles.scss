@@ -179,9 +179,6 @@ nav {
     padding-left: 16px;
     padding-bottom: 8px;
   }
-  // .ant-drawer-wrapper-body {
-  // width: 300px;
-  // }
   .ant-drawer-body {
     background-color: $backgroundColor;
   }
@@ -245,9 +242,8 @@ nav {
 .pie-chart {
   width: 350px;
 }
-
-.ant-drawer-content-wrapper {
-  width: 250px !important;
+.ant-drawer-header-title {
+  flex-direction: row-reverse;
 }
 
 .ant-drawer-body {

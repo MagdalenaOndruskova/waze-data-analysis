@@ -43,6 +43,7 @@ const StatsDrawer = ({ open, onCloseDrawer }) => {
       placement="left"
       onClose={onCloseDrawer}
       open={open}
+      width={'250px'}
       closable={true}
       zIndex={10000}
     >

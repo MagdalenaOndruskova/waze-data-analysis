@@ -2506,7 +2506,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"leaflet@npm:^1.0.1, leaflet@npm:^1.9.4":
+"leaflet@npm:^1.0.1, leaflet@npm:^1.8.0, leaflet@npm:^1.9.4":
   version: 1.9.4
   resolution: "leaflet@npm:1.9.4"
   checksum: bfc79f17a247b37b92d84b3c78702501603392d6589fde606de4a825d11f1609d90225388834f2e0709dac327e52dcd4b4b9cc9fd3d590060c5b1e53b84fa6c6
@@ -3597,6 +3597,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-leaflet-v2-sidebar@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "react-leaflet-v2-sidebar@npm:1.0.2"
+  dependencies:
+    leaflet: ^1.8.0
+    leaflet-sidebar-v2: ^3.2.3
+  peerDependencies:
+    react: ">=16"
+  checksum: 0b063f15e83c8defd7e098302e7c384b3847ba4a619afe3f16dd5a3c8d3cecf693d594212e020275d6b0c8bafe89148c9a98049f2bfea4a2683bf262da3bc804
+  languageName: node
+  linkType: hard
+
 "react-leaflet@npm:^4.2.1":
   version: 4.2.1
   resolution: "react-leaflet@npm:4.2.1"
@@ -4181,6 +4193,7 @@ __metadata:
     react-dom: ^18.2.0
     react-i18next: 13.3.1
     react-leaflet: ^4.2.1
+    react-leaflet-v2-sidebar: ^1.0.2
     react-router-dom: ^6.10.0
     sass: ^1.62.1
     simplify-js: ^1.2.4

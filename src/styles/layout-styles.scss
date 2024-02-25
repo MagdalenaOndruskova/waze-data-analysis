@@ -29,6 +29,20 @@ header {
   justify-content: space-between;
 }
 
+.sidermenu {
+  background-color: $cardColor;
+  text-align: center;
+  padding-top: 10px;
+  // border-bottom: solid rgba(5, 5, 5, 0.07);
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  color: $contentTextColor;
+}
+
+.iconStyle {
+  padding-top: 10px;
+  font-size: 25 !important;
+}
+
 nav {
   a {
     margin: 0 1rem;
@@ -45,7 +59,9 @@ nav {
   text-align: left;
   margin-left: 15px;
   font-weight: bold;
+  color: black;
 }
+
 .sidebar {
   text-align: center;
   line-height: 30px;
@@ -73,12 +89,13 @@ nav {
 
 .content {
   text-align: center;
-  min-height: 120;
-  padding: 24px;
+  // min-height: 120;
+  // height: 100%;
+  // padding: 24px;
   // line-height: 120px;
   color: $contentTextColor;
   background-color: $backgroundColor;
-  padding-top: 60px;
+  padding-top: 50px;
   overflow: hidden;
 }
 
@@ -106,6 +123,7 @@ nav {
   // margin-top: 10px;
   background-color: white;
   padding: 0;
+  color: black;
 
   // &:not(.live-map-top-row) {
   //   height: unset;
@@ -156,16 +174,19 @@ nav {
 
 .ant-drawer {
   .ant-drawer-header {
-    background-color: $linkColorActive;
+    background-color: $backgroundColor;
     border-bottom: none;
     padding-left: 16px;
     padding-bottom: 8px;
   }
-  .ant-drawer-wrapper-body {
-    width: 200px;
+  // .ant-drawer-wrapper-body {
+  // width: 300px;
+  // }
+  .ant-drawer-body {
+    background-color: $backgroundColor;
   }
   .ant-drawer-title {
-    color: white;
+    color: black;
     font-weight: bold;
     font-size: 20px;
     text-transform: uppercase;
@@ -226,7 +247,7 @@ nav {
 }
 
 .ant-drawer-content-wrapper {
-  width: 200px !important;
+  width: 250px !important;
 }
 
 .ant-drawer-body {

@@ -71,38 +71,38 @@ const FullMap = (props: Props) => {
       target: () => refFilter.current,
     },
     {
-      title: 'Upload File',
-      description: 'Put your files here.',
+      title: t('graph.tiles.title'),
+      description: t('tour.stats.explained'),
 
       target: () => refStats.current,
     },
     {
-      title: 'Upload File',
-      description: 'Put your files here.',
+      title: t('graph.priebeh'),
+      description: t('tour.priebeh.explained'),
 
       target: () => refLineStats.current,
     },
     {
-      title: 'Upload File',
-      description: 'Put your files here.',
+      title: t('contact'),
+      description: t('tour.contact.explained'),
 
       target: () => refContacForm.current,
     },
     {
-      title: 'Upload File',
-      description: 'Put your files here.',
+      title: t('route.button'),
+      description: t('tour.route.explained'),
 
       target: () => refRoute.current,
     },
     {
-      title: 'Upload File',
-      description: 'Put your files here.',
+      title: t('Jams'),
+      description: t('tour.jams.explained'),
 
       target: () => refDelays.current,
     },
     {
-      title: 'Upload File',
-      description: 'Put your files here.',
+      title: t('Alerts'),
+      description: t('tour.alerts.explained'),
 
       target: () => refAlerts.current,
     },
@@ -166,10 +166,31 @@ const FullMap = (props: Props) => {
               to_time: `${filter.toDate} ${filter.toTime}:00`,
             };
             console.log('🚀 ~ click: ~ data_route:', data_route);
-            backendApi.post('find_route_by_coord/', data_route).then((response) => {
-              console.log('🚀 ~ .then ~ response:', response);
-              setRouteStreets(response.data.streets_coord);
+            const message = messageApi.open({
+              type: 'loading',
+              content: t('routeLoadingInProgress'),
+              duration: 0,
+              style: {
+                marginTop: '8vh',
+              },
             });
+            backendApi
+              .post('find_route_by_coord/', data_route)
+              .then((response) => {
+                console.log('🚀 ~ .then ~ response:', response);
+                setRouteStreets(response.data.streets_coord);
+                message();
+              })
+              .finally(() => {
+                messageApi.success({
+                  type: 'success',
+                  content: t('routeLoadingDone'),
+                  duration: 3,
+                  style: {
+                    marginTop: '8vh',
+                  },
+                });
+              });
           }
         } else {
           // street
@@ -239,7 +260,7 @@ const FullMap = (props: Props) => {
           onCancel={() => setOpenInfoModalState(false)}
           title={t('app.title')}
           width={800}
-          footer={[
+          footer={
             <Row>
               <Col span={5}>
                 <img src={Brno} alt="Brno" />
@@ -249,27 +270,22 @@ const FullMap = (props: Props) => {
                 <img src={fit} alt="Fakulta informačných technológii VUT" style={{ width: '200px' }} />
               </Col>
               <Col span={3}></Col>
-            </Row>,
-          ]}
+            </Row>
+          }
         >
-          <p>
-            Aplikácia analyzujúca a vizualizujúca dopravné dáta z aplikácie Waze bola vytvorená vrámci diplomovej práce
-            na FIT VUT vo spolupráci s magistrátom mesta Brna. Aplikácia je v testovacom nasadení, ak narazíte na nejaké
-            nezrovnalosti, prípadne máte návrh na vylepšenie aplikácie neváhajte použiť kontaktný formulár.
-          </p>
-          <Button type="primary" onClick={() => setOpenTour(true)}>
-            Begin Tour
-          </Button>
+          <p>{t('appDescription')}</p>
+          <br />
+          <div className="modalButtonDiv">
+            <Button type="primary" onClick={() => setOpenTour(true)} className="modalButton">
+              {t('tourButton')}
+            </Button>
+          </div>
         </Modal>
         <Col span={1} className="sidermenu">
           <MenuOutlined className="iconStyle" style={{ fontSize: 20, paddingBottom: 10 }} onClick={openMenu} />
           <br></br>
           <div onClick={() => setOpenDrawerFilter(true)} style={{ paddingBottom: 10 }} ref={refFilter}>
-            <FilterOutlined
-              className="iconStyle"
-              style={{ fontSize: 20, paddingTop: 10 }}
-              // onClick={() => console.log('hi')}
-            />
+            <FilterOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
             <p>Filter</p>
           </div>
           <div

@@ -110,5 +110,17 @@
   "graph.tiles.title": "Štatistiky",
   "graph.priebeh": "Priebeh",
 
-  "contact": "Kontakt"
+  "contact": "Kontakt",
+  "appDescription": "Aplikácia analyzujúca a vizualizujúca dopravné dáta z aplikácie Waze bola vytvorená vrámci diplomovej práce  na FIT VUT vo spolupráci s magistrátom mesta Brna. Aplikácia je v testovacom nasadení, ak narazíte na nejaké nezrovnalosti, prípadne máte návrh na vylepšenie aplikácie neváhajte použiť kontaktný formulár.",
+  "tourButton": "Vysvetli ako aplikácia funguje",
+
+  "routeLoadingInProgress": "Načítavam úsek cesty.",
+  "routeLoadingDone": "Načítanie úseku cesty hotové.",
+
+  "tour.stats.explained": "Nachádzajú sa tu sumarizačné (číselné) štatistiky o dopravných nehodách a dopravných udalostiach.",
+  "tour.priebeh.explained": "Nachádza sa tu graf priebehu dopravných nehôd a dopravných udalostí vo vybranom časovom okne.",
+  "tour.contact.explained": "Kontaktný formulár pre zasielanie pripomienok a prípadných chybových hlásení.",
+  "tour.route.explained": "Mód výberu na mape. V tomto móde sa každý klik na mapu ráta do hľadanej trasy. Vykresluje sa postupne, po jednotlivých úsekoch trasy.",
+  "tour.jams.explained": "Vykreslí na mapu všetky dopravné zápchy v danom období. Ak sú vo filtry/na mape vybrané konkrétne ulice, vykreslí iba na týchto uliciach.",
+  "tour.alerts.explained": "Vykreslí na mapu všetky dopravné udalosti v danom období. Ak sú vo filtry/na mape vybrané konkrétne ulice, vykreslí iba na týchto uliciach."
 }

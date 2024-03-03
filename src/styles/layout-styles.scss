@@ -190,16 +190,20 @@ nav {
     text-align: left;
   }
 }
+.modalButtonDiv {
+  display: flex;
+  justify-content: center;
+}
 
 .modalButton {
-  color: $linkColorActive;
+  background-color: $linkColorActive;
   font-weight: bold;
 }
 
 .modalButton:hover {
-  color: $buttonHoverBackgroundColor !important;
+  background-color: $buttonHoverBackgroundColor !important;
   font-weight: bold !important;
-  border: $buttonHoverBackgroundColor !important;
+  background-color: $buttonHoverBackgroundColor !important;
 }
 
 .buttonsModal {

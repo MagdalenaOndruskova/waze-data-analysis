@@ -8,9 +8,12 @@ import { filterContext } from '../utils/contexts';
 import LiveTile from './LiveTile';
 import * as Icons from '../utils/icons';
 
-type Props = {};
+type Props = {
+  open: boolean;
+  onCloseDrawer: any;
+};
 
-const StatsDrawer = ({ open, onCloseDrawer }) => {
+const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
   const { t } = useTranslation();
   const { filter } = useContext(filterContext);
 

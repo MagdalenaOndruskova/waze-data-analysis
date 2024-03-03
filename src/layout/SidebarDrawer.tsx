@@ -26,7 +26,12 @@ function getStreetsLocations(streets: Streets | null) {
   return streetsFulls;
 }
 
-const SidebarDrawer = ({ open, onCloseDrawer }) => {
+type Props = {
+  open: boolean;
+  onCloseDrawer: any;
+};
+
+const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 

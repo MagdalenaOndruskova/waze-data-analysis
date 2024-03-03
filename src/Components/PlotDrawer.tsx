@@ -6,13 +6,18 @@ import { dataContext, filterContext } from '../utils/contexts';
 import backendApi from '../utils/api';
 import dayjs from 'dayjs';
 
-function getXMinDate(toDate) {
+function getXMinDate(toDate: string) {
   return dayjs(`${toDate}, 06:00:00`, { format: 'YYYY-MM-DD, HH:mm:ss' })
     .subtract(1, 'day')
     .format('YYYY-MM-DD, HH:mm:ss');
 }
 
-const PlotDrawer = ({ open, onCloseDrawer }) => {
+type Props = {
+  open: boolean;
+  onCloseDrawer: any;
+};
+
+const PlotDrawer = ({ open, onCloseDrawer }: Props) => {
   const { t } = useTranslation();
   const { filter, setNewFilter } = useContext(filterContext);
 
@@ -65,7 +70,6 @@ const PlotDrawer = ({ open, onCloseDrawer }) => {
         setTimeData(response.data.delay);
         setLevelData(response.data.level);
         setLengthData(response.data.length);
-        console.log(response);
       });
       backendApi.post('data_for_plot_alerts/', body).then((response) => {
         console.log(response.data);

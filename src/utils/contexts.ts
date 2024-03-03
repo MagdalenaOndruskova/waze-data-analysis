@@ -34,7 +34,7 @@ export const filterContext = React.createContext<FilterContext>(FILTER_DEFAULT_V
 export interface StreetContext {
   streetsInMap: StreetInMap[];
   streetsInSelected: string[];
-  setNewStreetsInMap: (streetsInMap: StreetInMap[]) => void;
+  setNewStreetsInMap: React.Dispatch<React.SetStateAction<StreetInMap[]>>;
   setNewStreetsInSelected: (streetsInSelected: string[]) => void;
 }
 

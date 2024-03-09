@@ -143,7 +143,6 @@ const FullMap = (props: Props) => {
   const MapClickEvent = () => {
     const handleContextMenu = (e) => {
       e.originalEvent.preventDefault();
-      //TODO: handle right click
     };
 
     useMapEvents({
@@ -165,7 +164,6 @@ const FullMap = (props: Props) => {
               from_time: `${filter.fromDate} ${filter.fromTime}:00`,
               to_time: `${filter.toDate} ${filter.toTime}:00`,
             };
-            console.log('🚀 ~ click: ~ data_route:', data_route);
             const message = messageApi.open({
               type: 'loading',
               content: t('routeLoadingInProgress'),

@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { renderToString } from 'react-dom/server';
+
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L, { Map as LeafletMap } from 'leaflet';
 import Brno from '../assets/Brno.png';
@@ -23,7 +25,7 @@ import backendApi from '../utils/api';
 import { StreetInMap } from '../types/StreetInMap';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import { queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
-import { RouteIcon } from '../utils/icons';
+import { PinIcon, RouteIcon } from '../utils/icons';
 import EmailModalForm from '../Components/EmailModalForm';
 
 type Props = {};
@@ -139,7 +141,7 @@ const FullMap = (props: Props) => {
       setMapMode('route');
       messageApi.open({
         type: 'info',
-        content: 'You can start selecting route from map.',
+        content: t('route.selection.active'),
         style: {
           marginTop: '8vh',
         },
@@ -149,7 +151,7 @@ const FullMap = (props: Props) => {
       setMapMode('street');
       messageApi.open({
         type: 'success',
-        content: 'Selecting route done.',
+        content: t('route.selection.done'),
         style: {
           marginTop: '8vh',
         },
@@ -170,7 +172,17 @@ const FullMap = (props: Props) => {
             latitude: e.latlng.lat,
             longitude: e.latlng.lng,
           };
+          const map = mapRef.current;
           routeCoordinates.push(coord);
+          // const customIcon = L.divIcon({
+          //   className: 'custom-pin-icon', // optional, add your custom class
+          //   html: renderToString(<PinIcon />),
+          //   iconSize: [40, 40], // set the size of your icon
+          //   iconAnchor: [0, 0], // set the anchor point of your icon
+          //   popupAnchor: [0, -10], // set the popup anchor point to show the popup above the marker
+          // });
+          L.marker([coord.latitude, coord.longitude]).addTo(map);
+
           const last_two = routeCoordinates.slice(-2);
           if (last_two.length > 1) {
             const data_route = {

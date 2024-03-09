@@ -136,5 +136,7 @@
   "app.body": "Body",
   "app.bodyHint": "Please, fill in body of email - it can contain ideas for application, error reporting...",
   "app.send": "Send",
-  "app.emailSend": "Email was sent."
+  "app.emailSend": "Email was sent.",
+  "route.selection.active": "You can start selecting route from map.",
+  "route.selection.done": "Selecting route done."
 }

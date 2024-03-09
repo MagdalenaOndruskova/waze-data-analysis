@@ -13,9 +13,9 @@ function App() {
   return (
     <Routes>
       <Route path="/waze-data-analysis/" element={<Layout />}>
-        <Route index element={<LiveDashboardPage />} />
+        <Route index element={<FullMap />} />
         <Route path="/waze-data-analysis/dashboard" element={<Dashboard />} />
-        <Route path="/waze-data-analysis/test" element={<FullMap />} />
+        <Route path="/waze-data-analysis/test" element={<LiveDashboardPage />} />
       </Route>
       <Route path="*" element={<h1>TODO: NotFound komponent!</h1>} />
     </Routes>

@@ -13,6 +13,7 @@ import { RangePickerProps } from 'antd/es/date-picker';
 import { getOptionsFromStreet } from '../utils/util';
 import { Streets } from '../types/baseTypes';
 import locale from 'antd/es/date-picker/locale/cs_CZ';
+import { deleteMultipleFromMap } from '../utils/map';
 
 function getStreetsLocations(streets: Streets | null) {
   var streetsFulls: StreetFull[] = [];
@@ -48,14 +49,28 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
 
   const { filter, setNewFilter } = useContext(filterContext);
 
-  const { setNewStreetsInSelected, streetsInSelected, streetsInMap, setNewStreetsInMap } = useContext(streetContext);
+  const {
+    setNewStreetsInSelected,
+    streetsInSelected,
+    streetsInMap,
+    setNewStreetsInMap,
+    newlySelected,
+    setNewNewlySelected,
+  } = useContext(streetContext);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [messageDate, messageDateContext] = message.useMessage();
 
   useEffect(() => {
-    setSelected(streetsInSelected);
+    const streetsInMapStaying = deleteMultipleFromMap(streetsInMap, streetsInSelected); // deleting removed streets
+    setNewStreetsInMap(streetsInMapStaying);
+
+    const oldSelected = [...selected];
+    const newSelected = streetsInSelected.filter((street) => !oldSelected.includes(street));
+    setNewNewlySelected(newSelected[0]); //sending to drawing
+
+    setSelected(streetsInSelected); // setting actual state
   }, [streetsInSelected]);
 
   useEffect(() => {
@@ -242,7 +257,6 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
         allowClear
         placeholder={t('PleaseSelect')}
         onChange={(value) => {
-          setSelected(value);
           setNewStreetsInSelected(value);
         }}
         //  TODO: filter ignore diacritics

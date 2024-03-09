@@ -84,7 +84,7 @@
   "plot.DateAndTime": "Dátum a čas",
   "plot.Count": "Počet",
 
-  "language.English": "Anglicky",
+  "language.English": "English",
   "language.Slovak": "Slovensky",
   "language.Czech": "Česky",
 
@@ -92,6 +92,7 @@
   "cancel": "Zrušiť",
 
   "route.button": "Vyber trasu",
+  "route.button.active": "Výber trasy aktívny",
   "route.source": "Z ulice",
   "route.dst": "Do ulice",
   "route.pass": "Cez",
@@ -118,7 +119,7 @@
   "routeLoadingDone": "Načítanie úseku cesty hotové.",
 
   "tour.stats.explained": "Nachádzajú sa tu sumarizačné (číselné) štatistiky o dopravných nehodách a dopravných udalostiach.",
-  "tour.priebeh.explained": "Nachádza sa tu graf priebehu dopravných nehôd a dopravných udalostí vo vybranom časovom okne.",
+  "tour.priebeh.explained": "Nachádza sa tu graf priebehu dopravných zápch a dopravných udalostí vo vybranom časovom okne.",
   "tour.contact.explained": "Kontaktný formulár pre zasielanie pripomienok a prípadných chybových hlásení.",
   "tour.route.explained": "Mód výberu na mape. V tomto móde sa každý klik na mapu ráta do hľadanej trasy. Vykresluje sa postupne, po jednotlivých úsekoch trasy.",
   "tour.jams.explained": "Vykreslí na mapu všetky dopravné zápchy v danom období. Ak sú vo filtry/na mape vybrané konkrétne ulice, vykreslí iba na týchto uliciach.",

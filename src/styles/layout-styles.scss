@@ -110,6 +110,17 @@ nav {
 .header-nav {
   min-width: 40px;
 }
+
+.navLink {
+  color: black;
+  .active {
+    color: $linkColorActive;
+  }
+}
+.navLink:hover {
+  color: $buttonHoverBackgroundColor !important;
+}
+
 .live-map-top-row {
   display: flex;
   flex-direction: column;
@@ -205,6 +216,11 @@ nav {
   color: $buttonHoverBackgroundColor !important;
 }
 
+.ant-btn:hover {
+  border-color: $buttonHoverBackgroundColor !important;
+  color: $buttonHoverBackgroundColor !important;
+}
+
 .ant-tour-indicator-active {
   background-color: $linkColorActive !important;
 }
@@ -220,11 +236,26 @@ nav {
   gap: 10px;
   top: 10px;
   left: 50px;
+  .ant-btn-primary {
+    background-color: $linkColorActive !important;
+    color: white !important;
+  }
+  .ant-btn-primary:hover {
+    background-color: white !important;
+    color: $buttonHoverBackgroundColor !important;
+    border-color: $buttonHoverBackgroundColor;
+  }
 }
 
 .buttonRoute {
   display: flex;
   align-items: center;
+}
+
+.buttonRoute:hover {
+  border-color: $buttonHoverBackgroundColor !important;
+  color: $buttonHoverBackgroundColor !important;
+  background-color: white;
 }
 
 .buttonsModal {
@@ -296,7 +327,11 @@ nav {
 }
 .ant-select-selector {
   max-height: 280px;
+  min-width: 50px;
   overflow: auto;
+  background-color: white !important;
+  color: black !important;
+  border-color: $buttonHoverBackgroundColor;
 }
 
 .graphs-row {

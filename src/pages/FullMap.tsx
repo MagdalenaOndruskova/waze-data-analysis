@@ -40,7 +40,14 @@ type Coord = {
 
 const FullMap = (props: Props) => {
   const { filter } = useContext(filterContext);
-  const { streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap } = useContext(streetContext);
+  const {
+    streetsInSelected,
+    setNewStreetsInSelected,
+    streetsInMap,
+    setNewStreetsInMap,
+    setNewNewlySelected,
+    newlySelected,
+  } = useContext(streetContext);
 
   const mapRef = useRef<LeafletMap>(null);
   const { t } = useTranslation();
@@ -250,23 +257,24 @@ const FullMap = (props: Props) => {
   }, [routeStreets]);
 
   useEffect(() => {
+    if (!newlySelected) {
+      return;
+    }
+
     const map = mapRef.current;
-    let newStreetsInMap = streetsInMap;
-    // drawing/removing streets in selected
-    streetsInSelected?.forEach((element) => {
-      if (!findArrayElementByName(newStreetsInMap, element)) {
-        backendApi.get(`/street_coord/?${queryStreetCoord(filter, element)}`).then((response) => {
-          const name = response.data.street;
-          const path = response.data.path;
-          const color = response.data.color;
-          const newDrawedStreet = drawOnMap(map, name, path, color);
-          newStreetsInMap.push(newDrawedStreet);
-        });
-      }
-    });
-    const streetsInMapStaying = deleteMultipleFromMap(newStreetsInMap, streetsInSelected);
-    setNewStreetsInMap(streetsInMapStaying);
-  }, [streetsInSelected]);
+
+    const fetchData = async () => {
+      const response = await backendApi.get(`/street_coord/?${queryStreetCoord(filter, newlySelected)}`);
+      const name = response.data.street;
+      const path = response.data.path;
+      const color = response.data.color;
+
+      const newDrawedStreet = drawOnMap(map, name, path, color);
+      setNewStreetsInMap((prevArray) => [...prevArray, newDrawedStreet]);
+    };
+
+    fetchData();
+  }, [newlySelected]);
 
   return (
     <div>
@@ -366,7 +374,8 @@ const FullMap = (props: Props) => {
         <Col span={23} style={{ position: 'relative' }}>
           <div className="divButtonsOnMap">
             <Button className="buttonRoute" ref={refRoute} type={buttonStyle} onClick={findRoute}>
-              {t('route.button')}
+              {buttonStyle == 'default' && t('route.button')}
+              {buttonStyle == 'primary' && t('route.button.active')}
               <RouteIcon />
             </Button>
             <Button ref={refDelays}>{t('Jams')}</Button>

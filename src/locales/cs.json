@@ -125,5 +125,15 @@
 
   "tour.next": "Ďalej",
   "tour.previous": "Predchádzajúci",
-  "tour.final": "Hotovo"
+  "tour.final": "Hotovo",
+  "app.contactForm": "Kontaktný formulár",
+  "app.contactEmail": "Kontaktný email",
+  "app.contactEmailNotValid": "Vstup nie je validná e-mailová adresa",
+  "app.contactEmailHint": "Prosím, vyplň svoj email.",
+  "app.subject": "Predmet",
+  "app.subjectHint": "Prosím, vyplň predmet emailu.",
+  "app.body": "Obsah správy",
+  "app.bodyHint": "Prosím, vyplň obsah emailu - môže obsahovať návrhy na vylepšenie, hlásenie chýb a iné.",
+  "app.send": "Odoslať",
+  "app.emailSend": "Email bol odoslaný"
 }

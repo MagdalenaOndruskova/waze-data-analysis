@@ -170,7 +170,7 @@ nav {
   color: #d9d9d9 !important;
 }
 .modalButtonOk:hover {
-  background-color: $buttonHoverBackgroundColor;
+  background-color: $buttonHoverBackgroundColor !important;
   color: $filterTextColor !important;
   border: $buttonHoverBackgroundColor;
 }
@@ -209,6 +209,11 @@ nav {
 .modalButton {
   background-color: $linkColorActive;
   font-weight: bold;
+}
+
+.modal .modalButton:hover {
+  background-color: $buttonHoverBackgroundColor !important;
+  color: white !important;
 }
 
 .ant-tour-prev-btn:hover {

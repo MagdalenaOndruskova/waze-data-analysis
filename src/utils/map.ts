@@ -39,11 +39,9 @@ export function deleteFromMap(streetsInMap: StreetInMap[], name: string) {
  */
 export function deleteMultipleFromMap(streetsInMap: StreetInMap[], streetsInSelected: string[]) {
   const streetsInMapToDelete = streetsInMap?.filter((street) => !streetsInSelected.includes(street.name));
-  console.log('🚀 ~ deleteMultipleFromMap ~ streetsInMapToDelete:', streetsInMapToDelete);
   streetsInMapToDelete?.forEach((street) => {
     street?.lines?.forEach((line) => line.remove());
   });
   const streetsInMapStaying = streetsInMap?.filter((street) => streetsInSelected.includes(street.name));
-  console.log('🚀 ~ deleteMultipleFromMap ~ streetsInMapStaying:', streetsInMapStaying);
   return streetsInMapStaying;
 }

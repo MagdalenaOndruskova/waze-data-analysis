@@ -24,6 +24,7 @@ import { StreetInMap } from '../types/StreetInMap';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import { queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
 import { RouteIcon } from '../utils/icons';
+import EmailModalForm from '../Components/EmailModalForm';
 
 type Props = {};
 
@@ -61,6 +62,7 @@ const FullMap = (props: Props) => {
   const refAlerts = useRef(null);
 
   const [openInfoModalState, setOpenInfoModalState] = useState<boolean>(false);
+  const [openEmailModal, setOpenEmailModal] = useState<boolean>(false);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [openDrawerFilter, setOpenDrawerFilter] = useState<boolean>(false);
   const [openDrawerPlot, setOpenDrawerPlot] = useState<boolean>(false);
@@ -188,7 +190,6 @@ const FullMap = (props: Props) => {
             backendApi
               .post('find_route_by_coord/', data_route)
               .then((response) => {
-                console.log('🚀 ~ .then ~ response:', response);
                 setRouteStreets(response.data.streets_coord);
                 message();
               })
@@ -205,7 +206,6 @@ const FullMap = (props: Props) => {
           }
         } else {
           // street
-          console.log('🚀 ~ click: ~ mapMode:', mapMode);
           backendApi.get(`reverse_geocode/street/?${queryFindStreet(e, filter)}`).then((response) => {
             const map = mapRef.current;
             const name = response.data.street;
@@ -310,6 +310,7 @@ const FullMap = (props: Props) => {
             </Button>
           </div>
         </Modal>
+        <EmailModalForm openEmailModal={openEmailModal} setOpenEmailModal={setOpenEmailModal}></EmailModalForm>
         <Col span={1} className="sidermenu">
           <MenuOutlined className="iconStyle" style={{ fontSize: 20, paddingBottom: 10 }} onClick={openMenu} />
           <br></br>
@@ -357,7 +358,9 @@ const FullMap = (props: Props) => {
             <p>Info</p>
           </div>
           <div
-            onClick={openMailForm}
+            onClick={() => {
+              setOpenEmailModal(true);
+            }}
             style={{
               paddingBottom: 10,
               position: 'absolute',

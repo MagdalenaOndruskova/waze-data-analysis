@@ -126,5 +126,15 @@
 
   "tour.next": "Next",
   "tour.previous": "Previous",
-  "tour.final": "Finish"
+  "tour.final": "Finish",
+  "app.contactForm": "Contact form",
+  "app.contactEmail": "Contact email",
+  "app.contactEmailNotValid": "Input is not valid email address.",
+  "app.contactEmailHint": "Please, fill in your email address..",
+  "app.subject": "Subject",
+  "app.subjectHint": "Please, fill in subject for email.",
+  "app.body": "Body",
+  "app.bodyHint": "Please, fill in body of email - it can contain ideas for application, error reporting...",
+  "app.send": "Send",
+  "app.emailSend": "Email was sent."
 }

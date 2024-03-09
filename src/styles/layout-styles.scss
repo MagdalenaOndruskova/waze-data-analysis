@@ -200,10 +200,31 @@ nav {
   font-weight: bold;
 }
 
+.ant-tour-prev-btn:hover {
+  border-color: $buttonHoverBackgroundColor !important;
+  color: $buttonHoverBackgroundColor !important;
+}
+
+.ant-tour-indicator-active {
+  background-color: $linkColorActive !important;
+}
 .modalButton:hover {
   background-color: $buttonHoverBackgroundColor !important;
   font-weight: bold !important;
-  background-color: $buttonHoverBackgroundColor !important;
+}
+
+.divButtonsOnMap {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+  top: 10px;
+  left: 50px;
+}
+
+.buttonRoute {
+  display: flex;
+  align-items: center;
 }
 
 .buttonsModal {

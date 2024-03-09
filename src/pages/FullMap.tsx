@@ -21,8 +21,9 @@ import { BaseButtonProps } from 'antd/es/button/button';
 import { filterContext, streetContext } from '../utils/contexts';
 import backendApi from '../utils/api';
 import { StreetInMap } from '../types/StreetInMap';
-import { deleteMultipleFromMap, drawOnMap } from '../utils/map';
-import { queryStreetCoord } from '../utils/queryBuilder';
+import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
+import { queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
+import { RouteIcon } from '../utils/icons';
 
 type Props = {};
 
@@ -67,43 +68,50 @@ const FullMap = (props: Props) => {
     {
       title: 'Upload File',
       description: 'Put your files here.',
-
+      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
       target: () => refFilter.current,
     },
     {
       title: t('graph.tiles.title'),
       description: t('tour.stats.explained'),
-
+      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
+      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
       target: () => refStats.current,
     },
     {
       title: t('graph.priebeh'),
       description: t('tour.priebeh.explained'),
-
+      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
+      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
       target: () => refLineStats.current,
     },
     {
       title: t('contact'),
       description: t('tour.contact.explained'),
-
+      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
+      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
       target: () => refContacForm.current,
     },
     {
       title: t('route.button'),
       description: t('tour.route.explained'),
+      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
+      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
 
       target: () => refRoute.current,
     },
     {
       title: t('Jams'),
       description: t('tour.jams.explained'),
-
+      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
+      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
       target: () => refDelays.current,
     },
     {
       title: t('Alerts'),
       description: t('tour.alerts.explained'),
-
+      nextButtonProps: { children: <p>{t('tour.final')}</p>, className: 'modalButton' },
+      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
       target: () => refAlerts.current,
     },
   ];
@@ -149,13 +157,11 @@ const FullMap = (props: Props) => {
       contextmenu: handleContextMenu,
       click: async (e) => {
         if (mapMode === 'route') {
-          console.log('🚀 ~ click: ~ mapMode:', mapMode);
           const coord: Coord = {
             latitude: e.latlng.lat,
             longitude: e.latlng.lng,
           };
           routeCoordinates.push(coord);
-          console.log('🚀 ~ click: ~ routeCoordinates:', routeCoordinates);
           const last_two = routeCoordinates.slice(-2);
           if (last_two.length > 1) {
             const data_route = {
@@ -193,6 +199,19 @@ const FullMap = (props: Props) => {
         } else {
           // street
           console.log('🚀 ~ click: ~ mapMode:', mapMode);
+          backendApi.get(`reverse_geocode/street/?${queryFindStreet(e, filter)}`).then((response) => {
+            const map = mapRef.current;
+            const name = response.data.street;
+            const path = response.data.path;
+            const color = response.data.color;
+            deleteFromMap(streetsInMap, name);
+            var streetsInMapStaying = streetsInMap.filter((street) => street.name !== name); // keeping everything but the one i deleted
+            const newDrawedStreet: StreetInMap = drawOnMap(map, name, path, color);
+            streetsInMapStaying.push(newDrawedStreet);
+            setNewStreetsInMap(streetsInMapStaying);
+            const newStreetsInSelected = [...new Set([...streetsInSelected, name])];
+            setNewStreetsInSelected(newStreetsInSelected);
+          });
         }
       },
     });
@@ -261,11 +280,15 @@ const FullMap = (props: Props) => {
           footer={
             <Row>
               <Col span={5}>
-                <img src={Brno} alt="Brno" />
+                <a href="https://www.brno.cz/" target="_blank">
+                  <img src={Brno} alt="Brno" />
+                </a>
               </Col>
               <Col span={12}></Col>
               <Col span={5}>
-                <img src={fit} alt="Fakulta informačných technológii VUT" style={{ width: '200px' }} />
+                <a href="https://www.fit.vut.cz/" target="_blank">
+                  <img src={fit} alt="Fakulta informačných technológii VUT" style={{ width: '200px' }} />
+                </a>
               </Col>
               <Col span={3}></Col>
             </Row>
@@ -341,20 +364,15 @@ const FullMap = (props: Props) => {
           </div>
         </Col>
         <Col span={23} style={{ position: 'relative' }}>
-          <Button
-            style={{ position: 'absolute', zIndex: 10000, left: 50, top: 10 }}
-            ref={refRoute}
-            type={buttonStyle}
-            onClick={findRoute}
-          >
-            {t('route.button')}
-          </Button>
-          <Button style={{ position: 'absolute', zIndex: 10000, left: 160, top: 10 }} ref={refDelays}>
-            {t('Jams')}
-          </Button>
-          <Button style={{ position: 'absolute', zIndex: 10000, left: 305, top: 10 }} ref={refAlerts}>
-            {t('Alerts')}
-          </Button>
+          <div className="divButtonsOnMap">
+            <Button className="buttonRoute" ref={refRoute} type={buttonStyle} onClick={findRoute}>
+              {t('route.button')}
+              <RouteIcon />
+            </Button>
+            <Button ref={refDelays}>{t('Jams')}</Button>
+            <Button ref={refAlerts}>{t('Alerts')}</Button>
+          </div>
+
           <MapContainer
             ref={mapRef}
             center={[49.194391, 16.612064]}

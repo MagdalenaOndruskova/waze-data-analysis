@@ -121,5 +121,9 @@
   "tour.contact.explained": "Kontaktný formulár pre zasielanie pripomienok a prípadných chybových hlásení.",
   "tour.route.explained": "Mód výberu na mape. V tomto móde sa každý klik na mapu ráta do hľadanej trasy. Vykresluje sa postupne, po jednotlivých dvojicách trasy.",
   "tour.jams.explained": "Vykreslí na mapu všetky dopravné zápchy v danom období. Ak sú vo filtry/na mape vybrané konkrétne ulice, vykreslí iba na týchto uliciach.",
-  "tour.alerts.explained": "Vykreslí na mapu všetky dopravné udalosti v danom období. Ak sú vo filtry/na mape vybrané konkrétne ulice, vykreslí iba na týchto uliciach."
+  "tour.alerts.explained": "Vykreslí na mapu všetky dopravné udalosti v danom období. Ak sú vo filtry/na mape vybrané konkrétne ulice, vykreslí iba na týchto uliciach.",
+
+  "tour.next": "Next",
+  "tour.previous": "Previous",
+  "tour.final": "Finish"
 }

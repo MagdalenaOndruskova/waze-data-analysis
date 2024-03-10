@@ -1,10 +1,7 @@
 import { Drawer } from 'antd';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import useAxios from '../utils/useAxios';
-import { DataDelay, DataEvent } from '../types/baseTypes';
-import { queryBuilder } from '../utils/queryBuilder';
-import { filterContext } from '../utils/contexts';
+import { dataContext } from '../utils/contexts';
 import LiveTile from './LiveTile';
 import * as Icons from '../utils/icons';
 
@@ -15,29 +12,7 @@ type Props = {
 
 const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
   const { t } = useTranslation();
-  const { filter } = useContext(filterContext);
-
-  const query = queryBuilder(filter);
-
-  const {
-    response: dataDelay,
-    loading: loadingDelay,
-    error: errorDelay,
-  } = useAxios<DataDelay>({
-    url: `query?where=(${query})`,
-    api: 'jam',
-    getData: filter !== null,
-  });
-
-  const {
-    response: dataEvent,
-    loading: loadingEvent,
-    error: errorEvent,
-  } = useAxios<DataEvent>({
-    url: `query?where=(${query})`,
-    api: 'event',
-    getData: filter !== null,
-  });
+  const { jamsData, alertData, levelData, speedData, lengthData, timeData } = useContext(dataContext);
 
   return (
     <Drawer
@@ -52,13 +27,13 @@ const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
     >
       <LiveTile
         icon={<Icons.WarningIcon />}
-        tileTitle={new Intl.NumberFormat('cs-CZ').format(dataEvent?.features?.length)}
+        tileTitle={new Intl.NumberFormat('cs-CZ').format(alertData?.reduce((sum, attribute) => sum + attribute, 0))}
         tileType={t('tile.ActiveAlerts')}
       ></LiveTile>
       <br />
       <LiveTile
         icon={<Icons.CarIcon />}
-        tileTitle={new Intl.NumberFormat('cs-CZ').format(dataDelay?.features?.length)}
+        tileTitle={new Intl.NumberFormat('cs-CZ').format(jamsData?.reduce((sum, attribute) => sum + attribute, 0))}
         tileType={t('tile.TrafficJams')}
       ></LiveTile>
       <br />
@@ -67,14 +42,7 @@ const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
         tileTitle={new Intl.NumberFormat('pt-PT', {
           style: 'unit',
           unit: 'kilometer-per-hour',
-        }).format(
-          Number(
-            (
-              dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.speedKMH, 0) /
-              dataDelay?.features?.length
-            ).toFixed(2),
-          ),
-        )}
+        }).format(Number((speedData?.reduce((sum, attribute) => sum + attribute, 0) / jamsData?.length).toFixed(2)))}
         tileType={t('tile.AverageSpeed')}
       ></LiveTile>
       <br />
@@ -83,7 +51,7 @@ const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
         tileTitle={new Intl.NumberFormat('cs-CZ', {
           style: 'unit',
           unit: 'kilometer',
-        }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.length, 0) / 1000)}
+        }).format(lengthData?.reduce((sum, attribute) => sum + attribute, 0))}
         tileType={t('tile.JamsLength')}
       ></LiveTile>
       <br />
@@ -93,16 +61,14 @@ const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
         tileTitle={new Intl.NumberFormat('cs-CZ', {
           style: 'unit',
           unit: 'hour',
-        }).format(dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.delay, 0) / 3600)}
+        }).format(timeData?.reduce((sum, attribute) => sum + attribute, 0) / 60)}
         tileType={t('tile.JamsDelay')}
       ></LiveTile>
       <br />
 
       <LiveTile
         icon={<Icons.JamLevelIcon />}
-        tileTitle={(
-          dataDelay?.features?.reduce((sum, { attributes }) => sum + attributes.level, 0) / dataDelay?.features?.length
-        ).toFixed(2)}
+        tileTitle={(levelData?.reduce((sum, attribute) => sum + attribute, 0) / jamsData?.length).toFixed(2)}
         tileType={t('tile.AverageJamLevel')}
       ></LiveTile>
     </Drawer>

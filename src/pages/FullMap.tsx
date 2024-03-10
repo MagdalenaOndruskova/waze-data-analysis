@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { renderToString } from 'react-dom/server';
 
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L, { Map as LeafletMap } from 'leaflet';
@@ -8,7 +7,6 @@ import fit from '../assets/fit.png';
 import { Button, Col, Modal, Row, Tour, TourProps, message } from 'antd';
 import {
   BarChartOutlined,
-  CheckCircleOutlined,
   FilterOutlined,
   InfoCircleOutlined,
   LineChartOutlined,
@@ -19,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import StatsDrawer from '../Components/StatsDrawer';
 import SidebarDrawer from '../layout/SidebarDrawer';
 import PlotDrawer from '../Components/PlotDrawer';
-import { BaseButtonProps } from 'antd/es/button/button';
 import { filterContext, streetContext } from '../utils/contexts';
 import backendApi from '../utils/api';
 import { StreetInMap } from '../types/StreetInMap';
@@ -27,6 +24,7 @@ import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
 import { queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
 import { PinIcon, RouteIcon } from '../utils/icons';
 import EmailModalForm from '../Components/EmailModalForm';
+import AwesomeMarkers from 'leaflet.awesome-markers';
 
 type Props = {};
 
@@ -174,13 +172,14 @@ const FullMap = (props: Props) => {
           };
           const map = mapRef.current;
           routeCoordinates.push(coord);
-          // const customIcon = L.divIcon({
-          //   className: 'custom-pin-icon', // optional, add your custom class
-          //   html: renderToString(<PinIcon />),
-          //   iconSize: [40, 40], // set the size of your icon
-          //   iconAnchor: [0, 0], // set the anchor point of your icon
-          //   popupAnchor: [0, -10], // set the popup anchor point to show the popup above the marker
+
+          // var redMarker = L.AwesomeMarkers.icon({
+          //   icon: 'fa-university',
+          //   prefix: 'fa',
+          //   markerColor: 'red',
+          //   iconColor: 'white',
           // });
+          // L.marker([coord.latitude, coord.longitude], { icon: redMarker }).addTo(map);
           L.marker([coord.latitude, coord.longitude]).addTo(map);
 
           const last_two = routeCoordinates.slice(-2);
@@ -292,6 +291,7 @@ const FullMap = (props: Props) => {
     <div>
       <Row>
         {contextHolder}
+
         <Modal
           open={openInfoModalState}
           onCancel={() => setOpenInfoModalState(false)}

@@ -140,5 +140,7 @@
   "app.send": "Odoslať",
   "app.emailSend": "Email bol odoslaný",
   "route.selection.active": "Môžete začať vyberať trasu kliknutím na mapu.",
-  "route.selection.done": "Vyberanie trasy hotové."
+  "route.selection.done": "Vyberanie trasy hotové.",
+
+  "loading.data": "Načítavam dáta"
 }

@@ -2,64 +2,37 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L, { Map as LeafletMap } from 'leaflet';
-import Brno from '../assets/Brno.png';
-import fit from '../assets/fit.png';
 import { Button, Col, Modal, Row, Slider, Tour, TourProps, message } from 'antd';
-import {
-  BarChartOutlined,
-  FilterOutlined,
-  InfoCircleOutlined,
-  LineChartOutlined,
-  MailOutlined,
-  MenuOutlined,
-} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import StatsDrawer from '../Components/StatsDrawer';
+import StatsDrawer from '../Components/SidebarComponents/StatsDrawer';
 import SidebarDrawer from '../layout/SidebarDrawer';
-import PlotDrawer from '../Components/PlotDrawer';
+import PlotDrawer from '../Components/SidebarComponents/PlotDrawer';
 import { dataContext, filterContext, streetContext } from '../utils/contexts';
 import backendApi from '../utils/api';
 import { StreetInMap } from '../types/StreetInMap';
-import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
+import { deleteFromMap, drawOnMap } from '../utils/map';
 import { queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
-import { PinIcon, RouteIcon } from '../utils/icons';
-import EmailModalForm from '../Components/EmailModalForm';
-import AwesomeMarkers from 'leaflet.awesome-markers';
-import BrushChartComponent from '../Components/GraphComponents/BrushChartComponent';
-import LineChartComponent from '../Components/GraphComponents/LineChartComponent';
+import { RouteIcon } from '../utils/icons';
+import EmailModalForm from '../Components/ModalComponents/EmailModalForm';
 import DateSlider from '../Components/DateSlider';
-
-type Props = {};
-
-function findArrayElementByName(array: StreetInMap[], name: string) {
-  return array?.find((element) => {
-    return element?.name === name;
-  });
-}
+import InfoModal from '../Components/ModalComponents/InfoModal';
+import Sidebar from '../Components/SidebarComponents/Sidebar';
 
 type Coord = {
   latitude: number;
   longitude: number;
 };
 
-const FullMap = (props: Props) => {
+const FullMap = () => {
   const { filter } = useContext(filterContext);
-  const {
-    streetsInSelected,
-    setNewStreetsInSelected,
-    streetsInMap,
-    setNewStreetsInMap,
-    setNewNewlySelected,
-    newlySelected,
-  } = useContext(streetContext);
+  const { streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap, newlySelected } =
+    useContext(streetContext);
 
-  const { previousDate, fullAlerts, setFullAlerts, fullJams, setFullJams, fullXAxis, setFullXAxis } =
-    useContext(dataContext);
+  const { setFullAlerts, setFullJams, setFullXAxis } = useContext(dataContext);
 
   const mapRef = useRef<LeafletMap>(null);
   const { t } = useTranslation();
 
-  const refFilter = useRef(null);
   const refStats = useRef(null);
   const refLineStats = useRef(null);
   const refContacForm = useRef(null);
@@ -81,12 +54,6 @@ const FullMap = (props: Props) => {
   const [loadingData, setLoadingData] = useState<boolean>(true);
 
   const steps: TourProps['steps'] = [
-    {
-      title: 'Upload File',
-      description: 'Put your files here.',
-      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
-      target: () => refFilter.current,
-    },
     {
       title: t('graph.tiles.title'),
       description: t('tour.stats.explained'),
@@ -131,10 +98,6 @@ const FullMap = (props: Props) => {
       target: () => refAlerts.current,
     },
   ];
-
-  const openMenu = () => {
-    console.log('hi menu');
-  };
 
   const findRoute = () => {
     if (buttonStyle === 'default') {
@@ -190,8 +153,6 @@ const FullMap = (props: Props) => {
             const data_route = {
               src_coord: [last_two[0].longitude, last_two[0].latitude],
               dst_coord: [last_two[1].longitude, last_two[1].latitude],
-              from_time: `${filter.fromDate} ${filter.fromTime}:00`,
-              to_time: `${filter.toDate} ${filter.toTime}:00`,
             };
             const message = messageApi.open({
               type: 'loading',
@@ -292,7 +253,6 @@ const FullMap = (props: Props) => {
 
   const get_data = async () => {
     const response = await backendApi.get(`/full_data/`);
-    console.log('🚀 ~ backendApi.get ~ response:', response);
     setFullAlerts(response.data.alerts);
     setFullJams(response.data.jams);
     setFullXAxis(response.data.xaxis);
@@ -307,100 +267,22 @@ const FullMap = (props: Props) => {
     <div>
       <Row>
         {contextHolder}
-
-        <Modal
-          open={openInfoModalState}
-          onCancel={() => setOpenInfoModalState(false)}
-          title={t('app.title')}
-          width={800}
-          footer={
-            <Row>
-              <Col span={5}>
-                <a href="https://www.brno.cz/" target="_blank">
-                  <img src={Brno} alt="Brno" />
-                </a>
-              </Col>
-              <Col span={12}></Col>
-              <Col span={5}>
-                <a href="https://www.fit.vut.cz/" target="_blank">
-                  <img src={fit} alt="Fakulta informačných technológii VUT" style={{ width: '200px' }} />
-                </a>
-              </Col>
-              <Col span={3}></Col>
-            </Row>
-          }
-        >
-          <p>{t('appDescription')}</p>
-          <br />
-          <div className="modalButtonDiv">
-            <Button type="primary" onClick={() => setOpenTour(true)} className="modalButton">
-              {t('tourButton')}
-            </Button>
-          </div>
-        </Modal>
-        <EmailModalForm openEmailModal={openEmailModal} setOpenEmailModal={setOpenEmailModal}></EmailModalForm>
+        <InfoModal
+          openInfoModalState={openInfoModalState}
+          setOpenInfoModalState={setOpenInfoModalState}
+          setOpenTour={setOpenTour}
+        />
+        <EmailModalForm openEmailModal={openEmailModal} setOpenEmailModal={setOpenEmailModal} />
         <Col span={1} className="sidermenu">
-          <MenuOutlined className="iconStyle" style={{ fontSize: 20, paddingBottom: 10 }} onClick={openMenu} />
-          <br></br>
-          <div onClick={() => setOpenDrawerFilter(true)} style={{ paddingBottom: 10 }} ref={refFilter}>
-            <FilterOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
-            <p>Filter</p>
-          </div>
-          <div
-            onClick={() => {
-              setOpenDrawer(true);
-            }}
-            style={{ paddingBottom: 10 }}
-            ref={refStats}
-          >
-            <BarChartOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
-
-            <p>{t('graph.tiles.title')}</p>
-          </div>
-
-          <div
-            onClick={() => {
-              setOpenDrawerPlot(true);
-            }}
-            style={{ paddingBottom: 10 }}
-            ref={refLineStats}
-          >
-            <LineChartOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
-
-            <p>{t('graph.priebeh')}</p>
-          </div>
-
-          <div
-            onClick={() => {
-              setOpenInfoModalState(true);
-            }}
-            style={{
-              paddingBottom: 10,
-              position: 'absolute',
-              bottom: '3%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-            }}
-          >
-            <InfoCircleOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
-            <p>Info</p>
-          </div>
-          <div
-            onClick={() => {
-              setOpenEmailModal(true);
-            }}
-            style={{
-              paddingBottom: 10,
-              position: 'absolute',
-              bottom: '-2%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-            }}
-            ref={refContacForm}
-          >
-            <MailOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
-            <p>{t('contact')}</p>
-          </div>
+          <Sidebar
+            setOpenDrawer={setOpenDrawer}
+            setOpenDrawerPlot={setOpenDrawerPlot}
+            setOpenInfoModalState={setOpenInfoModalState}
+            setOpenEmailModal={setOpenEmailModal}
+            refStats={refStats}
+            refLineStats={refLineStats}
+            refContacForm={refContacForm}
+          />
         </Col>
         <Col span={23} style={{ position: 'relative' }}>
           <div className="divButtonsOnMap">
@@ -426,21 +308,9 @@ const FullMap = (props: Props) => {
             />
             <MapClickEvent />
           </MapContainer>
-          {fullAlerts ? (
-            <div className="divTimelineOnMap">
-              <DateSlider />
-
-              {/* <BrushChartComponent
-                dataJams={fullAlerts}
-                dataAlerts={fullJams}
-                xAxis={fullXAxis}
-                xaxis_min_selected={`${previousDate}`}
-                xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
-              ></BrushChartComponent> */}
-            </div>
-          ) : (
-            <></>
-          )}
+          <div className="divTimelineOnMap">
+            <DateSlider />
+          </div>
         </Col>
         <StatsDrawer
           open={openDrawer}

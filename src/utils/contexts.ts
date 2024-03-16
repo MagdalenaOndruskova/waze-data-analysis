@@ -1,28 +1,23 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { StreetFull } from '../types/StreetFull';
 import { StreetInMap } from '../types/StreetInMap';
 
 export interface Filter {
   fromDate: string;
   toDate: string;
-  fromTime: string;
-  toTime: string;
   streets: Array<String>;
 }
 
 export interface FilterContext {
   filter: Filter | null;
   filterDefaultValue: Filter;
-  setNewFilter: (newFilter: Filter) => void;
+  setNewFilter: React.Dispatch<React.SetStateAction<Filter>>;
 }
 
 export const FILTER_DEFAULT_VALUE: FilterContext = {
   filterDefaultValue: {
     fromDate: dayjs().add(-7, 'd').format('YYYY-MM-DD'),
     toDate: dayjs().format('YYYY-MM-DD'),
-    fromTime: dayjs('06:00', 'HH:mm').format('HH:mm'),
-    toTime: dayjs().format('HH:mm'),
     streets: [],
   },
   filter: null,

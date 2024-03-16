@@ -33,9 +33,16 @@ header {
   background-color: $cardColor;
   text-align: center;
   padding-top: 10px;
-  // border-bottom: solid rgba(5, 5, 5, 0.07);
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   color: $contentTextColor;
+  // min-width: 60px;
+}
+
+.ant-spin {
+  color: $linkColorActive;
+  .ant-spin-dot-item {
+    background-color: $linkColorActive !important;
+  }
 }
 
 .iconStyle {
@@ -256,9 +263,9 @@ nav {
   top: 10.8px !important;
 }
 
-.ant-slider-mark-text {
-  width: 100%;
-}
+// .ant-slider-mark-text {
+//   width: 100%;
+// }
 
 .ant-slider {
   .ant-slider-track {
@@ -278,7 +285,9 @@ nav {
   width: 100%;
   background-color: $backgroundColor;
 }
-
+.ant-slider-mark-text {
+  width: auto;
+}
 .buttonRoute {
   display: flex;
   align-items: center;

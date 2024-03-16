@@ -1,9 +1,9 @@
 import { Drawer } from 'antd';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { dataContext } from '../utils/contexts';
-import LiveTile from './LiveTile';
-import * as Icons from '../utils/icons';
+import { dataContext } from '../../utils/contexts';
+import LiveTile from '../LiveTile';
+import * as Icons from '../../utils/icons';
 
 type Props = {
   open: boolean;

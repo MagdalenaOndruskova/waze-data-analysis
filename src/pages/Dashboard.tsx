@@ -59,7 +59,6 @@ const Dashboard = () => {
     speedData,
     previousDate,
     setXAxisData,
-    setJamsData,
     setAlertData,
     dateTimeFrom,
     dateTimeTo,
@@ -102,12 +101,10 @@ const Dashboard = () => {
   }, [alertTypes]);
 
   useEffect(() => {
-    console.log('tam');
     if (filter) {
-      console.log('tu');
       const body = {
-        from_date_time: `${filter?.fromDate} ${filter?.fromTime}:00`,
-        to_date_time: `${filter?.toDate} ${filter?.toTime}:00`,
+        from_date: `${filter?.fromDate}`,
+        to_date: `${filter?.toDate}`,
         streets: filter.streets,
       };
       backendApi.post('data_for_plot_streets/', body).then((response) => {
@@ -133,11 +130,6 @@ const Dashboard = () => {
           <Row className="dashboard-row" gutter={24}>
             <Col span={5}>
               <Card title={t('tile.AlertsType')}>
-                {/* <PieChartComponent
-                  values={alertTypes['basic_types_values']}
-                  labels={alertTypes['basic_types_labels']}
-                  chartId="chart5"
-                ></PieChartComponent> */}
                 <BarChartComponent
                   streets={alertTypes['basic_types_labels'].map((value) => t(value))}
                   values={alertTypes['basic_types_values']}
@@ -168,7 +160,7 @@ const Dashboard = () => {
                   dataAlerts={alertData}
                   xAxis={xAxisData}
                   xaxis_min_selected={`${previousDate}`}
-                  xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
+                  xaxis_max_selected={`${filter?.toDate}`}
                   targets={['chart3', 'chart2', 'chart4']}
                 />
                 <LineChartComponentV2

@@ -138,5 +138,7 @@
   "app.send": "Send",
   "app.emailSend": "Email was sent.",
   "route.selection.active": "You can start selecting route from map.",
-  "route.selection.done": "Selecting route done."
+  "route.selection.done": "Selecting route done.",
+
+  "loading.data": "Loading data"
 }

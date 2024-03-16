@@ -8,14 +8,7 @@ import { colorBlue, colorRed } from '../../utils/constants';
 
 // TODO: otypovat?
 
-const LineChartComponent = ({
-  dataJams,
-  dataAlerts,
-  xAxis,
-  xaxis_min_selected,
-  xaxis_max_selected,
-  with_timeline = true,
-}) => {
+const LineChartComponent = ({ dataJams, dataAlerts, xAxis, xaxis_min_selected, with_timeline = true }) => {
   const { t } = useTranslation();
 
   const options: ApexOptions = {
@@ -37,31 +30,14 @@ const LineChartComponent = ({
     },
     tooltip: {
       x: {
-        format: 'dd MMM yyyy hh:mm:ss',
+        format: 'dd MMM yyyy hh:mm',
         show: true,
         formatter: function (value) {
           const date = new Date(value);
-          const formattedTime = dayjs(date).format('DD MMM YYYY HH:mm:ss');
+          const formattedTime = dayjs(date).format('DD MMM YYYY HH:mm');
           return formattedTime;
         },
       },
-      // shared: true,
-      // y: [
-      //   {
-      //     title: {
-      //       formatter: function (val) {
-      //         return val + ' (mins)';
-      //       },
-      //     },
-      //   },
-      //   {
-      //     title: {
-      //       formatter: function (val) {
-      //         return val + ' per session';
-      //       },
-      //     },
-      //   },
-      // ],
     },
     legend: {
       position: 'top',
@@ -115,7 +91,7 @@ const LineChartComponent = ({
         enabled: true,
         xaxis: {
           min: new Date(`${xaxis_min_selected}`).getTime(),
-          max: new Date(`${xaxis_max_selected}`).getTime(),
+          max: xAxis.slice(-1),
         },
       },
     },

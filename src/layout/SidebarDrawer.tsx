@@ -1,31 +1,18 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import '../styles/layout-styles.scss';
-import { Button, DatePicker, Drawer, Input, Select, SelectProps, TimePicker, message } from 'antd';
+import { Button, DatePicker, Drawer, Input, Select, SelectProps, message } from 'antd';
 import dayjs from 'dayjs';
 import useAxios from '../utils/useAxios';
 import { FILTER_DEFAULT_VALUE, filterContext, streetContext } from '../utils/contexts';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Dayjs } from 'dayjs';
-import { StreetFull } from '../types/StreetFull';
 import { useTranslation } from 'react-i18next';
 import { RangePickerProps } from 'antd/es/date-picker';
 import { getOptionsFromStreet } from '../utils/util';
 import { Streets } from '../types/baseTypes';
 import locale from 'antd/es/date-picker/locale/cs_CZ';
 import { deleteMultipleFromMap } from '../utils/map';
-
-function getStreetsLocations(streets: Streets | null) {
-  var streetsFulls: StreetFull[] = [];
-  streets?.features?.map(({ attributes, geometry }, index) =>
-    streetsFulls.push({
-      name: attributes.nazev,
-      code: attributes.kod,
-      location: geometry?.paths?.map((a: []) => a?.map((b) => [b[1], b[0]])),
-    }),
-  );
-  return streetsFulls;
-}
 
 type Props = {
   open: boolean;
@@ -42,8 +29,6 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
   const [dateFrom, setDateFrom] = useState<Dayjs>(dayjs().add(-7, 'd'));
 
   const [dateTo, setDateTo] = useState<Dayjs>(dayjs());
-  const [timeFrom, setTimeFrom] = useState<Dayjs>(dayjs('06:00', 'HH:mm'));
-  const [timeTo, setTimeTo] = useState<Dayjs>(dayjs());
 
   const inicialized = useRef<Boolean>(false);
 
@@ -75,12 +60,10 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
 
   useEffect(() => {
     if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filterDefaultValue) && filter !== null) {
-      const { fromDate, fromTime, toDate, toTime } = filter;
+      const { fromDate, toDate } = filter;
       setSearchParams({
         fromDate,
-        fromTime,
         toDate,
-        toTime,
         streets: `('${filter.streets.join(`', '`)}')`,
       });
     } else {
@@ -94,9 +77,7 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
     if (inicialized.current === false) {
       if (filter === null && searchParams.toString() !== '') {
         const fromDate = searchParams.get('fromDate');
-        const fromTime = searchParams.get('fromTime');
         const toDate = searchParams.get('toDate');
-        const toTime = searchParams.get('toTime');
         var streets = searchParams.get('streets');
 
         // TODO: check when creating url params, so that when no street, dont have this url param
@@ -108,11 +89,9 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
           streetsSplitted = streets.split(',');
           streetsSplitted = streetsSplitted.map((item) => item.trim());
         }
-        setNewFilter({ fromDate, fromTime, toDate, toTime, streets: streetsSplitted });
+        setNewFilter({ fromDate, toDate, streets: streetsSplitted });
         setDateFrom(dayjs(fromDate));
-        setTimeFrom(dayjs(fromTime, 'HH:mm'));
         setDateTo(dayjs(toDate));
-        setTimeTo(dayjs(toTime, 'HH:mm'));
         setSelected(streetsSplitted);
         setNewStreetsInSelected(streetsSplitted);
 
@@ -131,14 +110,9 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
     setDateTo(dayjs());
 
     //TODO: funguje iba aj ked sa date zmeni?
-    setTimeFrom(dayjs('06:00', 'HH:mm'));
-    // setTimeFrom(dayjs().format('HH:mm'));
-    setTimeTo(dayjs());
     setNewFilter({
       fromDate: dateFrom.format('YYYY-MM-DD'),
       toDate: dateTo.format('YYYY-MM-DD'),
-      fromTime: timeFrom.format('HH:mm'),
-      toTime: timeTo.format('HH:mm'),
       streets: [],
     });
 
@@ -170,8 +144,6 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
     setNewFilter({
       fromDate: dateFrom.format('YYYY-MM-DD'),
       toDate: dateTo.format('YYYY-MM-DD'),
-      fromTime: timeFrom.format('HH:mm'),
-      toTime: timeTo.format('HH:mm'),
       streets: selected,
     });
   };
@@ -225,14 +197,7 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
         }}
         value={dayjs(dateFrom)}
       />
-      <TimePicker
-        className="filterStyle"
-        locale={locale}
-        onChange={(value) => setTimeFrom(value)}
-        format="HH:mm"
-        allowClear={false}
-        value={dayjs(timeFrom, 'HH:mm')}
-      />
+
       <p className="text-left">{t('To')}</p>
       <DatePicker
         className="filterStyle"
@@ -242,14 +207,7 @@ const SidebarDrawer = ({ open, onCloseDrawer }: Props) => {
         allowClear={false}
         disabledDate={disabledDate}
       />
-      <TimePicker
-        className="filterStyle"
-        locale={locale}
-        onChange={(value) => setTimeTo(value)}
-        value={dayjs(timeTo)}
-        allowClear={false}
-        format="HH:mm"
-      />
+
       <h3 className="text-left">{t('Streets')}</h3>
       <Select
         className="filterStyle"

@@ -8,6 +8,7 @@ export const useStreetContext = (): StreetContext => {
   const [streetsInSelected, setStreetsInSelected] = React.useState<string[]>(
     STREET_CONTEXT_DEFAULT_VALUE.streetsInSelected,
   );
+  const [streetsInRoute, setStreetsInRoute] = React.useState<string[]>(STREET_CONTEXT_DEFAULT_VALUE.streetsInRoute);
 
   const setNewStreetsInMap = React.useCallback((streetsInMap: StreetInMap[]): void => {
     setStreetsInMap(streetsInMap);
@@ -21,10 +22,16 @@ export const useStreetContext = (): StreetContext => {
     setNewlySelected(selected);
   }, []);
 
+  const setNewStreetsInRoute = React.useCallback((street: string[]): void => {
+    setStreetsInRoute(street);
+  }, []);
+
   return {
     streetsInMap,
     streetsInSelected,
     newlySelected,
+    streetsInRoute,
+    setNewStreetsInRoute,
     setNewStreetsInMap,
     setNewStreetsInSelected,
     setNewNewlySelected,

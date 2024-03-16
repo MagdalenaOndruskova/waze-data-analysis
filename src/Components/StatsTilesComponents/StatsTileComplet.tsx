@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { dataContext } from '../../utils/contexts';
-import LiveTile from './LiveTile';
+import LiveTile from './StatsTile';
 import * as Icons from '../../utils/icons';
 import { useTranslation } from 'react-i18next';
 

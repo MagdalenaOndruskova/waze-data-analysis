@@ -2,21 +2,19 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L, { Map as LeafletMap } from 'leaflet';
-import { Button, Col, Row, Tour, TourProps, message } from 'antd';
+import { Button, Col, Row, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import StatsDrawer from '../Components/SidebarComponents/StatsDrawer';
-import PlotDrawer from '../Components/SidebarComponents/PlotDrawer';
 import { dataContext, filterContext, streetContext } from '../utils/contexts';
 import backendApi from '../utils/api';
 import { StreetInMap } from '../types/StreetInMap';
 import { deleteFromMap, drawOnMap } from '../utils/map';
 import { queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
 import { RouteIcon } from '../utils/icons';
-import EmailModalForm from '../Components/ModalComponents/EmailModalForm';
 import DateSlider from '../Components/DateSlider';
 import InfoModal from '../Components/ModalComponents/InfoModal';
 import Sidebar from '../Components/SidebarComponents/Sidebar';
 import 'leaflet/dist/leaflet.css';
+import ApplicationTour from '../Components/SidebarComponents/ApplicationTour';
 
 type Coord = {
   latitude: number;
@@ -25,8 +23,14 @@ type Coord = {
 
 const FullMap = () => {
   const { filter } = useContext(filterContext);
-  const { streetsInSelected, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap, newlySelected } =
-    useContext(streetContext);
+  const {
+    streetsInSelected,
+    setNewStreetsInSelected,
+    streetsInMap,
+    setNewStreetsInMap,
+    newlySelected,
+    setNewStreetsInRoute,
+  } = useContext(streetContext);
 
   const { setFullAlerts, setFullJams, setFullXAxis } = useContext(dataContext);
 
@@ -39,11 +43,9 @@ const FullMap = () => {
   const refRoute = useRef(null);
   const refDelays = useRef(null);
   const refAlerts = useRef(null);
+  const refRouteSidebar = useRef(null);
 
   const [openInfoModalState, setOpenInfoModalState] = useState<boolean>(false);
-  const [openEmailModal, setOpenEmailModal] = useState<boolean>(false);
-  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
-  const [openDrawerPlot, setOpenDrawerPlot] = useState<boolean>(false);
   const [openTour, setOpenTour] = useState<boolean>(false);
   const [buttonStyle, setButtonStyle] = useState<'default' | 'primary'>('default');
   const [mapMode, setMapMode] = useState<'route' | 'street'>('street');
@@ -51,52 +53,6 @@ const FullMap = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [routeStreets, setRouteStreets] = useState<any>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
-
-  const steps: TourProps['steps'] = [
-    {
-      title: t('graph.tiles.title'),
-      description: t('tour.stats.explained'),
-      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
-      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
-      target: () => refStats.current,
-    },
-    {
-      title: t('graph.priebeh'),
-      description: t('tour.priebeh.explained'),
-      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
-      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
-      target: () => refLineStats.current,
-    },
-    {
-      title: t('contact'),
-      description: t('tour.contact.explained'),
-      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
-      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
-      target: () => refContacForm.current,
-    },
-    {
-      title: t('route.button'),
-      description: t('tour.route.explained'),
-      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
-      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
-
-      target: () => refRoute.current,
-    },
-    {
-      title: t('Jams'),
-      description: t('tour.jams.explained'),
-      nextButtonProps: { children: <p>{t('tour.next')}</p>, className: 'modalButton' },
-      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
-      target: () => refDelays.current,
-    },
-    {
-      title: t('Alerts'),
-      description: t('tour.alerts.explained'),
-      nextButtonProps: { children: <p>{t('tour.final')}</p>, className: 'modalButton' },
-      prevButtonProps: { children: <p>{t('tour.previous')}</p> },
-      target: () => refAlerts.current,
-    },
-  ];
 
   const findRoute = () => {
     if (buttonStyle === 'default') {
@@ -152,6 +108,8 @@ const FullMap = () => {
             const data_route = {
               src_coord: [last_two[0].longitude, last_two[0].latitude],
               dst_coord: [last_two[1].longitude, last_two[1].latitude],
+              from_time: filter.fromDate,
+              to_time: filter.toDate,
             };
             const message = messageApi.open({
               type: 'loading',
@@ -166,6 +124,10 @@ const FullMap = () => {
               .then((response) => {
                 setRouteStreets(response.data.streets_coord);
                 message();
+                console.log(response.data.streets_coord.map((street) => street.street_name));
+                setNewStreetsInRoute((...prevState) => [
+                  ...new Set([...prevState, ...response.data.streets_coord.map((street) => street.street_name)]),
+                ]);
               })
               .finally(() => {
                 messageApi.success({
@@ -207,7 +169,7 @@ const FullMap = () => {
     routeStreets?.forEach((element) => {
       const streetInMapNew: StreetInMap = drawOnMap(map, element.street_name, element?.path, element?.color);
       newStreetsInMap.push(streetInMapNew);
-      newSelected.push(element.street_name);
+      // newSelected.push(element.street_name);
     });
 
     setNewStreetsInMap((prevState: StreetInMap[]) => {
@@ -227,7 +189,7 @@ const FullMap = () => {
       });
       return [...stateCopy, ...newStreets];
     });
-    setNewStreetsInSelected([...new Set([...newSelected, ...streetsInSelected])]);
+    // setNewStreetsInSelected([...new Set([...newSelected, ...streetsInSelected])]);
   }, [routeStreets]);
 
   useEffect(() => {
@@ -271,16 +233,14 @@ const FullMap = () => {
           setOpenInfoModalState={setOpenInfoModalState}
           setOpenTour={setOpenTour}
         />
-        <EmailModalForm openEmailModal={openEmailModal} setOpenEmailModal={setOpenEmailModal} />
         <Col span={1} className="sidermenu">
           <Sidebar
-            setOpenDrawer={setOpenDrawer}
-            setOpenDrawerPlot={setOpenDrawerPlot}
             setOpenInfoModalState={setOpenInfoModalState}
-            setOpenEmailModal={setOpenEmailModal}
             refStats={refStats}
             refLineStats={refLineStats}
             refContacForm={refContacForm}
+            refRoute={refRouteSidebar}
+            routeStreets={routeStreets}
           />
         </Col>
         <Col span={23} style={{ position: 'relative' }}>
@@ -311,14 +271,18 @@ const FullMap = () => {
             <DateSlider />
           </div>
         </Col>
-        <StatsDrawer
-          open={openDrawer}
-          onCloseDrawer={() => {
-            setOpenDrawer(false);
-          }}
-        ></StatsDrawer>
-        <PlotDrawer open={openDrawerPlot} onCloseDrawer={() => setOpenDrawerPlot(false)}></PlotDrawer>
-        <Tour open={openTour} onClose={() => setOpenTour(false)} steps={steps} />
+
+        <ApplicationTour
+          refStats={refStats}
+          refLineStats={refLineStats}
+          refContacForm={refContacForm}
+          refRoute={refRoute}
+          refRouteSidebar={refRouteSidebar}
+          refDelays={refDelays}
+          refAlerts={refAlerts}
+          openTour={openTour}
+          setOpenTour={setOpenTour}
+        ></ApplicationTour>
       </Row>
     </div>
   );

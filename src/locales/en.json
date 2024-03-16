@@ -123,6 +123,7 @@
   "tour.route.explained": "Map selection mode. In this mode, each click on the map counts towards the route you are looking for. It is plotted sequentially, in route pairs.",
   "tour.jams.explained": "Plots all traffic jams in a given period on a map. If specific streets are selected in the filters/map, it will only plot on those streets.",
   "tour.alerts.explained": "Plots all traffic events in a given period on the map. If specific streets are selected in the filters/map, it will only plot on those streets.",
+  "tour.routeSidebar.explained": "Edit selected route, or choose another (whole) streets for vizualization.",
 
   "tour.next": "Next",
   "tour.previous": "Previous",
@@ -140,5 +141,7 @@
   "route.selection.active": "You can start selecting route from map.",
   "route.selection.done": "Selecting route done.",
 
-  "loading.data": "Loading data"
+  "loading.data": "Loading data",
+  "sidebar.route": "Route",
+  "sidebar.streets.more": "Choose more streets"
 }

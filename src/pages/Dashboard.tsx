@@ -8,7 +8,7 @@ import backendApi from '../utils/api';
 import BarChartComponent from '../Components/GraphComponents/BarChartComponent';
 import ChartTimelineComponent from '../Components/GraphComponents/ChartTimelineComponent';
 import LineChartComponentV2 from '../Components/GraphComponents/LineChartComponentV2';
-import LiveTilesComplet from '../Components/StatsTilesComponents/LiveTilesComplet';
+import LiveTilesComplet from '../Components/StatsTilesComponents/StatsTileComplet';
 
 type BarChartData = {
   streets: [];

@@ -150,6 +150,7 @@ nav {
 
 .filterStyle {
   min-width: 180px;
+  max-width: 220px;
   margin-top: 5px;
 }
 
@@ -230,7 +231,6 @@ nav {
 
 .ant-btn:hover {
   border-color: $buttonHoverBackgroundColor !important;
-  color: $buttonHoverBackgroundColor !important;
 }
 
 .ant-tour-indicator-active {
@@ -372,7 +372,14 @@ nav {
   overflow: auto;
   background-color: white !important;
   color: black !important;
-  border-color: $buttonHoverBackgroundColor;
+}
+
+.ant-select-selector:hover {
+  border-color: $buttonHoverBackgroundColor !important;
+}
+
+.ant-select-selector:active {
+  border-color: $buttonHoverBackgroundColor !important;
 }
 
 .graphs-row {

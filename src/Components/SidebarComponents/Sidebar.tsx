@@ -1,32 +1,51 @@
 import { BarChartOutlined, InfoCircleOutlined, LineChartOutlined, MailOutlined, MenuOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { RouteIcon } from '../../utils/icons';
+import PlotDrawer from './PlotDrawer';
+import StatsDrawer from './StatsDrawer';
+import EmailModalForm from '../ModalComponents/EmailModalForm';
+import StreetsDrawer from './StreetsDrawer';
 
 type Props = {
-  setOpenDrawer: (value: React.SetStateAction<boolean>) => void;
-  setOpenDrawerPlot: (value: React.SetStateAction<boolean>) => void;
   setOpenInfoModalState: (value: React.SetStateAction<boolean>) => void;
-  setOpenEmailModal: (value: React.SetStateAction<boolean>) => void;
 
   refStats: React.MutableRefObject<any>;
   refLineStats: React.MutableRefObject<any>;
   refContacForm: React.MutableRefObject<any>;
+  refRoute: React.MutableRefObject<any>;
+  routeStreets: any;
 };
 
 const Sidebar = ({
-  setOpenDrawer,
-  setOpenDrawerPlot,
   setOpenInfoModalState,
-  setOpenEmailModal,
 
   refStats,
   refContacForm,
   refLineStats,
+  refRoute,
+  routeStreets,
 }: Props) => {
   const { t } = useTranslation();
+  const [openDrawerPlot, setOpenDrawerPlot] = useState<boolean>(false);
+  const [openDrawerRoute, setOpenDrawerRoute] = useState<boolean>(false);
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+  const [openEmailModal, setOpenEmailModal] = useState<boolean>(false);
 
   return (
     <div>
+      <div
+        onClick={() => {
+          setOpenDrawerRoute(true);
+        }}
+        style={{ paddingBottom: 10 }}
+        ref={refRoute}
+      >
+        <RouteIcon />
+
+        <p>{t('sidebar.route')}</p>
+      </div>
+
       <div
         onClick={() => {
           setOpenDrawer(true);
@@ -82,6 +101,19 @@ const Sidebar = ({
         <MailOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
         <p>{t('contact')}</p>
       </div>
+      <PlotDrawer open={openDrawerPlot} onCloseDrawer={() => setOpenDrawerPlot(false)} />
+      <StatsDrawer
+        open={openDrawer}
+        onCloseDrawer={() => {
+          setOpenDrawer(false);
+        }}
+      ></StatsDrawer>
+      <EmailModalForm openEmailModal={openEmailModal} setOpenEmailModal={setOpenEmailModal} />
+      <StreetsDrawer
+        openDrawerRoute={openDrawerRoute}
+        setOpenDrawerRoute={setOpenDrawerRoute}
+        routeStreets={routeStreets}
+      />
     </div>
   );
 };

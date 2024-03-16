@@ -122,6 +122,7 @@
   "tour.route.explained": "Mód výberu na mape. V tomto móde sa každý klik na mapu ráta do hľadanej trasy. Vykresluje sa postupne, po jednotlivých dvojicách trasy.",
   "tour.jams.explained": "Vykreslí na mapu všetky dopravné zápchy v danom období. Ak sú vo filtry/na mape vybrané konkrétne ulice, vykreslí iba na týchto uliciach.",
   "tour.alerts.explained": "Vykreslí na mapu všetky dopravné udalosti v danom období. Ak sú vo filtry/na mape vybrané konkrétne ulice, vykreslí iba na týchto uliciach.",
+  "tour.routeSidebar.explained": "Upravenie vyklikanej trasy, prípadne výber ďaľších (celých) ulíc pre vizualizáciu.",
 
   "tour.next": "Ďalej",
   "tour.previous": "Predchádzajúci",
@@ -139,5 +140,7 @@
   "route.selection.active": "Môžete začať vyberať trasu kliknutím na mapu.",
   "route.selection.done": "Vyberanie trasy hotové.",
 
-  "loading.data": "Načítavam dáta"
+  "loading.data": "Načítavam dáta",
+  "sidebar.route": "Trasa",
+  "sidebar.streets.more": "Vyber ďalšie ulice"
 }

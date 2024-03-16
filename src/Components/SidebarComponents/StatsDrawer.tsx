@@ -1,7 +1,7 @@
 import { Drawer } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import LiveTilesComplet from '../StatsTilesComponents/LiveTilesComplet';
+import LiveTilesComplet from '../StatsTilesComponents/StatsTileComplet';
 
 type Props = {
   open: boolean;

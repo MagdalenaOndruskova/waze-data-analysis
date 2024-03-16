@@ -33,15 +33,19 @@ export interface StreetContext {
   setNewStreetsInSelected: (streetsInSelected: string[]) => void;
   newlySelected: string;
   setNewNewlySelected: (selected: string) => void;
+  streetsInRoute: string[];
+  setNewStreetsInRoute: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const STREET_CONTEXT_DEFAULT_VALUE: StreetContext = {
   streetsInMap: [],
   streetsInSelected: [],
   newlySelected: '',
+  streetsInRoute: [],
   setNewStreetsInMap: () => {},
   setNewStreetsInSelected: () => {},
   setNewNewlySelected: () => {},
+  setNewStreetsInRoute: () => {},
 };
 
 export const streetContext = React.createContext<StreetContext>(STREET_CONTEXT_DEFAULT_VALUE);

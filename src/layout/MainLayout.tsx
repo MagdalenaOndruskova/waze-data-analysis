@@ -1,7 +1,7 @@
-import React, { createContext } from 'react';
-import { Link, Outlet } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
-import { Content, Footer } from 'antd/es/layout/layout';
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import { Layout } from 'antd';
+import { Content } from 'antd/es/layout/layout';
 import Navbar from './Navbar';
 import '../styles/layout-styles.scss';
 import { useFilter } from '../utils/useFilter';

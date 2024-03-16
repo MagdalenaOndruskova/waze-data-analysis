@@ -41,7 +41,6 @@ const PlotDrawer = ({ open, onCloseDrawer }: Props) => {
 
   useEffect(() => {
     if (!filter) {
-      console.log('filter not defined');
       return;
     }
     const body = {
@@ -50,7 +49,6 @@ const PlotDrawer = ({ open, onCloseDrawer }: Props) => {
       streets: filter.streets,
     };
     setLoading(true);
-    console.log('data ziskavam');
 
     setDateTimeFrom(`${filter.fromDate}`);
     setDateTimeTo(`${filter.toDate}`);
@@ -60,7 +58,6 @@ const PlotDrawer = ({ open, onCloseDrawer }: Props) => {
       setJamsData(response.data.jams);
       setAlertData(response.data.alerts);
       setXAxisData(response.data.xaxis);
-      console.log('mam data');
       setLoading(false);
     });
     backendApi.post('data_for_plot/', body).then((response) => {

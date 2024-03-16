@@ -2,10 +2,9 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L, { Map as LeafletMap } from 'leaflet';
-import { Button, Col, Modal, Row, Slider, Tour, TourProps, message } from 'antd';
+import { Button, Col, Row, Tour, TourProps, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import StatsDrawer from '../Components/SidebarComponents/StatsDrawer';
-import SidebarDrawer from '../layout/SidebarDrawer';
 import PlotDrawer from '../Components/SidebarComponents/PlotDrawer';
 import { dataContext, filterContext, streetContext } from '../utils/contexts';
 import backendApi from '../utils/api';
@@ -17,6 +16,7 @@ import EmailModalForm from '../Components/ModalComponents/EmailModalForm';
 import DateSlider from '../Components/DateSlider';
 import InfoModal from '../Components/ModalComponents/InfoModal';
 import Sidebar from '../Components/SidebarComponents/Sidebar';
+import 'leaflet/dist/leaflet.css';
 
 type Coord = {
   latitude: number;
@@ -43,7 +43,6 @@ const FullMap = () => {
   const [openInfoModalState, setOpenInfoModalState] = useState<boolean>(false);
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
-  const [openDrawerFilter, setOpenDrawerFilter] = useState<boolean>(false);
   const [openDrawerPlot, setOpenDrawerPlot] = useState<boolean>(false);
   const [openTour, setOpenTour] = useState<boolean>(false);
   const [buttonStyle, setButtonStyle] = useState<'default' | 'primary'>('default');
@@ -318,7 +317,6 @@ const FullMap = () => {
             setOpenDrawer(false);
           }}
         ></StatsDrawer>
-        <SidebarDrawer open={openDrawerFilter} onCloseDrawer={() => setOpenDrawerFilter(false)}></SidebarDrawer>
         <PlotDrawer open={openDrawerPlot} onCloseDrawer={() => setOpenDrawerPlot(false)}></PlotDrawer>
         <Tour open={openTour} onClose={() => setOpenTour(false)} steps={steps} />
       </Row>

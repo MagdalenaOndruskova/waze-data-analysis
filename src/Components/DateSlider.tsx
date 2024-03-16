@@ -1,8 +1,9 @@
 import { Slider, SliderSingleProps } from 'antd';
 import dayjs from 'dayjs';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { colorRed } from '../utils/constants';
-import { filterContext } from '../utils/contexts';
+import { FILTER_DEFAULT_VALUE, filterContext } from '../utils/contexts';
+import { useSearchParams } from 'react-router-dom';
 
 type rangeValuesType = {
   startValue: number;
@@ -19,10 +20,54 @@ const defaultValues = {
 const DateSlider = () => {
   const { filter, setNewFilter } = useContext(filterContext);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [value, setValue] = useState<rangeValuesType>({
     startValue: defaultValues.defaultStartValue,
     endValue: defaultValues.defaultEndValue,
   });
+
+  const inicialized = useRef<Boolean>(false);
+
+  useEffect(() => {
+    if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filterDefaultValue) && filter !== null) {
+      const { fromDate, toDate } = filter;
+      setSearchParams({
+        fromDate,
+        toDate,
+        streets: `('${filter.streets.join(`', '`)}')`,
+      });
+    } else {
+      if (inicialized.current === true) {
+        setSearchParams({});
+      }
+    }
+  }, [filter]);
+
+  useEffect(() => {
+    if (inicialized.current === false) {
+      if (filter === null && searchParams.toString() !== '') {
+        const fromDate = searchParams.get('fromDate');
+        const toDate = searchParams.get('toDate');
+        var streets = searchParams.get('streets');
+
+        // TODO: check when creating url params, so that when no street, dont have this url param
+        var streetsSplitted = [];
+        if (streets !== "('')") {
+          streets = streets.replaceAll("'", '');
+          streets = streets.replaceAll('(', '');
+          streets = streets.replaceAll(')', '');
+          streetsSplitted = streets.split(',');
+          streetsSplitted = streetsSplitted.map((item) => item.trim());
+        }
+        setNewFilter({ fromDate, toDate, streets: streetsSplitted });
+        inicialized.current = true;
+      }
+      if (searchParams.toString() === '') {
+        setNewFilter(FILTER_DEFAULT_VALUE.filterDefaultValue);
+      }
+    }
+  }, [searchParams, inicialized]);
 
   const marks: SliderSingleProps['marks'] = {
     0: {

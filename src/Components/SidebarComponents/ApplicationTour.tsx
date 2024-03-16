@@ -6,6 +6,7 @@ type Props = {
   refStats: React.MutableRefObject<any>;
   refLineStats: React.MutableRefObject<any>;
   refContacForm: React.MutableRefObject<any>;
+  refRoute: React.MutableRefObject<any>;
   refRouteSidebar: React.MutableRefObject<any>;
   refDelays: React.MutableRefObject<any>;
   refAlerts: React.MutableRefObject<any>;

@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L, { Map as LeafletMap } from 'leaflet';
 import Brno from '../assets/Brno.png';
 import fit from '../assets/fit.png';
-import { Button, Col, Modal, Row, Tour, TourProps, message } from 'antd';
+import { Button, Col, Modal, Row, Slider, Tour, TourProps, message } from 'antd';
 import {
   BarChartOutlined,
   FilterOutlined,
@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import StatsDrawer from '../Components/StatsDrawer';
 import SidebarDrawer from '../layout/SidebarDrawer';
 import PlotDrawer from '../Components/PlotDrawer';
-import { filterContext, streetContext } from '../utils/contexts';
+import { dataContext, filterContext, streetContext } from '../utils/contexts';
 import backendApi from '../utils/api';
 import { StreetInMap } from '../types/StreetInMap';
 import { deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../utils/map';
@@ -25,6 +25,9 @@ import { queryFindStreet, queryStreetCoord } from '../utils/queryBuilder';
 import { PinIcon, RouteIcon } from '../utils/icons';
 import EmailModalForm from '../Components/EmailModalForm';
 import AwesomeMarkers from 'leaflet.awesome-markers';
+import BrushChartComponent from '../Components/GraphComponents/BrushChartComponent';
+import LineChartComponent from '../Components/GraphComponents/LineChartComponent';
+import DateSlider from '../Components/DateSlider';
 
 type Props = {};
 
@@ -50,6 +53,9 @@ const FullMap = (props: Props) => {
     newlySelected,
   } = useContext(streetContext);
 
+  const { previousDate, fullAlerts, setFullAlerts, fullJams, setFullJams, fullXAxis, setFullXAxis } =
+    useContext(dataContext);
+
   const mapRef = useRef<LeafletMap>(null);
   const { t } = useTranslation();
 
@@ -72,6 +78,7 @@ const FullMap = (props: Props) => {
   const [routeCoordinates, setRouteCoordinates] = useState<Coord[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [routeStreets, setRouteStreets] = useState<any>([]);
+  const [loadingData, setLoadingData] = useState<boolean>(true);
 
   const steps: TourProps['steps'] = [
     {
@@ -127,10 +134,6 @@ const FullMap = (props: Props) => {
 
   const openMenu = () => {
     console.log('hi menu');
-  };
-
-  const openMailForm = () => {
-    console.log('hi contact');
   };
 
   const findRoute = () => {
@@ -287,6 +290,19 @@ const FullMap = (props: Props) => {
     fetchData();
   }, [newlySelected]);
 
+  const get_data = async () => {
+    const response = await backendApi.get(`/full_data/`);
+    console.log('🚀 ~ backendApi.get ~ response:', response);
+    setFullAlerts(response.data.alerts);
+    setFullJams(response.data.jams);
+    setFullXAxis(response.data.xaxis);
+    setLoadingData(false);
+  };
+
+  if (loadingData) {
+    get_data();
+  }
+
   return (
     <div>
       <Row>
@@ -410,6 +426,21 @@ const FullMap = (props: Props) => {
             />
             <MapClickEvent />
           </MapContainer>
+          {fullAlerts ? (
+            <div className="divTimelineOnMap">
+              <DateSlider />
+
+              {/* <BrushChartComponent
+                dataJams={fullAlerts}
+                dataAlerts={fullJams}
+                xAxis={fullXAxis}
+                xaxis_min_selected={`${previousDate}`}
+                xaxis_max_selected={`${filter?.toDate}, ${filter?.toTime}:00`}
+              ></BrushChartComponent> */}
+            </div>
+          ) : (
+            <></>
+          )}
         </Col>
         <StatsDrawer
           open={openDrawer}

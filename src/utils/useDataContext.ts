@@ -13,6 +13,9 @@ export const useDataContext = (): DataContext => {
   const [timeData, setNewTimeData] = React.useState<[]>(DATA_CONTEXT_DEFAULT_VALUE.timeData);
   const [previousDate, setNewPreviousDate] = React.useState<string>(DATA_CONTEXT_DEFAULT_VALUE.previousDate);
   const [alertTypes, setNewAlertTypes] = React.useState<{}>(DATA_CONTEXT_DEFAULT_VALUE.alertTypes);
+  const [fullAlerts, setNewFullAlerts] = React.useState<[]>(DATA_CONTEXT_DEFAULT_VALUE.fullAlerts);
+  const [fullJams, setNewFullJams] = React.useState<[]>(DATA_CONTEXT_DEFAULT_VALUE.fullJams);
+  const [fullXAxis, setNewFullXAxis] = React.useState<[]>(DATA_CONTEXT_DEFAULT_VALUE.fullXAxis);
 
   const setDateTimeFrom = React.useCallback((dateTime: string): void => {
     setNewDateTimeFrom(dateTime);
@@ -58,6 +61,17 @@ export const useDataContext = (): DataContext => {
     setNewAlertTypes(data);
   }, []);
 
+  const setFullAlerts = React.useCallback((data: []): void => {
+    setNewFullAlerts(data);
+  }, []);
+
+  const setFullJams = React.useCallback((data: []): void => {
+    setNewFullJams(data);
+  }, []);
+  const setFullXAxis = React.useCallback((data: []): void => {
+    setNewFullXAxis(data);
+  }, []);
+
   return {
     dateTimeFrom,
     dateTimeTo,
@@ -70,6 +84,9 @@ export const useDataContext = (): DataContext => {
     lengthData,
     timeData,
     alertTypes,
+    fullAlerts,
+    fullJams,
+    fullXAxis,
 
     setDateTimeFrom,
     setDateTimeTo,
@@ -82,5 +99,8 @@ export const useDataContext = (): DataContext => {
     setLengthData,
     setTimeData,
     setAlertTypes,
+    setFullAlerts,
+    setFullJams,
+    setFullXAxis,
   };
 };

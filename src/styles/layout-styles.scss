@@ -252,6 +252,33 @@ nav {
   }
 }
 
+.tooltip {
+  top: 10.8px !important;
+}
+
+.ant-slider-mark-text {
+  width: 100%;
+}
+
+.ant-slider {
+  .ant-slider-track {
+    background-color: $linkColorActive !important;
+  }
+  .ant-slider-handle::after {
+    box-shadow: 0 0 0 2px $linkColorActive !important;
+  }
+}
+
+.divTimelineOnMap {
+  position: absolute;
+  z-index: 1000;
+  bottom: 30px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background-color: $backgroundColor;
+}
+
 .buttonRoute {
   display: flex;
   align-items: center;
@@ -310,7 +337,7 @@ nav {
 .ant-drawer-body {
   text-align: center;
   line-height: 30px;
-  color: $filterTextColor;
+  color: black;
   background-color: $linkColorActive;
   height: 100%;
   // position: fixed;

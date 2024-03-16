@@ -38,7 +38,6 @@ const PlotDrawer = ({ open, onCloseDrawer }: Props) => {
     setLevelData,
     setSpeedData,
     setTimeData,
-    alertTypes,
     setAlertTypes,
   } = useContext(dataContext);
 

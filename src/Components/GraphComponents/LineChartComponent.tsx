@@ -45,6 +45,23 @@ const LineChartComponent = ({
           return formattedTime;
         },
       },
+      // shared: true,
+      // y: [
+      //   {
+      //     title: {
+      //       formatter: function (val) {
+      //         return val + ' (mins)';
+      //       },
+      //     },
+      //   },
+      //   {
+      //     title: {
+      //       formatter: function (val) {
+      //         return val + ' per session';
+      //       },
+      //     },
+      //   },
+      // ],
     },
     legend: {
       position: 'top',

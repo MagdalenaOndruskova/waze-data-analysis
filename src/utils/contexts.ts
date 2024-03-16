@@ -63,6 +63,9 @@ export interface DataContext {
   lengthData: [];
   timeData: [];
   alertTypes: {};
+  fullAlerts: [];
+  fullJams: [];
+  fullXAxis: [];
 
   setDateTimeFrom: (dateTime: string) => void;
   setDateTimeTo: (dateTime: string) => void;
@@ -75,6 +78,9 @@ export interface DataContext {
   setLengthData: (data: []) => void;
   setTimeData: (data: []) => void;
   setAlertTypes: (data: {}) => void;
+  setFullAlerts: (data: {}) => void;
+  setFullJams: (data: {}) => void;
+  setFullXAxis: (data: {}) => void;
 }
 
 export const DATA_CONTEXT_DEFAULT_VALUE: DataContext = {
@@ -89,6 +95,9 @@ export const DATA_CONTEXT_DEFAULT_VALUE: DataContext = {
   lengthData: [],
   timeData: [],
   alertTypes: {},
+  fullAlerts: [],
+  fullJams: [],
+  fullXAxis: [],
 
   setDateTimeFrom: () => {},
   setDateTimeTo: () => {},
@@ -101,6 +110,9 @@ export const DATA_CONTEXT_DEFAULT_VALUE: DataContext = {
   setLengthData: () => {},
   setTimeData: () => {},
   setAlertTypes: () => {},
+  setFullAlerts: () => {},
+  setFullJams: () => {},
+  setFullXAxis: () => {},
 };
 
 export const dataContext = React.createContext<DataContext>(DATA_CONTEXT_DEFAULT_VALUE);

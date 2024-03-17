@@ -39,6 +39,7 @@
     "leaflet-routing-machine": "^3.2.12",
     "leaflet-sidebar-v2": "^3.2.3",
     "leaflet.awesome-markers": "^2.0.5",
+    "lodash": "^4.17.21",
     "papaparse": "^5.4.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",

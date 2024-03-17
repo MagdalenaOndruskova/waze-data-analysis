@@ -6,12 +6,20 @@ import { streetContext } from '../../utils/contexts';
 import useAxios from '../../utils/useAxios';
 import { Streets } from '../../types/baseTypes';
 import { getOptionsFromStreet } from '../../utils/util';
-import { deleteMultipleFromMap } from '../../utils/map';
+import { deburr } from 'lodash';
 
 type Props = {
   openDrawerRoute: boolean;
   setOpenDrawerRoute: React.Dispatch<React.SetStateAction<boolean>>;
   routeStreets: any;
+};
+
+const ignoreDiacriticsFilter = (input, option) => {
+  // Normalize both input and option text to remove diacritics
+  const inputValue = deburr(input).toLowerCase();
+  const optionValue = deburr(option.value).toLowerCase();
+
+  return optionValue.includes(inputValue);
 };
 
 const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Props) => {
@@ -43,6 +51,7 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
     if (!dataStreets) {
       return;
     }
+    console.log(streetsInRoute);
     setOptions(getOptionsFromStreet(dataStreets, streetsInRoute));
     const toDelete = selected.filter((street) => streetsInRoute.includes(street));
     // todo: odstran tie ktore si zobrala zo select aj z vykreslovaneho pola
@@ -98,6 +107,7 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
         }}
         options={options}
         value={selected}
+        filterOption={ignoreDiacriticsFilter}
       />
     </Drawer>
   );

@@ -1,75 +1,19 @@
 import { Drawer, Spin } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import LineChartComponent from '../GraphComponents/LineChartComponent';
-import { dataContext, filterContext } from '../../utils/contexts';
-import backendApi from '../../utils/api';
-import dayjs from 'dayjs';
-
-function getXMinDate(toDate: string) {
-  return dayjs(`${toDate}`, { format: 'YYYY-MM-DD' }).subtract(2, 'day').format('YYYY-MM-DD');
-}
+import { dataContext } from '../../utils/contexts';
 
 type Props = {
   open: boolean;
   onCloseDrawer: any;
+  loading: boolean;
 };
 
-const PlotDrawer = ({ open, onCloseDrawer }: Props) => {
-  const { filter } = useContext(filterContext);
+const PlotDrawer = ({ open, onCloseDrawer, loading }: Props) => {
   const { t } = useTranslation();
 
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const {
-    xAxisData,
-    jamsData,
-    alertData,
-    previousDate,
-    setXAxisData,
-    setJamsData,
-    setAlertData,
-    setDateTimeFrom,
-    setDateTimeTo,
-    setPreviousDate,
-    setLengthData,
-    setLevelData,
-    setSpeedData,
-    setTimeData,
-    setAlertTypes,
-  } = useContext(dataContext);
-
-  useEffect(() => {
-    if (!filter) {
-      return;
-    }
-    const body = {
-      from_date: filter?.fromDate,
-      to_date: filter?.toDate,
-      streets: filter.streets,
-    };
-    setLoading(true);
-
-    setDateTimeFrom(`${filter.fromDate}`);
-    setDateTimeTo(`${filter.toDate}`);
-    setPreviousDate(getXMinDate(filter?.toDate));
-
-    backendApi.post('data_for_plot_drawer/', body).then((response) => {
-      setJamsData(response.data.jams);
-      setAlertData(response.data.alerts);
-      setXAxisData(response.data.xaxis);
-      setLoading(false);
-    });
-    backendApi.post('data_for_plot/', body).then((response) => {
-      setSpeedData(response.data.speedKMH);
-      setTimeData(response.data.delay);
-      setLevelData(response.data.level);
-      setLengthData(response.data.length);
-    });
-    backendApi.post('data_for_plot_alerts/', body).then((response) => {
-      setAlertTypes(response.data);
-    });
-  }, [filter]);
+  const { xAxisData, jamsData, alertData, previousDate } = useContext(dataContext);
 
   return (
     <Drawer

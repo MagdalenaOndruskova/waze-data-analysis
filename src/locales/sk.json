@@ -148,5 +148,7 @@
 
   "loading.data": "Načítavam dáta",
   "sidebar.route": "Trasa",
-  "sidebar.streets.more": "Vyber ďalšie ulice"
+  "sidebar.streets.more": "Vyber ďalšie ulice",
+
+  "plot.downloadSVG": "Stiahni SVG"
 }

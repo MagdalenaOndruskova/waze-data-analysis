@@ -91,7 +91,7 @@ const LineChartComponent = ({ dataJams, dataAlerts, xAxis, xaxis_min_selected, w
         enabled: true,
         xaxis: {
           min: new Date(`${xaxis_min_selected}`).getTime(),
-          max: xAxis.slice(-1),
+          max: xAxis?.slice(-1),
         },
       },
     },

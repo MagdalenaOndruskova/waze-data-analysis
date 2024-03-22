@@ -1,7 +1,7 @@
 import { Drawer } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import LiveTilesComplet from '../StatsTilesComponents/StatsTileComplet';
+import StatsTilesComplet from '../StatsTilesComponents/StatsTileComplet';
 
 type Props = {
   open: boolean;
@@ -22,7 +22,7 @@ const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
       closable={true}
       zIndex={10000}
     >
-      <LiveTilesComplet spaceBetween={true} />
+      <StatsTilesComplet spaceBetween={true} />
     </Drawer>
   );
 };

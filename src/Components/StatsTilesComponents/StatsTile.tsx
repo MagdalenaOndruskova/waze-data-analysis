@@ -1,4 +1,4 @@
-const LiveTile = ({ icon, tileTitle, tileType }) => {
+const StatsTile = ({ icon, tileTitle, tileType }) => {
   return (
     <div className="cardbody" style={{ minWidth: 200 }}>
       <div>
@@ -10,4 +10,4 @@ const LiveTile = ({ icon, tileTitle, tileType }) => {
   );
 };
 
-export default LiveTile;
+export default StatsTile;

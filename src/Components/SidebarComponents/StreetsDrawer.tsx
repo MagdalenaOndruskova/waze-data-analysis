@@ -62,7 +62,7 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
   }, [dataStreets, streetsInRoute]);
 
   useEffect(() => {
-    setNewNewlySelected(streetsInSelected.slice(-1)[0]); //sending to drawing
+    setNewNewlySelected(streetsInSelected?.slice(-1)[0]); //sending to drawing
 
     setSelected(streetsInSelected);
   }, [streetsInSelected]);

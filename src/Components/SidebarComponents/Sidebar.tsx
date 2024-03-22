@@ -1,11 +1,14 @@
 import { BarChartOutlined, InfoCircleOutlined, LineChartOutlined, MailOutlined, MenuOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RouteIcon } from '../../utils/icons';
 import PlotDrawer from './PlotDrawer';
 import StatsDrawer from './StatsDrawer';
 import EmailModalForm from '../ModalComponents/EmailModalForm';
 import StreetsDrawer from './StreetsDrawer';
+import { dataContext, filterContext } from '../../utils/contexts';
+import { get_data_delay_alerts } from '../../utils/backendApiRequests';
+import { getXMinDate } from '../../utils/util';
 
 type Props = {
   setOpenInfoModalState: (value: React.SetStateAction<boolean>) => void;
@@ -27,10 +30,47 @@ const Sidebar = ({
   routeStreets,
 }: Props) => {
   const { t } = useTranslation();
+  const { filter } = useContext(filterContext);
+
+  const {
+    xAxisData,
+    jamsData,
+    alertData,
+    previousDate,
+    setXAxisData,
+    setJamsData,
+    setAlertData,
+    setDateTimeFrom,
+    setDateTimeTo,
+    setPreviousDate,
+    setAlertTypes,
+  } = useContext(dataContext);
+
   const [openDrawerPlot, setOpenDrawerPlot] = useState<boolean>(false);
   const [openDrawerRoute, setOpenDrawerRoute] = useState<boolean>(false);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!filter) {
+      return;
+    }
+
+    setDateTimeFrom(`${filter.fromDate}`);
+    setDateTimeTo(`${filter.toDate}`);
+    setPreviousDate(getXMinDate(filter?.toDate));
+
+    setLoading(true);
+    const get_data = async () => {
+      const data = await get_data_delay_alerts(filter);
+      setJamsData(data.jams);
+      setAlertData(data.alerts);
+      setXAxisData(data.xaxis);
+      setLoading(false);
+    };
+    get_data();
+  }, [filter]);
 
   return (
     <div>
@@ -101,7 +141,7 @@ const Sidebar = ({
         <MailOutlined className="iconStyle" style={{ fontSize: 20, paddingTop: 10 }} />
         <p>{t('contact')}</p>
       </div>
-      <PlotDrawer open={openDrawerPlot} onCloseDrawer={() => setOpenDrawerPlot(false)} />
+      <PlotDrawer open={openDrawerPlot} onCloseDrawer={() => setOpenDrawerPlot(false)} loading={loading} />
       <StatsDrawer
         open={openDrawer}
         onCloseDrawer={() => {

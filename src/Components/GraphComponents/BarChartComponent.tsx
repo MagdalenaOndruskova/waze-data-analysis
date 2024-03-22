@@ -68,7 +68,7 @@ const BarChartComponent = ({ streets, values, id, title }) => {
     tooltip: {
       theme: 'dark',
       x: {
-        show: false,
+        show: true,
       },
       y: {
         title: {

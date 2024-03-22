@@ -8,7 +8,8 @@ import backendApi from '../utils/api';
 import BarChartComponent from '../Components/GraphComponents/BarChartComponent';
 import ChartTimelineComponent from '../Components/GraphComponents/ChartTimelineComponent';
 import LineChartComponentV2 from '../Components/GraphComponents/LineChartComponentV2';
-import LiveTilesComplet from '../Components/StatsTilesComponents/StatsTileComplet';
+import StatsTilesComplet from '../Components/StatsTilesComponents/StatsTileComplet';
+import { get_data_alert_types, get_data_critical_streets, get_data_delay_alerts } from '../utils/backendApiRequests';
 
 type BarChartData = {
   streets: [];
@@ -26,6 +27,9 @@ const Dashboard = () => {
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState<string>('ACCIDENT');
 
+  const [loadingAlertTypes, setLoadingAlertTypes] = useState<boolean>(false);
+  const [loadingCriticalStreets, setLoadingCriticalStreets] = useState<boolean>(false);
+
   const {
     xAxisData,
     jamsData,
@@ -42,6 +46,7 @@ const Dashboard = () => {
     setDateTimeFrom,
     setDateTimeTo,
     alertTypes,
+    setJamsData,
     setAlertTypes,
   } = useContext(dataContext);
 
@@ -58,50 +63,59 @@ const Dashboard = () => {
   }, [alertTypes]);
 
   useEffect(() => {
-    if (filter) {
-      const body = {
-        from_date: `${filter?.fromDate}`,
-        to_date: `${filter?.toDate}`,
-        streets: filter.streets,
-      };
-      backendApi.post('data_for_plot_streets/', body).then((response) => {
-        console.log('🚀 ~ backendApi.post ~ response:', response);
-
-        setCriticalStreetsJams({ streets: response.data.streets_jams, values: response.data.values_jams });
-        setCriticalStreetsAlerts({ streets: response.data.streets_alerts, values: response.data.values_alerts });
-      });
+    if (!filter) {
+      return;
     }
+    setLoadingCriticalStreets(true);
+    setLoadingAlertTypes(true);
+
+    const get_critical_streets_data = async () => {
+      const data = await get_data_critical_streets(filter);
+      setCriticalStreetsJams({ streets: data.streets_jams, values: data.values_jams });
+      setCriticalStreetsAlerts({ streets: data.streets_alerts, values: data.values_alerts });
+      setLoadingCriticalStreets(false);
+    };
+    const get_alert_types_data = async () => {
+      const data = await get_data_alert_types(filter);
+      setAlertTypes(data);
+      setLoadingAlertTypes(false);
+    };
+
+    get_critical_streets_data();
+    get_alert_types_data();
   }, [filter]);
 
   return (
-    <div>
+    <div style={{ padding: '12px' }}>
       <div className="top-row">
-        <LiveTilesComplet spaceBetween={false} isDashboard={true} />
+        <StatsTilesComplet spaceBetween={false} isDashboard={true} />
       </div>
       <Row className="dashboard-row" gutter={24}>
         <Col xxl={5} xl={12} lg={12} md={24} className="alerts-type-col">
           <Card title={t('tile.AlertsType')}>
-            {/* <BarChartComponent
-              streets={alertTypes['basic_types_labels'].map((value) => t(value))}
-              values={alertTypes['basic_types_values']}
-              id="chart-bar3"
-              title={''}
-            ></BarChartComponent> */}
-            <Select
-              className="filterStyle"
-              value={selected}
-              style={{ width: 120 }}
-              onChange={(value) => {
-                setSelected(value);
-              }}
-              options={options}
-            />
-            <BarChartComponent
-              streets={alertTypes[selected]?.subtype_labels.map((value) => t(value))}
-              values={alertTypes[selected]?.subtype_values}
-              id="chart-bar4"
-              title={''}
-            ></BarChartComponent>
+            <Spin tip={t('loading.data')} size="large" spinning={loadingAlertTypes}>
+              <BarChartComponent
+                streets={alertTypes['basic_types_labels']?.map((value) => t(value))}
+                values={alertTypes['basic_types_values']}
+                id="chart-bar3"
+                title={''}
+              ></BarChartComponent>
+              <Select
+                className="filterStyle"
+                value={selected}
+                style={{ width: 120 }}
+                onChange={(value) => {
+                  setSelected(value);
+                }}
+                options={options}
+              />
+              <BarChartComponent
+                streets={alertTypes[selected]?.subtype_labels.map((value) => t(value))}
+                values={alertTypes[selected]?.subtype_values}
+                id="chart-bar4"
+                title={''}
+              ></BarChartComponent>
+            </Spin>
           </Card>
         </Col>
         <Col xxl={12} xl={24} lg={24} md={24} className="graphs-col">
@@ -147,18 +161,20 @@ const Dashboard = () => {
         </Col>
         <Col xxl={7} xl={12} lg={12} md={24} className="graph-tiles-col">
           <Card title={t('graph.tiles.title')}>
-            <BarChartComponent
-              streets={criticalStreetsAlerts.streets}
-              values={criticalStreetsAlerts.values}
-              id="chart-bar1"
-              title={t('tile.CriticalStreetsAlerts')}
-            ></BarChartComponent>
-            <BarChartComponent
-              streets={criticalStreetsJams.streets}
-              values={criticalStreetsJams.values}
-              id="chart-bar2"
-              title={t('tile.CriticalStreetsJams')}
-            ></BarChartComponent>
+            <Spin tip={t('loading.data')} size="large" spinning={loadingCriticalStreets}>
+              <BarChartComponent
+                streets={criticalStreetsAlerts?.streets}
+                values={criticalStreetsAlerts?.values}
+                id="chart-bar1"
+                title={t('tile.CriticalStreetsAlerts')}
+              ></BarChartComponent>
+              <BarChartComponent
+                streets={criticalStreetsJams?.streets}
+                values={criticalStreetsJams?.values}
+                id="chart-bar2"
+                title={t('tile.CriticalStreetsJams')}
+              ></BarChartComponent>
+            </Spin>
           </Card>
         </Col>
       </Row>

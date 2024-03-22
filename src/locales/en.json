@@ -147,5 +147,7 @@
 
   "loading.data": "Loading data",
   "sidebar.route": "Route",
-  "sidebar.streets.more": "Choose more streets"
+  "sidebar.streets.more": "Choose more streets",
+
+  "plot.downloadSVG": "Download SVG"
 }

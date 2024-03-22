@@ -52,11 +52,9 @@ const FullMap = () => {
   const [buttonStyle, setButtonStyle] = useState<'default' | 'primary'>('default');
   const [mapMode, setMapMode] = useState<'route' | 'street'>('street');
   const [routeCoordinates, setRouteCoordinates] = useState<Coord[]>([]);
-  // const [messageApi, contextHolder] = message.useMessage();
   const [api, contextHolder] = notification.useNotification({ stack: { threshold: 3 } });
 
   const [routeStreets, setRouteStreets] = useState<any>([]);
-  const [loadingData, setLoadingData] = useState<boolean>(true);
 
   const findRoute = () => {
     if (buttonStyle === 'default') {
@@ -93,7 +91,7 @@ const FullMap = () => {
           // L.marker([coord.latitude, coord.longitude], { icon: redMarker }).addTo(map);
           L.marker([coord.latitude, coord.longitude]).addTo(map);
 
-          const last_two = routeCoordinates.slice(-2);
+          const last_two = routeCoordinates?.slice(-2);
           if (last_two.length > 1) {
             const data_route = {
               src_coord: [last_two[0].longitude, last_two[0].latitude],
@@ -140,6 +138,7 @@ const FullMap = () => {
           }
         } else {
           // street
+          console.log('street');
           backendApi.get(`reverse_geocode/street/?${queryFindStreet(e, filter)}`).then((response) => {
             const map = mapRef.current;
             const name = response.data.street;
@@ -162,12 +161,10 @@ const FullMap = () => {
   useEffect(() => {
     const map = mapRef.current;
     var newStreetsInMap: StreetInMap[] = [];
-    var newSelected: string[] = [];
 
     routeStreets?.forEach((element) => {
-      const streetInMapNew: StreetInMap = drawOnMap(map, element.street_name, element?.path, element?.color);
+      const streetInMapNew: StreetInMap = drawOnMap(map, element?.street_name, element?.path, element?.color);
       newStreetsInMap.push(streetInMapNew);
-      // newSelected.push(element.street_name);
     });
 
     setNewStreetsInMap((prevState: StreetInMap[]) => {
@@ -187,7 +184,6 @@ const FullMap = () => {
       });
       return [...stateCopy, ...newStreets];
     });
-    // setNewStreetsInSelected([...new Set([...newSelected, ...streetsInSelected])]);
   }, [routeStreets]);
 
   useEffect(() => {
@@ -210,21 +206,9 @@ const FullMap = () => {
     fetchData();
   }, [newlySelected]);
 
-  const get_data = async () => {
-    const response = await backendApi.get(`/full_data/`);
-    setFullAlerts(response.data.alerts);
-    setFullJams(response.data.jams);
-    setFullXAxis(response.data.xaxis);
-    setLoadingData(false);
-  };
-
-  if (loadingData) {
-    get_data();
-  }
-
   return (
     <div>
-      {/* TODO: class? */}
+      {/* TODO: component? */}
       <Row style={{ flexFlow: 'unset' }}>
         {contextHolder}
         <InfoModal

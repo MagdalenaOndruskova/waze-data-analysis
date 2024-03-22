@@ -1,69 +1,121 @@
-import React, { useContext } from 'react';
-import { dataContext } from '../../utils/contexts';
-import LiveTile from './StatsTile';
+import React, { useContext, useEffect } from 'react';
+import { dataContext, filterContext } from '../../utils/contexts';
+import StatsTile from './StatsTile';
 import * as Icons from '../../utils/icons';
 import { useTranslation } from 'react-i18next';
+import backendApi from '../../utils/api';
+import { getXMinDate } from '../../utils/util';
+import { get_data_delay_alerts, get_data_stats } from '../../utils/backendApiRequests';
 
 type Props = {
   spaceBetween: boolean;
   isDashboard?: boolean;
 };
 
-const LiveTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
+const StatsTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
   const { t } = useTranslation();
+  const { filter } = useContext(filterContext);
 
-  const { jamsData, alertData, levelData, speedData, lengthData, timeData } = useContext(dataContext);
+  const {
+    jamsData,
+    alertData,
+    levelData,
+    speedData,
+    lengthData,
+    timeData,
+    dateTimeFrom,
+    dateTimeTo,
+    setLengthData,
+    setLevelData,
+    setSpeedData,
+    setTimeData,
+    setDateTimeFrom,
+    setDateTimeTo,
+    setPreviousDate,
+    setJamsData,
+    setAlertData,
+    setXAxisData,
+  } = useContext(dataContext);
+
+  useEffect(() => {
+    console.log(filter);
+    if (!filter) {
+      return;
+    }
+    // TODO: optimalizacia -> nepytat data , problem je, ze sa data pytaju vo viacerych requestoch -> spojit do jedneho?
+
+    const get_data = async () => {
+      const response = await get_data_delay_alerts(filter);
+      setJamsData(response.jams);
+      setAlertData(response.alerts);
+      setXAxisData(response.xaxis);
+    };
+    const get_data_stats_all = async () => {
+      const response = await get_data_stats(filter);
+      setSpeedData(response.speedKMH);
+      setTimeData(response.time);
+      setLevelData(response.level);
+      setLengthData(response.length);
+    };
+
+    setDateTimeFrom(`${filter.fromDate}`);
+    setDateTimeTo(`${filter.toDate}`);
+    setPreviousDate(getXMinDate(filter?.toDate));
+
+    get_data();
+    get_data_stats_all();
+  }, [filter]);
 
   return (
     <div className={isDashboard ? 'dashboard-top-row-stats' : ''}>
-      <LiveTile
+      <StatsTile
         icon={<Icons.WarningIcon />}
         tileTitle={new Intl.NumberFormat('cs-CZ').format(alertData?.reduce((sum, attribute) => sum + attribute, 0))}
         tileType={t('tile.ActiveAlerts')}
-      ></LiveTile>
+      ></StatsTile>
       {spaceBetween ? <br /> : <></>}
-      <LiveTile
+      <StatsTile
         icon={<Icons.CarIcon />}
         tileTitle={new Intl.NumberFormat('cs-CZ').format(jamsData?.reduce((sum, attribute) => sum + attribute, 0))}
         tileType={t('tile.TrafficJams')}
-      ></LiveTile>
+      ></StatsTile>
       {spaceBetween ? <br /> : <></>}
-      <LiveTile
+      <StatsTile
         icon={<Icons.SpeedIcon />}
         tileTitle={new Intl.NumberFormat('pt-PT', {
           style: 'unit',
           unit: 'kilometer-per-hour',
         }).format(Number((speedData?.reduce((sum, attribute) => sum + attribute, 0) / jamsData?.length).toFixed(2)))}
         tileType={t('tile.AverageSpeed')}
-      ></LiveTile>
+      ></StatsTile>
       {spaceBetween ? <br /> : <></>}
-      <LiveTile
+      <StatsTile
         icon={<Icons.CarIcon />}
         tileTitle={new Intl.NumberFormat('cs-CZ', {
           style: 'unit',
           unit: 'kilometer',
         }).format(lengthData?.reduce((sum, attribute) => sum + attribute, 0))}
         tileType={t('tile.JamsLength')}
-      ></LiveTile>
+      ></StatsTile>
       {spaceBetween ? <br /> : <></>}
 
-      <LiveTile
+      <StatsTile
         icon={<Icons.JamDelayIcon />}
         tileTitle={new Intl.NumberFormat('cs-CZ', {
           style: 'unit',
           unit: 'hour',
         }).format(timeData?.reduce((sum, attribute) => sum + attribute, 0) / 60)}
         tileType={t('tile.JamsDelay')}
-      ></LiveTile>
+      ></StatsTile>
       {spaceBetween ? <br /> : <></>}
 
-      <LiveTile
+      <StatsTile
         icon={<Icons.JamLevelIcon />}
         tileTitle={(levelData?.reduce((sum, attribute) => sum + attribute, 0) / jamsData?.length).toFixed(2)}
         tileType={t('tile.AverageJamLevel')}
-      ></LiveTile>
+      ></StatsTile>
     </div>
   );
 };
 
-export default LiveTilesComplet;
+export default StatsTilesComplet;

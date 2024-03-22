@@ -146,5 +146,6 @@
 
   "loading.data": "Načítavam dáta",
   "sidebar.route": "Trasa",
-  "sidebar.streets.more": "Vyber ďalšie ulice"
+  "sidebar.streets.more": "Vyber ďalšie ulice",
+  "data.delay.loading": "Načítavam dáta o dopravných zápchach."
 }

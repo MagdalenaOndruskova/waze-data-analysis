@@ -30,6 +30,12 @@ export function deleteFromMap(streetsInMap: StreetInMap[], name: string) {
   });
 }
 
+export function deleteAllFromMap(streetsInMap: StreetInMap[]) {
+  streetsInMap.forEach((street) => {
+    street?.lines?.forEach((line) => line.remove());
+  });
+}
+
 /**
  * Function deletes streets from map (which should be removed based on the new selection) and return new list of streets that are kept drawn
  * @param streetsInMap Array of StreetInMap (objects of streets drawed on map)

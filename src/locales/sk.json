@@ -150,5 +150,6 @@
   "sidebar.route": "Trasa",
   "sidebar.streets.more": "Vyber ďalšie ulice",
 
-  "plot.downloadSVG": "Stiahni SVG"
+  "plot.downloadSVG": "Stiahni SVG",
+  "data.delay.loading": "Načítavam dáta o dopravných zápchach."
 }

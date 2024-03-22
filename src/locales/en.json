@@ -149,5 +149,6 @@
   "sidebar.route": "Route",
   "sidebar.streets.more": "Choose more streets",
 
-  "plot.downloadSVG": "Download SVG"
+  "plot.downloadSVG": "Download SVG",
+  "data.delay.loading": "Loading data of streets delay."
 }

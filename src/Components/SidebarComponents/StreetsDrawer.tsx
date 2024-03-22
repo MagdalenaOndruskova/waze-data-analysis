@@ -1,8 +1,8 @@
 import { CloseOutlined } from '@ant-design/icons';
-import { Card, Drawer, Select, SelectProps } from 'antd';
+import { Button, Card, Drawer, Select, SelectProps } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { streetContext } from '../../utils/contexts';
+import { filterContext, streetContext } from '../../utils/contexts';
 import useAxios from '../../utils/useAxios';
 import { Streets } from '../../types/baseTypes';
 import { getOptionsFromStreet } from '../../utils/util';
@@ -32,6 +32,7 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
     streetsInSelected,
     streetsInMap,
   } = useContext(streetContext);
+  const { setNewFilter } = useContext(filterContext);
   const [options, setOptions] = useState<SelectProps['options']>(getOptionsFromStreet(null, []));
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -45,8 +46,6 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
     getData: true,
   });
 
-  //   options = getOptionsFromStreet(dataStreets);
-
   useEffect(() => {
     if (!dataStreets) {
       return;
@@ -54,8 +53,6 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
     console.log(streetsInRoute);
     setOptions(getOptionsFromStreet(dataStreets, streetsInRoute));
     const toDelete = selected.filter((street) => streetsInRoute.includes(street));
-    // todo: odstran tie ktore si zobrala zo select aj z vykreslovaneho pola
-    // neodstrani to uz vykreslenu trasu?
     setSelected((prevValue) => {
       return prevValue.filter((street) => !streetsInRoute.includes(street));
     });
@@ -66,6 +63,13 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
 
     setSelected(streetsInSelected);
   }, [streetsInSelected]);
+
+  const recalculate = (value) => {
+    setNewFilter((prevState) => ({
+      ...prevState,
+      streets: streetsInSelected,
+    }));
+  };
 
   return (
     <Drawer
@@ -83,7 +87,6 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
       <div style={{ maxHeight: '410px', overflowY: 'scroll' }}>
         {streetsInRoute?.map((street, index) => (
           <div key={index.toString()}>
-            {/* {index === 0 && <h3>{t('route.pass')}</h3>} */}
             <Select
               showSearch
               className="filterStyle"
@@ -113,6 +116,9 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
         value={selected}
         filterOption={ignoreDiacriticsFilter}
       />
+      <Button type="primary" onClick={recalculate}>
+        Filtruj
+      </Button>
     </Drawer>
   );
 };

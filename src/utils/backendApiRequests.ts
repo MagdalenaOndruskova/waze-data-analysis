@@ -1,13 +1,12 @@
 import backendApi from './api';
 import { Filter } from './contexts';
+import { queryStreetCoord, queryTime } from './queryBuilder';
 
 type ResponseDelayAlerts = {
   jams: [];
   alerts: [];
   xaxis: [];
-};
 
-type ResponseStats = {
   speedKMH: [];
   time: [];
   level: [];
@@ -22,7 +21,15 @@ type ResponseCriticalStreets = {
   values_alerts: [];
 };
 
+type ResponseStreetsDrawing = {
+  name: string;
+  path: [[]];
+  color: string;
+};
+
 function getRequestBody(filter: Filter) {
+  console.log('🚀 ~ getRequestBody ~ filter:', filter);
+
   const body = {
     from_date: filter?.fromDate,
     to_date: filter?.toDate,
@@ -42,18 +49,6 @@ export async function get_data_delay_alerts(filter: Filter) {
     jams: response.data.jams,
     alerts: response.data.alerts,
     xaxis: response.data.xaxis,
-  };
-  return data;
-}
-
-export async function get_data_stats(filter: Filter) {
-  console.log('🚀 ~ get_data_stats ~ get_data_stats:');
-  if (!filter) {
-    return null;
-  }
-  const body = getRequestBody(filter);
-  const response = await backendApi.post('data_for_plot_stats/', body);
-  const data: ResponseStats = {
     speedKMH: response.data.speedKMH,
     time: response.data.delay,
     level: response.data.level,
@@ -88,4 +83,20 @@ export async function get_data_alert_types(filter: Filter) {
   const body = getRequestBody(filter);
   const response = await backendApi.post('data_for_plot_alerts/', body);
   return response.data;
+}
+
+export async function get_streets_coord(filter: Filter, newlySelected: string) {
+  const response = await backendApi.get(`/street_coord/?${queryStreetCoord(filter, newlySelected)}`);
+  const data: ResponseStreetsDrawing = {
+    name: response.data.street,
+    path: response.data.path,
+    color: response.data.color,
+  };
+  return data;
+}
+
+export async function get_all_street_delays(filter: Filter) {
+  const response = await backendApi.get(`/all_delays/?${queryTime(filter)}`);
+  const data = response.data;
+  return data;
 }

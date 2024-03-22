@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Navbar from './Navbar';
-import '../styles/layout-styles.scss';
+// import '../styles/layout-styles.scss';
 import { useFilter } from '../utils/useFilter';
 import { filterContext, streetContext, dataContext } from '../utils/contexts';
 import { useStreetContext } from '../utils/useStreetContext';

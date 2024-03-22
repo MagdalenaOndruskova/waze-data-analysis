@@ -17,7 +17,6 @@ export function getOptionsFromStreet(streets: Streets | null, streetsInRoute: st
   );
   // sorting values
   options.sort((val1, val2) => val1?.value?.toString().localeCompare(val2?.value.toString()));
-  console.log('🚀 ~ getOptionsFromStreet ~ options:', options);
 
   return options;
 }

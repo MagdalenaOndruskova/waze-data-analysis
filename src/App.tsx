@@ -5,6 +5,8 @@ import Layout from './layout/MainLayout';
 import './i18n/i18n';
 
 import './App.css';
+import './styles/layout-styles.scss';
+import './styles/responsivity.scss';
 import Dashboard from './pages/Dashboard';
 import FullMap from './pages/FullMap';
 

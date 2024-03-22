@@ -1,6 +1,6 @@
 const LiveTile = ({ icon, tileTitle, tileType }) => {
   return (
-    <div className="cardbody" style={{ minWidth: 250 }}>
+    <div className="cardbody" style={{ minWidth: 200 }}>
       <div>
         {icon}
         <h3>{tileTitle}</h3>

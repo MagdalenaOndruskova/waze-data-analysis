@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L, { Map as LeafletMap } from 'leaflet';
-import { Button, Col, Row, message } from 'antd';
+import { Button, Col, Row, message, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { dataContext, filterContext, streetContext } from '../utils/contexts';
 import backendApi from '../utils/api';
@@ -15,6 +15,8 @@ import InfoModal from '../Components/ModalComponents/InfoModal';
 import Sidebar from '../Components/SidebarComponents/Sidebar';
 import 'leaflet/dist/leaflet.css';
 import ApplicationTour from '../Components/SidebarComponents/ApplicationTour';
+import { LoadingOutlined } from '@ant-design/icons';
+import * as Icons from '../utils/icons';
 
 type Coord = {
   latitude: number;
@@ -50,7 +52,9 @@ const FullMap = () => {
   const [buttonStyle, setButtonStyle] = useState<'default' | 'primary'>('default');
   const [mapMode, setMapMode] = useState<'route' | 'street'>('street');
   const [routeCoordinates, setRouteCoordinates] = useState<Coord[]>([]);
-  const [messageApi, contextHolder] = message.useMessage();
+  // const [messageApi, contextHolder] = message.useMessage();
+  const [api, contextHolder] = notification.useNotification({ stack: { threshold: 3 } });
+
   const [routeStreets, setRouteStreets] = useState<any>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
 
@@ -58,23 +62,9 @@ const FullMap = () => {
     if (buttonStyle === 'default') {
       setButtonStyle('primary');
       setMapMode('route');
-      messageApi.open({
-        type: 'info',
-        content: t('route.selection.active'),
-        style: {
-          marginTop: '8vh',
-        },
-      });
     } else {
       setButtonStyle('default');
       setMapMode('street');
-      messageApi.open({
-        type: 'success',
-        content: t('route.selection.done'),
-        style: {
-          marginTop: '8vh',
-        },
-      });
     }
   };
 
@@ -111,33 +101,41 @@ const FullMap = () => {
               from_time: filter.fromDate,
               to_time: filter.toDate,
             };
-            const message = messageApi.open({
-              type: 'loading',
-              content: t('routeLoadingInProgress'),
-              duration: 0,
-              style: {
-                marginTop: '8vh',
-              },
-            });
+            const key = routeCoordinates.length.toString();
+            console.log('🚀 ~ click: ~ key:', key);
+            const openNotification = () => {
+              api['info']({
+                key,
+                message: t('route.selection.inProgress'),
+                description: t('route.selection.loading'),
+                placement: 'bottomRight',
+                duration: 0,
+                icon: <LoadingOutlined />,
+              });
+            };
+            openNotification();
             backendApi
               .post('find_route_by_coord/', data_route)
               .then((response) => {
                 setRouteStreets(response.data.streets_coord);
-                message();
+                // message();
                 console.log(response.data.streets_coord.map((street) => street.street_name));
-                setNewStreetsInRoute((...prevState) => [
-                  ...new Set([...prevState, ...response.data.streets_coord.map((street) => street.street_name)]),
-                ]);
+                setNewStreetsInRoute((prevState) => {
+                  console.log(prevState);
+                  return [
+                    ...new Set([...prevState, ...response.data.streets_coord.map((street) => street.street_name)]),
+                  ];
+                });
               })
               .finally(() => {
-                messageApi.success({
-                  type: 'success',
-                  content: t('routeLoadingDone'),
-                  duration: 3,
-                  style: {
-                    marginTop: '8vh',
-                  },
-                });
+                setTimeout(() => {
+                  api['success']({
+                    key,
+                    message: t('route.selection.inProgress'),
+                    description: t('route.selection.loading.done'),
+                    placement: 'bottomRight',
+                  });
+                }, 1000);
               });
           }
         } else {
@@ -226,14 +224,15 @@ const FullMap = () => {
 
   return (
     <div>
-      <Row>
+      {/* TODO: class? */}
+      <Row style={{ flexFlow: 'unset' }}>
         {contextHolder}
         <InfoModal
           openInfoModalState={openInfoModalState}
           setOpenInfoModalState={setOpenInfoModalState}
           setOpenTour={setOpenTour}
         />
-        <Col span={1} className="sidermenu">
+        <Col className="sidermenu">
           <Sidebar
             setOpenInfoModalState={setOpenInfoModalState}
             refStats={refStats}
@@ -250,8 +249,14 @@ const FullMap = () => {
               {buttonStyle == 'primary' && t('route.button.active')}
               <RouteIcon />
             </Button>
-            <Button ref={refDelays}>{t('Jams')}</Button>
-            <Button ref={refAlerts}>{t('Alerts')}</Button>
+            <Button ref={refDelays} className="buttonRoute">
+              {t('Jams')} <RouteIcon />
+              {/* <Icons.CarIcon /> */}
+            </Button>
+            <Button ref={refAlerts} className="buttonRoute">
+              {t('Alerts')} <RouteIcon />
+              {/* <Icons.WarningIcon /> */}
+            </Button>
           </div>
 
           <MapContainer

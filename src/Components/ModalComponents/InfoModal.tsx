@@ -1,4 +1,4 @@
-import { Button, Col, Modal, Row } from 'antd';
+import { Button, Col, Flex, Modal, Row } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Brno from '../../assets/Brno.png';
@@ -14,20 +14,14 @@ const InfoModal = ({ openInfoModalState, setOpenInfoModalState, setOpenTour }) =
       title={t('app.title')}
       width={800}
       footer={
-        <Row>
-          <Col span={5}>
-            <a href="https://www.brno.cz/" target="_blank">
-              <img src={Brno} alt="Brno" />
-            </a>
-          </Col>
-          <Col span={12}></Col>
-          <Col span={5}>
-            <a href="https://www.fit.vut.cz/" target="_blank">
-              <img src={fit} alt="Fakulta informačných technológii VUT" style={{ width: '200px' }} />
-            </a>
-          </Col>
-          <Col span={3}></Col>
-        </Row>
+        <Flex justify="space-between" wrap="wrap" className="info-modal-footer">
+          <a href="https://www.brno.cz/" target="_blank">
+            <img src={Brno} alt="Brno" />
+          </a>
+          <a href="https://www.fit.vut.cz/" target="_blank">
+            <img src={fit} alt="Fakulta informačných technológii VUT" height={47} />
+          </a>
+        </Flex>
       }
     >
       <p>{t('appDescription')}</p>

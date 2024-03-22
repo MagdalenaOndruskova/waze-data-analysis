@@ -95,7 +95,7 @@
   "route.button.active": "Finding route active",
   "route.source": "Source street",
   "route.dst": "Destination street",
-  "route.pass": "Thru",
+  "route.pass": "Route is going thru:",
   "route.source.missing": "Please, fill in source street.",
   "route.dst.missing": "Please, fill in destination street.",
   "route.notfound": "Path not found. Please add some pass streets.",
@@ -140,6 +140,10 @@
   "app.emailSend": "Email was sent.",
   "route.selection.active": "You can start selecting route from map.",
   "route.selection.done": "Selecting route done.",
+
+  "route.selection.loading": "Loading part of the route.",
+  "route.selection.loading.done": "Loading part of the route done.",
+  "route.selection.inProgress": "Loading route",
 
   "loading.data": "Loading data",
   "sidebar.route": "Route",

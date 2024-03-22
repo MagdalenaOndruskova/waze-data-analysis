@@ -6,15 +6,16 @@ import { useTranslation } from 'react-i18next';
 
 type Props = {
   spaceBetween: boolean;
+  isDashboard?: boolean;
 };
 
-const LiveTilesComplet = ({ spaceBetween }: Props) => {
+const LiveTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
   const { t } = useTranslation();
 
   const { jamsData, alertData, levelData, speedData, lengthData, timeData } = useContext(dataContext);
 
   return (
-    <>
+    <div className={isDashboard ? 'dashboard-top-row-stats' : ''}>
       <LiveTile
         icon={<Icons.WarningIcon />}
         tileTitle={new Intl.NumberFormat('cs-CZ').format(alertData?.reduce((sum, attribute) => sum + attribute, 0))}
@@ -61,7 +62,7 @@ const LiveTilesComplet = ({ spaceBetween }: Props) => {
         tileTitle={(levelData?.reduce((sum, attribute) => sum + attribute, 0) / jamsData?.length).toFixed(2)}
         tileType={t('tile.AverageJamLevel')}
       ></LiveTile>
-    </>
+    </div>
   );
 };
 

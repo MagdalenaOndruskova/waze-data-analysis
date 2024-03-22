@@ -3,7 +3,7 @@ import { ApexOptions } from 'apexcharts';
 import ReactApexChart from 'react-apexcharts';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import '../../styles/layout-styles.scss';
+// import '../../styles/layout-styles.scss';
 import { colorBlue, colorRed } from '../../utils/constants';
 
 // TODO: otypovat?

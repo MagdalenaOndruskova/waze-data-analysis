@@ -62,7 +62,7 @@ const EmailModalForm = ({ openEmailModal, setOpenEmailModal }) => {
       title={t('app.contactForm')}
       width={800}
       onCancel={() => setOpenEmailModal(false)}
-      footer={<></>}
+      footer={null}
       className="modal"
     >
       <Form
@@ -101,7 +101,7 @@ const EmailModalForm = ({ openEmailModal, setOpenEmailModal }) => {
         <Form.Item name="body" label={t('app.body')} rules={[{ required: true, message: t('app.bodyHint') }]}>
           <Input.TextArea showCount maxLength={1000} />
         </Form.Item>
-        <Form.Item {...tailFormItemLayout}>
+        <Form.Item {...tailFormItemLayout} style={{ margin: 0 }}>
           <Button type="primary" htmlType="submit" className="modalButton">
             {t('app.send')}
           </Button>

@@ -1,5 +1,5 @@
 import { CloseOutlined } from '@ant-design/icons';
-import { Drawer, Select, SelectProps } from 'antd';
+import { Card, Drawer, Select, SelectProps } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { streetContext } from '../../utils/contexts';
@@ -78,24 +78,28 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, routeStreets }: Pr
       closable={true}
       zIndex={10000}
     >
-      {streetsInRoute?.map((street, index) => (
-        <div key={index.toString()}>
-          {index === 0 && <p>{t('route.pass')}:</p>}
-          <Select
-            showSearch
-            className="filterStyle"
-            allowClear
-            placeholder={t('PleaseSelect')}
-            onChange={(value) => {}}
-            value={street}
-            options={options}
-          />
+      {streetsInRoute?.length > 0 ? <h3>{t('route.pass')}</h3> : <></>}
 
-          <CloseOutlined className="iconCancel" onClick={() => {}} />
-        </div>
-      ))}
+      <div style={{ maxHeight: '410px', overflowY: 'scroll' }}>
+        {streetsInRoute?.map((street, index) => (
+          <div key={index.toString()}>
+            {/* {index === 0 && <h3>{t('route.pass')}</h3>} */}
+            <Select
+              showSearch
+              className="filterStyle"
+              allowClear
+              placeholder={t('PleaseSelect')}
+              onChange={(value) => {}} // todo change value in route
+              value={street}
+              options={options}
+            />
 
-      <h3>{t('sidebar.streets.more')}</h3>
+            <CloseOutlined className="iconCancel" onClick={() => {}} />
+          </div>
+        ))}
+      </div>
+
+      <h3>{t('sidebar.streets.more')}:</h3>
       <Select
         showSearch
         className="filterStyle"

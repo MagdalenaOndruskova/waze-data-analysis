@@ -75,11 +75,11 @@ const Dashboard = () => {
 
   return (
     <div>
-      <Row gutter={8} className="top-row" style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <LiveTilesComplet spaceBetween={false} />
-      </Row>
+      <div className="top-row">
+        <LiveTilesComplet spaceBetween={false} isDashboard={true} />
+      </div>
       <Row className="dashboard-row" gutter={24}>
-        <Col span={5}>
+        <Col xxl={5} xl={12} lg={12} md={24} className="alerts-type-col">
           <Card title={t('tile.AlertsType')}>
             {/* <BarChartComponent
               streets={alertTypes['basic_types_labels'].map((value) => t(value))}
@@ -104,7 +104,7 @@ const Dashboard = () => {
             ></BarChartComponent>
           </Card>
         </Col>
-        <Col span={12}>
+        <Col xxl={12} xl={24} lg={24} md={24} className="graphs-col">
           <Card title={t('graphs.title')}>
             <ChartTimelineComponent
               dataJams={jamsData}
@@ -145,7 +145,7 @@ const Dashboard = () => {
             ></MultipleYChartComponent>
           </Card>
         </Col>
-        <Col span={7}>
+        <Col xxl={7} xl={12} lg={12} md={24} className="graph-tiles-col">
           <Card title={t('graph.tiles.title')}>
             <BarChartComponent
               streets={criticalStreetsAlerts.streets}

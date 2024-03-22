@@ -6,6 +6,9 @@ $linkColorActive: #d4041c;
 $fontFamily: 'Roboto', 'sans-serif';
 $cardBodyColor: #d9d9d9;
 $buttonHoverBackgroundColor: #6f040f;
+$selectOptionBackgroundColor: #cc5160;
+$selectOptionTickColor: #4f0109;
+// $selectOptionBackgroundColor: #783d43c1;
 
 header {
   background-color: $cardColor;
@@ -35,7 +38,7 @@ header {
   padding-top: 10px;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   color: $contentTextColor;
-  // min-width: 60px;
+  min-width: 60px;
 }
 
 .ant-spin {
@@ -108,7 +111,6 @@ nav {
 
 .title {
   color: $linkColorActive;
-  letter-spacing: 5px;
   font-size: 23px;
   font-weight: 900;
   text-wrap: balance;
@@ -154,6 +156,17 @@ nav {
   margin-top: 5px;
 }
 
+// .ant-select-item .ant-select-item-option .ant-select-item-option-selected {
+.ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: $selectOptionBackgroundColor;
+  color: white;
+}
+
+.ant-select-dropdown
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled)
+  .ant-select-item-option-state {
+  color: $selectOptionTickColor;
+}
 .modalStyle {
   min-width: 300px;
 }
@@ -248,6 +261,8 @@ nav {
   gap: 10px;
   top: 10px;
   left: 50px;
+  flex-wrap: wrap;
+
   .ant-btn-primary {
     background-color: $linkColorActive !important;
     color: white !important;
@@ -395,6 +410,24 @@ nav {
   padding-top: 8px;
 }
 
+.dashboard-top-row-stats {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px 0;
+  padding-top: 10px;
+}
+
+.language-switcher .ant-select-item-option-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & > img {
+    width: 100%;
+  }
+}
+
 @media only screen and (max-width: 1440px) {
   .top-row .ant-card-body,
   .live-map-top-row .ant-card-body {
@@ -416,9 +449,9 @@ nav {
 
 @media only screen and (max-width: 1024px) {
   .top-row .cardbody {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    // height: 100%;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
   }
 }

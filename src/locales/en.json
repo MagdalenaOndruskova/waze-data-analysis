@@ -54,6 +54,7 @@
   "HAZARD_ON_SHOULDER_CAR_STOPPED": "On shoulder: car stopped",
   "HAZARD_ON_SHOULDER_CAR_ANIMALS": "On shoulder: animals",
   "HAZARD_ON_SHOULDER_CAR_MISSING_SIGN": "On shoulder: car missing sign",
+  "HAZARD_ON_SHOULDER_ANIMALS": "On shoulder: animals",
 
   "HAZARD_WEATHER_FOG": "Weather: Fog",
   "HAZARD_WEATHER_HAIL": "Weather: Hail",
@@ -150,5 +151,11 @@
   "sidebar.streets.more": "Choose more streets",
 
   "plot.downloadSVG": "Download SVG",
-  "data.delay.loading": "Loading data of streets delay."
+  "data.delay.loading": "Loading data of streets delay.",
+  "data.alerts.loading": "Loading data of streets alerts.",
+
+  "type": "Type",
+  "subtype": "Subtype",
+  "street": "Street",
+  "pubMillis": "Date and time"
 }

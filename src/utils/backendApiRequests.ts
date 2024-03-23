@@ -96,7 +96,14 @@ export async function get_streets_coord(filter: Filter, newlySelected: string) {
 }
 
 export async function get_all_street_delays(filter: Filter) {
-  const response = await backendApi.get(`/all_delays/?${queryTime(filter)}`);
+  const body = getRequestBody(filter);
+  const response = await backendApi.post(`/all_delays/`, body);
   const data = response.data;
   return data;
+}
+
+export async function get_points(filter: Filter) {
+  const body = getRequestBody(filter);
+  const response = await backendApi.post('draw_alerts/', body);
+  return response.data;
 }

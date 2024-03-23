@@ -12,7 +12,7 @@ import { StreetInMap } from '../types/StreetInMap';
 export function drawOnMap(map: L.Map, name: string, path: [[]], color: string) {
   var streetInMapNew: StreetInMap = { name: name, lines: [] };
   path?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-    const line = L.polyline(path, { color: color }).addTo(map);
+    const line = L.polyline(path, { color: color, opacity: 0.75 }).addTo(map);
     streetInMapNew.lines.push(line);
   });
   return streetInMapNew;

@@ -1,7 +1,14 @@
 import { BarChartOutlined, InfoCircleOutlined, LineChartOutlined, MailOutlined, MenuOutlined } from '@ant-design/icons';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RouteIcon } from '../../utils/icons';
+import {
+  CarCrashIcon,
+  CarSmallIcon,
+  RoadClosedIcon,
+  RouteIcon,
+  TrafficJamIcon,
+  WarningSmallIcon,
+} from '../../utils/icons';
 import PlotDrawer from './PlotDrawer';
 import StatsDrawer from './StatsDrawer';
 import EmailModalForm from '../ModalComponents/EmailModalForm';
@@ -9,6 +16,8 @@ import StreetsDrawer from './StreetsDrawer';
 import { dataContext, filterContext } from '../../utils/contexts';
 import { get_data_delay_alerts } from '../../utils/backendApiRequests';
 import { getXMinDate } from '../../utils/util';
+import { Checkbox, Tooltip } from 'antd';
+import { AdressPoint } from '../../types/baseTypes';
 
 type Props = {
   setOpenInfoModalState: (value: React.SetStateAction<boolean>) => void;
@@ -18,6 +27,9 @@ type Props = {
   refContacForm: React.MutableRefObject<any>;
   refRoute: React.MutableRefObject<any>;
   routeStreets: any;
+  showMarkers: boolean;
+  alertsPoints: AdressPoint;
+  setAlertsPoints: React.Dispatch<React.SetStateAction<AdressPoint>>;
 };
 
 const Sidebar = ({
@@ -28,29 +40,25 @@ const Sidebar = ({
   refLineStats,
   refRoute,
   routeStreets,
+  showMarkers,
+  alertsPoints,
+  setAlertsPoints,
 }: Props) => {
   const { t } = useTranslation();
   const { filter } = useContext(filterContext);
 
-  const {
-    xAxisData,
-    jamsData,
-    alertData,
-    previousDate,
-    setXAxisData,
-    setJamsData,
-    setAlertData,
-    setDateTimeFrom,
-    setDateTimeTo,
-    setPreviousDate,
-    setAlertTypes,
-  } = useContext(dataContext);
+  const { setXAxisData, setJamsData, setAlertData, setDateTimeFrom, setDateTimeTo, setPreviousDate } =
+    useContext(dataContext);
 
   const [openDrawerPlot, setOpenDrawerPlot] = useState<boolean>(false);
   const [openDrawerRoute, setOpenDrawerRoute] = useState<boolean>(false);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [trafficCheck, setTrafficCheck] = useState<boolean>(true);
+  const [accident, setTrafficAccident] = useState<boolean>(true);
+  const [hazard, setTrafficHazard] = useState<boolean>(true);
+  const [roadClosed, setRoadClosed] = useState<boolean>(true);
 
   useEffect(() => {
     if (!filter) {
@@ -71,6 +79,29 @@ const Sidebar = ({
     };
     get_data();
   }, [filter]);
+
+  const updateAlerts = (type: string, check: boolean, setFunction: React.Dispatch<React.SetStateAction<boolean>>) => {
+    if (check) {
+      const alertPointsNew = alertsPoints.map((alert) => {
+        if (alert.type === type) {
+          return { ...alert, visible: false };
+        }
+        return alert;
+      });
+      setAlertsPoints(alertPointsNew);
+
+      setFunction(false);
+    } else {
+      const alertPointsNew = alertsPoints.map((alert) => {
+        if (alert.type === type) {
+          return { ...alert, visible: true };
+        }
+        return alert;
+      });
+      setAlertsPoints(alertPointsNew);
+      setFunction(true);
+    }
+  };
 
   return (
     <div>
@@ -109,6 +140,31 @@ const Sidebar = ({
 
         <p>{t('graph.priebeh')}</p>
       </div>
+
+      {showMarkers && (
+        <div style={{ paddingLeft: '5px', paddingTop: '20px' }}>
+          <Tooltip placement="right" title={t('JAM')}>
+            <Checkbox onClick={() => updateAlerts('JAM', trafficCheck, setTrafficCheck)} checked={trafficCheck}>
+              <TrafficJamIcon />
+            </Checkbox>
+          </Tooltip>
+          <Tooltip placement="right" title={t('ACCIDENT')}>
+            <Checkbox onChange={() => updateAlerts('ACCIDENT', accident, setTrafficAccident)} checked={accident}>
+              <CarCrashIcon />
+            </Checkbox>
+          </Tooltip>
+          <Tooltip placement="right" title={t('HAZARD')}>
+            <Checkbox onChange={() => updateAlerts('HAZARD', hazard, setTrafficHazard)} checked={hazard}>
+              <WarningSmallIcon />
+            </Checkbox>
+          </Tooltip>
+          <Tooltip placement="right" title={t('ROAD_CLOSED')}>
+            <Checkbox onChange={() => updateAlerts('ROAD_CLOSED', roadClosed, setRoadClosed)} checked={roadClosed}>
+              <RoadClosedIcon />
+            </Checkbox>
+          </Tooltip>
+        </div>
+      )}
 
       <div
         onClick={() => {

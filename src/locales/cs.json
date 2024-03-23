@@ -53,6 +53,7 @@
   "HAZARD_ON_SHOULDER_CAR_STOPPED": "Na krajnici: Odstavené vozidlo",
   "HAZARD_ON_SHOULDER_CAR_ANIMALS": "Na krajnici: Zvieratá",
   "HAZARD_ON_SHOULDER_CAR_MISSING_SIGN": "Na krajnici: Chýbajúce značenie",
+  "HAZARD_ON_SHOULDER_ANIMALS": "Na krajnici: Zviera",
 
   "HAZARD_WEATHER_FOG": "Počasie: Hmla",
   "HAZARD_WEATHER_HAIL": "Počasie: Krupobytie",
@@ -147,5 +148,11 @@
   "loading.data": "Načítavam dáta",
   "sidebar.route": "Trasa",
   "sidebar.streets.more": "Vyber ďalšie ulice",
-  "data.delay.loading": "Načítavam dáta o dopravných zápchach."
+  "data.delay.loading": "Načítavam dáta o dopravných zápchach.",
+  "data.alerts.loading": "Loading data of streets alerts.",
+
+  "type": "Typ",
+  "subtype": "Podtyp",
+  "street": "Ulica",
+  "pubMillis": "Dátum a čas"
 }

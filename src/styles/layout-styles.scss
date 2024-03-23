@@ -265,13 +265,39 @@ nav {
   flex-wrap: wrap;
 
   .ant-btn-primary {
+    background-color: white !important;
+    color: $linkColorActive !important;
+    border: 1px solid $linkColorActive;
+  }
+  .ant-btn-primary:hover {
     background-color: $linkColorActive !important;
     color: white !important;
   }
-  .ant-btn-primary:hover {
-    background-color: white !important;
-    color: $buttonHoverBackgroundColor !important;
-    border-color: $buttonHoverBackgroundColor;
+}
+
+.ant-checkbox-checked {
+  .ant-checkbox-inner {
+    background-color: $linkColorActive;
+    border-color: $linkColorActive;
+  }
+  .ant-checkbox-inner:hover {
+    background-color: $linkColorActive;
+    border-color: $linkColorActive;
+  }
+  .ant-checkbox-inner:active {
+    background-color: $linkColorActive;
+    border-color: $linkColorActive;
+  }
+}
+
+.ant-checkbox {
+  .ant-checkbox-input {
+    background-color: $linkColorActive !important;
+    border-color: $linkColorActive !important;
+  }
+  .ant-checkbox-input::after {
+    background-color: $linkColorActive !important;
+    border-color: $linkColorActive !important;
   }
 }
 

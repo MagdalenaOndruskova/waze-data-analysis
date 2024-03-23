@@ -39,14 +39,7 @@ const Dashboard = () => {
     levelData,
     speedData,
     previousDate,
-    setXAxisData,
-    setAlertData,
-    dateTimeFrom,
-    dateTimeTo,
-    setDateTimeFrom,
-    setDateTimeTo,
     alertTypes,
-    setJamsData,
     setAlertTypes,
   } = useContext(dataContext);
 
@@ -57,7 +50,6 @@ const Dashboard = () => {
         value,
         label: t(value),
       }));
-      console.log('🚀 ~ file: Dashboard.tsx:104 ~ updatedOptions ~ updatedOptions:', updatedOptions);
       setOptions(updatedOptions);
     }
   }, [alertTypes]);

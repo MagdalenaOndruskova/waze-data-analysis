@@ -19,3 +19,10 @@ export type AdressPoint = Array<{
   key: string;
   visible?: boolean;
 }>;
+
+export type Coord = {
+  latitude: number;
+  longitude: number;
+  marker: L.Marker<any>;
+  street: string;
+};

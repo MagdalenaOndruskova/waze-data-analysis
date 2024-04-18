@@ -438,11 +438,13 @@ nav {
 }
 
 .dashboard-top-row-stats {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px 0;
-  padding-top: 10px;
+  .ant-spin-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px 0;
+    padding-top: 10px;
+  }
 }
 
 .language-switcher .ant-select-item-option-content {

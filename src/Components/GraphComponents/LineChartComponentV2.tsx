@@ -90,7 +90,7 @@ const LineChartComponentV2 = ({ dataFirst, dataSecond, labelFirst, labelSecond, 
   };
 
   return (
-    <div id={chartId}>
+    <div id={chartId} style={{ paddingLeft: '35px', paddingRight: '60px' }}>
       <ReactApexChart options={options} series={options.series} type="line" height={180} />
     </div>
   );

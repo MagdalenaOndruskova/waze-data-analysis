@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { dataContext, filterContext } from '../../utils/contexts';
+import { dataContext, filterContext, routeContext, streetContext } from '../../utils/contexts';
 import StatsTile from './StatsTile';
 import * as Icons from '../../utils/icons';
 import { useTranslation } from 'react-i18next';
@@ -40,16 +40,17 @@ const StatsTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
     setXAxisData,
   } = useContext(dataContext);
 
+  const { route } = useContext(routeContext);
+  const { streetsInRoute } = useContext(streetContext);
+
   useEffect(() => {
-    console.log(filter);
     if (!filter) {
       return;
     }
-    // TODO: optimalizacia -> nepytat data , problem je, ze sa data pytaju vo viacerych requestoch -> spojit do jedneho?
 
     setDataLoading(true);
     const get_data = async () => {
-      const response = await get_data_delay_alerts(filter);
+      const response = await get_data_delay_alerts(filter, route, streetsInRoute);
       setJamsData(response.jams);
       setAlertData(response.alerts);
       setXAxisData(response.xaxis);

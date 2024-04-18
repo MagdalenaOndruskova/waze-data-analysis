@@ -11,10 +11,8 @@ import { StreetInMap } from '../types/StreetInMap';
  */
 export function drawOnMap(map: L.Map, name: string, path: [[]], color: string) {
   var streetInMapNew: StreetInMap = { name: name, lines: [] };
-  path?.forEach((path: L.LatLngExpression[] | L.LatLngExpression[][]) => {
-    const line = L.polyline(path, { color: color, opacity: 0.75 }).addTo(map);
-    streetInMapNew.lines.push(line);
-  });
+  const line = L.polyline(path, { color: color, opacity: 0.75 }).addTo(map);
+  streetInMapNew.lines.push(line);
   return streetInMapNew;
 }
 
@@ -43,11 +41,13 @@ export function deleteAllFromMap(streetsInMap: StreetInMap[]) {
  * @param name Name of the street that is being removed
  * @returns Modified array of StreetInMap
  */
-export function deleteMultipleFromMap(streetsInMap: StreetInMap[], streetsInSelected: string[]) {
-  const streetsInMapToDelete = streetsInMap?.filter((street) => !streetsInSelected.includes(street.name));
+export function deleteMultipleFromMap(streetsInMap: StreetInMap[], streets: string[]) {
+  console.log('🚀 ~ deleteMultipleFromMap ~ streetsInMap:', streetsInMap);
+  const streetsInMapToDelete = streetsInMap?.filter((street) => streets.includes(street.name));
+  console.log('🚀 ~ deleteMultipleFromMap ~ streetsInMapToDelete:', streetsInMapToDelete);
   streetsInMapToDelete?.forEach((street) => {
     street?.lines?.forEach((line) => line.remove());
   });
-  const streetsInMapStaying = streetsInMap?.filter((street) => streetsInSelected.includes(street.name));
+  const streetsInMapStaying = streetsInMap?.filter((street) => !streets.includes(street.name));
   return streetsInMapStaying;
 }

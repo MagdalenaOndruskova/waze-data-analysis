@@ -9,7 +9,8 @@ import BarChartComponent from '../Components/GraphComponents/BarChartComponent';
 import ChartTimelineComponent from '../Components/GraphComponents/ChartTimelineComponent';
 import LineChartComponentV2 from '../Components/GraphComponents/LineChartComponentV2';
 import StatsTilesComplet from '../Components/StatsTilesComponents/StatsTileComplet';
-import { get_data_alert_types, get_data_critical_streets, get_data_delay_alerts } from '../utils/backendApiRequests';
+import { get_data_alert_types, get_data_critical_streets } from '../utils/backendApiRequests';
+import { useUrlSearchParams } from '../hooks/useUrlSearchParams';
 
 type BarChartData = {
   streets: [];
@@ -42,6 +43,8 @@ const Dashboard = () => {
     alertTypes,
     setAlertTypes,
   } = useContext(dataContext);
+
+  useUrlSearchParams();
 
   useEffect(() => {
     // Update options when alertTypes or t changes
@@ -138,6 +141,7 @@ const Dashboard = () => {
               labelFirst={'tile.JamsDelay'}
               labelSecond={'tile.JamsLength'}
               chartId={'chart3'}
+              style={{}}
             ></MultipleYChartComponent>
             <MultipleYChartComponent
               dataFirst={levelData}
@@ -148,6 +152,7 @@ const Dashboard = () => {
               yAxisSecond={'graph.speed'}
               xAxis={xAxisData}
               chartId={'chart4'}
+              style={{ paddingLeft: '20px', paddingRight: '10px' }}
             ></MultipleYChartComponent>
           </Card>
         </Col>

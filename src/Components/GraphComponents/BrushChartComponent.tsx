@@ -73,7 +73,6 @@ const BrushChartComponent = ({ dataJams, dataAlerts, xAxis, xaxis_min_selected, 
       cssClass: 'tooltip',
     },
   };
-  console.log(optionsLine.chart.selection.xaxis.min, optionsLine.chart.selection.xaxis.max);
 
   return (
     <div style={{ width: '100%' }} id="chart-line-timeline">

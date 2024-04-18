@@ -16,6 +16,7 @@ const MultipleYChartComponent = ({
   yAxisSecond,
   xAxis,
   chartId,
+  style,
 }) => {
   const { t } = useTranslation();
 
@@ -122,7 +123,7 @@ const MultipleYChartComponent = ({
   };
 
   return (
-    <div id={chartId}>
+    <div id={chartId} style={style}>
       <ReactApexChart options={options} series={options.series} type="line" height={180} />
     </div>
   );

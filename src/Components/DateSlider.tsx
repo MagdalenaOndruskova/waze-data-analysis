@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { colorRed } from '../utils/constants';
 import { FILTER_DEFAULT_VALUE, filterContext } from '../utils/contexts';
 import { useSearchParams } from 'react-router-dom';
+import { useUrlSearchParams } from '../hooks/useUrlSearchParams';
 
 type rangeValuesType = {
   startValue: number;
@@ -29,46 +30,6 @@ const DateSlider = () => {
 
   const inicialized = useRef<Boolean>(false);
 
-  useEffect(() => {
-    if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filterDefaultValue) && filter !== null) {
-      const { fromDate, toDate } = filter;
-      setSearchParams({
-        fromDate,
-        toDate,
-        streets: `('${filter.streets.join(`', '`)}')`,
-      });
-    } else {
-      if (inicialized.current === true) {
-        setSearchParams({});
-      }
-    }
-  }, [filter]);
-
-  useEffect(() => {
-    if (inicialized.current === false) {
-      if (filter === null && searchParams.toString() !== '') {
-        const fromDate = searchParams.get('fromDate');
-        const toDate = searchParams.get('toDate');
-        var streets = searchParams.get('streets');
-
-        // TODO: check when creating url params, so that when no street, dont have this url param
-        var streetsSplitted = [];
-        if (streets !== "('')") {
-          streets = streets.replaceAll("'", '');
-          streets = streets.replaceAll('(', '');
-          streets = streets.replaceAll(')', '');
-          streetsSplitted = streets.split(',');
-          streetsSplitted = streetsSplitted.map((item) => item.trim());
-        }
-        setNewFilter({ fromDate, toDate, streets: streetsSplitted });
-        inicialized.current = true;
-      }
-      if (searchParams.toString() === '') {
-        setNewFilter(FILTER_DEFAULT_VALUE.filterDefaultValue);
-      }
-    }
-  }, [searchParams, inicialized]);
-
   const marks: SliderSingleProps['marks'] = {
     0: {
       style: { color: colorRed },
@@ -87,7 +48,7 @@ const DateSlider = () => {
 
   useEffect(() => {
     const endValue = defaultValues.defaultEndValue - dayjs().diff(dayjs(filter?.toDate), 'days');
-    const startValue = dayjs(filter?.fromDate).diff(defaultValues.defaultStartDate, 'days');
+    const startValue = dayjs(filter?.fromDate).diff(defaultValues.defaultStartDate, 'days') + 1;
     setValue({ startValue, endValue });
   }, [filter]);
 
@@ -106,7 +67,7 @@ const DateSlider = () => {
             return defaultValues.defaultStartDate.add(value, 'days').format('DD.MM.YYYY');
           },
         }}
-        onAfterChange={(value) => {
+        onChangeComplete={(value) => {
           setNewFilter((prevState) => ({
             ...prevState,
             fromDate: defaultValues.defaultStartDate.add(value[0], 'days').format('YYYY-MM-DD'),

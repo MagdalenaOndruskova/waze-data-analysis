@@ -57,7 +57,7 @@ const ChartTimelineComponent = ({ dataJams, dataAlerts, xAxis, xaxis_min_selecte
   };
 
   return (
-    <div id="chart-line">
+    <div id="chart-line" style={{ paddingLeft: '35px', paddingRight: '60px' }}>
       <ReactApexChart options={optionsLine} series={series} type="area" height={130} />
     </div>
   );

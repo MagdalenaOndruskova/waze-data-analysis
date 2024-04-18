@@ -1,11 +1,12 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import { StreetInMap } from '../types/StreetInMap';
+import { Coord } from '../types/baseTypes';
 
 export interface Filter {
   fromDate: string;
   toDate: string;
-  streets: Array<String>;
+  streets: Array<string>;
 }
 
 export interface FilterContext {
@@ -26,11 +27,29 @@ export const FILTER_DEFAULT_VALUE: FilterContext = {
 
 export const filterContext = React.createContext<FilterContext>(FILTER_DEFAULT_VALUE);
 
+export interface RouteContext {
+  route: any[];
+  coordinates: Coord[];
+
+  setNewRoute: React.Dispatch<React.SetStateAction<any[]>>;
+  setNewCoordinates: React.Dispatch<React.SetStateAction<Coord[]>>;
+}
+export const ROUTE_CONTEXT_DEFAULT_VALUE: RouteContext = {
+  route: [],
+  coordinates: [],
+
+  setNewRoute: () => {},
+  setNewCoordinates: () => {},
+};
+
+export const routeContext = React.createContext<RouteContext>(ROUTE_CONTEXT_DEFAULT_VALUE);
+
 export interface StreetContext {
   streetsInMap: StreetInMap[];
   streetsInSelected: string[];
   setNewStreetsInMap: React.Dispatch<React.SetStateAction<StreetInMap[]>>;
-  setNewStreetsInSelected: (streetsInSelected: string[]) => void;
+  setNewStreetsInSelected: React.Dispatch<React.SetStateAction<string[]>>;
+
   newlySelected: string;
   setNewNewlySelected: (selected: string) => void;
   streetsInRoute: string[];

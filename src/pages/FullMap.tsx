@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import L, { Map as LeafletMap } from 'leaflet';
+import L, { Map as LeafletMap, map } from 'leaflet';
 import { Button, Card, Col, Row, Select, SelectProps, message, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { filterContext, streetContext } from '../utils/contexts';
+import { filterContext, routeContext, streetContext } from '../utils/contexts';
 import { StreetInMap } from '../types/StreetInMap';
 import { deleteAllFromMap, drawOnMap } from '../utils/map';
 import { RouteIcon } from '../utils/icons';
@@ -14,11 +14,12 @@ import 'leaflet/dist/leaflet.css';
 import ApplicationTour from '../Components/SidebarComponents/ApplicationTour';
 import { LoadingOutlined } from '@ant-design/icons';
 import * as Icons from '../utils/icons';
-import { get_all_street_delays, get_points, get_streets_coord } from '../utils/backendApiRequests';
+import { get_all_street_delays, get_all_street_alerts, get_streets_coord } from '../utils/backendApiRequests';
 
 import Map from '../Components/Map';
 import { AdressPoint } from '../types/baseTypes';
 import { t } from 'i18next';
+import { useUrlSearchParams } from '../hooks/useUrlSearchParams';
 
 type Coord = {
   latitude: number;
@@ -27,7 +28,9 @@ type Coord = {
 
 const FullMap = () => {
   const { filter } = useContext(filterContext);
-  const { setNewStreetsInSelected, streetsInMap, setNewStreetsInMap, newlySelected } = useContext(streetContext);
+  const { streetsInRoute, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap, newlySelected } =
+    useContext(streetContext);
+  const { route } = useContext(routeContext);
 
   const mapRef = useRef<LeafletMap>(null);
   const { t } = useTranslation();
@@ -59,11 +62,13 @@ const FullMap = () => {
       setButtonStyle('primary');
       setButtonStyleDelay('default');
       setMapMode('route');
+      // TODO: po obdrzani route, filtrovat na ulice ktore su vidiet
     } else {
       setButtonStyle('default');
       setMapMode('street');
     }
   };
+  useUrlSearchParams();
 
   const allDelayData = async () => {
     const map = mapRef.current;
@@ -116,7 +121,7 @@ const FullMap = () => {
 
   const allAlertData = async () => {
     const key = 'alertData';
-    setAlertsPoints([]);
+    // setAlertsPoints([]);
 
     const openNotification = () => {
       api['info']({
@@ -129,7 +134,8 @@ const FullMap = () => {
       });
     };
     openNotification();
-    const data: AdressPoint = await get_points(filter);
+
+    const data: AdressPoint = await get_all_street_alerts(filter, route, streetsInRoute);
     const newData: AdressPoint = data.map((obj) => ({ ...obj, visible: true }));
 
     setAlertsPoints(newData);
@@ -161,15 +167,53 @@ const FullMap = () => {
     }
 
     const map = mapRef.current;
-
+    console.log(newlySelected);
     const fetchData = async () => {
-      const data = await get_streets_coord(filter, newlySelected);
-      const newDrawedStreet = drawOnMap(map, data?.name, data?.path, data?.color);
-      setNewStreetsInMap((prevArray) => [...prevArray, newDrawedStreet]);
+      const isMatched = streetsInMap.some((street) => street.name === newlySelected);
+
+      if (!isMatched) {
+        const data = await get_streets_coord(filter, newlySelected);
+        const newStreets = [];
+        data?.streets?.forEach((element) => {
+          const newDrawedStreet: StreetInMap = drawOnMap(map, element.street_name, element.path, element.color);
+          newStreets.push(newDrawedStreet);
+        });
+        setNewStreetsInMap((prevState) => [...prevState, ...newStreets]);
+
+        return data;
+      }
     };
 
     fetchData();
   }, [newlySelected]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    var newStreetsInMap: StreetInMap[] = [];
+
+    routeStreets?.forEach((element) => {
+      const streetInMapNew: StreetInMap = drawOnMap(map, element?.street_name, element?.path, element?.color);
+      newStreetsInMap.push(streetInMapNew);
+    });
+
+    setNewStreetsInMap((prevState: StreetInMap[]) => {
+      if (prevState.length < 1) {
+        return newStreetsInMap;
+      }
+      const stateCopy = [...prevState];
+      const newStreets: StreetInMap[] = [];
+
+      newStreetsInMap.forEach((streetInMap) => {
+        const index = prevState.findIndex(({ name }) => name === streetInMap.name);
+        if (index > -1) {
+          stateCopy[index] = { ...stateCopy[index], lines: [...stateCopy[index].lines, ...streetInMap.lines] };
+        } else {
+          newStreets.push(streetInMap);
+        }
+      });
+      return [...stateCopy, ...newStreets];
+    });
+  }, [routeStreets]);
 
   useEffect(() => {
     if (buttonStyleDelay == 'primary') {
@@ -193,10 +237,11 @@ const FullMap = () => {
           <Sidebar
             setOpenInfoModalState={setOpenInfoModalState}
             refStats={refStats}
+            map={mapRef.current}
             refLineStats={refLineStats}
             refContacForm={refContacForm}
             refRoute={refRouteSidebar}
-            routeStreets={routeStreets}
+            setRouteStreets={setRouteStreets}
             showMarkers={showMarkers}
             alertsPoints={alertsPoints}
             setAlertsPoints={setAlertsPoints}
@@ -227,6 +272,7 @@ const FullMap = () => {
             setRouteStreets={setRouteStreets}
             showMarkers={showMarkers}
             alertsPoints={alertsPoints}
+            setMapMode={setMapMode}
           />
 
           <div className="divTimelineOnMap">

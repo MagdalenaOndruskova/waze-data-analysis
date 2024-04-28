@@ -25,7 +25,7 @@ header {
   width: 100%;
   top: 0;
   left: 0;
-  z-index: 10000; // navbar stays on top
+  z-index: 100; // navbar stays on top
   font-family: $fontFamily;
   display: flex;
   align-items: center;
@@ -60,7 +60,28 @@ nav {
     text-decoration: none;
   }
 }
+.ant-float-btn {
+  width: 60px;
+  height: 60px !important;
+}
 
+.ant-float-btn-default {
+  background-color: $linkColorActive;
+  .ant-float-btn-body {
+    background-color: $linkColorActive;
+    .ant-float-btn-content {
+      width: 80px;
+      padding-right: 17px;
+      .ant-float-btn-icon {
+        color: white;
+        font-size: 32px;
+      }
+    }
+  }
+}
+a {
+  color: $linkColorActive;
+}
 .active {
   color: $linkColorActive !important;
 }
@@ -118,6 +139,8 @@ nav {
 
 .header-nav {
   min-width: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .navLink {
@@ -142,7 +165,7 @@ nav {
   max-height: 100px;
   // height: 100%;
   // margin-top: 10px;
-  background-color: white;
+  // background-color: white;
   padding: 0;
   color: black;
 
@@ -259,10 +282,12 @@ nav {
   position: absolute;
   z-index: 1000;
   display: flex;
-  gap: 10px;
+  gap: 5px 7px;
   top: 10px;
   left: 50px;
   flex-wrap: wrap;
+  margin-right: 20px;
+  padding-right: 20px;
 
   .ant-btn-primary {
     background-color: white !important;
@@ -424,6 +449,29 @@ nav {
   border-color: $buttonHoverBackgroundColor !important;
 }
 
+.marker-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  background: #c30b82;
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -15px 0 0 -15px;
+}
+
+// to align icon
+.custom-div-icon i {
+  position: absolute;
+  width: 22px;
+  font-size: 22px;
+  left: 0;
+  right: 0;
+  margin: 10px auto;
+  text-align: center;
+}
+
 .graphs-row {
   display: grid;
   grid-gap: 10px;
@@ -447,13 +495,48 @@ nav {
   }
 }
 
-.language-switcher .ant-select-item-option-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.language-select {
+  .ant-select-selector {
+    overflow: hidden;
 
-  & > img {
-    width: 100%;
+    &::after {
+      margin: 9px;
+    }
+  }
+
+  .ant-select-selection-item {
+    padding: 0 !important;
+    height: 32px;
+  }
+}
+
+.language-switcher {
+  .ant-select-item-option {
+    padding: 0 !important;
+  }
+
+  .ant-select-item-option-selected {
+    background-color: #dcdcdc !important;
+  }
+
+  .ant-select-item-option-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    // & > img {
+    //   width: 32px;
+    // }
+  }
+}
+
+.date-slider .ant-slider-mark > span {
+  &:last-of-type {
+    transform: translateX(-90%) !important;
+  }
+
+  &:first-of-type {
+    transform: translateX(-10%) !important;
   }
 }
 

@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { filterContext, routeContext, streetContext } from '../../utils/contexts';
 import useAxios from '../../utils/useAxios';
 import { Coord, Streets } from '../../types/baseTypes';
-import { getOptionsFromStreet } from '../../utils/util';
-import { deburr } from 'lodash';
+import { getOptionsFromStreet, ignoreDiacriticsFilter } from '../../utils/util';
 import { deleteAllFromMap, deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../../utils/map';
 import { get_route, get_streets_coord } from '../../utils/backendApiRequests';
 import { StreetInMap } from '../../types/StreetInMap';
@@ -16,14 +15,6 @@ type Props = {
   setOpenDrawerRoute: React.Dispatch<React.SetStateAction<boolean>>;
   setRouteStreets: React.Dispatch<any>;
   map: L.Map;
-};
-
-const ignoreDiacriticsFilter = (input, option) => {
-  // Normalize both input and option text to remove diacritics
-  const inputValue = deburr(input).toLowerCase();
-  const optionValue = deburr(option.value).toLowerCase();
-
-  return optionValue.includes(inputValue);
 };
 
 const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, setRouteStreets, map }: Props) => {

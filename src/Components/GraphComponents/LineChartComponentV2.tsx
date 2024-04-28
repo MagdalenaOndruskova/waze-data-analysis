@@ -77,8 +77,18 @@ const LineChartComponentV2 = ({ dataFirst, dataSecond, labelFirst, labelSecond, 
         show: true,
         formatter: function (value) {
           const date = new Date(value);
-          const formattedTime = dayjs(date).format('DD MMM YYYY HH:mm:ss');
-          return formattedTime;
+          // const formattedTime = dayjs(date).format('DD MMM YYYY HH:mm:ss');
+          const utcDateString = date.toLocaleString('en-US', {
+            timeZone: 'UTC',
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          });
+
+          return utcDateString;
         },
       },
     },

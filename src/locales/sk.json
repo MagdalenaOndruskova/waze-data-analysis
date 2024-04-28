@@ -5,7 +5,7 @@
   "Time Range": "Časové rozpätie",
   "Streets": "Ulice",
   "PleaseSelect": "Vyberte ulice",
-  "FILTER": "FILTRUJ",
+  "FILTER": "FILTRE",
   "RESET": "VYNULUJ",
   "Live Map": "Live Mapa",
   "Dashboard": "Dashboard",
@@ -113,7 +113,7 @@
   "graph.priebeh": "Priebeh",
 
   "contact": "Kontakt",
-  "appDescription": "Aplikácia analyzujúca a vizualizujúca dopravné dáta z aplikácie Waze bola vytvorená vrámci diplomovej práce  na FIT VUT vo spolupráci s magistrátom mesta Brna. Aplikácia je v testovacom nasadení, ak narazíte na nejaké nezrovnalosti, prípadne máte návrh na vylepšenie aplikácie neváhajte použiť kontaktný formulár.",
+  "appDescription": "Aplikácia analyzujúca a vizualizujúca dopravné dáta z aplikácie Waze bola vytvorená vrámci diplomovej práce  na FIT VUT vo spolupráci s magistrátom mesta Brna. Aplikácia je v testovacom nasadení, ak narazíte na nejaké nezrovnalosti, prípadne máte návrh na vylepšenie aplikácie neváhajte použiť kontaktný formulár, alebo nám pošlite mail na:",
   "tourButton": "Vysvetli ako aplikácia funguje",
 
   "routeLoadingInProgress": "Načítavam úsek cesty.",
@@ -157,5 +157,13 @@
   "type": "Typ",
   "subtype": "Podtyp",
   "street": "Ulica",
-  "pubMillis": "Dátum a čas"
+  "pubMillis": "Dátum a čas",
+  "backHome": "Naspäť domov",
+  "pageNotExist": "Stránka, ktorú sa snažíte navštíviť neexistuje.",
+  "colorExplained": "Farby použité pre vykresľenie dopravných zápch na mape: ",
+  "green": "Zelená: Priemerne, menej ako 3 dopravné zápchy denne na danom segmente ulice",
+  "orange": "Oranžová: Priemerne, medzi 4-7 dopravných zápch denne na danom segmente ulice",
+  "red": "Červená: Priemerne, viac ako 7 dopravných zápch denne na danom segmente ulice",
+
+  "or": "alebo"
 }

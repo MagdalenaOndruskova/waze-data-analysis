@@ -53,7 +53,7 @@ const DateSlider = () => {
   }, [filter]);
 
   return (
-    <div style={{ width: '90%', margin: 'auto' }}>
+    <div style={{ width: '95%', margin: 'auto' }}>
       <Slider
         range={{ draggableTrack: false }}
         marks={marks}
@@ -62,6 +62,7 @@ const DateSlider = () => {
         step={1}
         value={[value.startValue, value.endValue]}
         onChange={handleChange}
+        className="date-slider"
         tooltip={{
           formatter: (value) => {
             return defaultValues.defaultStartDate.add(value, 'days').format('DD.MM.YYYY');

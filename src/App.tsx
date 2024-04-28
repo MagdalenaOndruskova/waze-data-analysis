@@ -9,6 +9,7 @@ import './styles/layout-styles.scss';
 import './styles/responsivity.scss';
 import Dashboard from './pages/Dashboard';
 import FullMap from './pages/FullMap';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <Route index element={<FullMap />} />
         <Route path="/waze-data-analysis/dashboard" element={<Dashboard />} />
       </Route>
-      <Route path="*" element={<h1>TODO: NotFound komponent!</h1>} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

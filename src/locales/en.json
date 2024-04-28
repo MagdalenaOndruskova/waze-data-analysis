@@ -107,12 +107,13 @@
   "graph.delayInMinutes": "Delay in minutes",
   "graph.level": "Average level",
   "graph.speed": "Average speed in km/h",
+  "graph.priebeh": "Chart",
 
   "graphs.title": "Plots of traffic delays and events",
   "graph.tiles.title": "Statistics",
 
   "contact": "Contact",
-  "appDescription": "The application is analyzing and visualizing traffic data from Waze was created as part of the master thesis at FIT BUT in cooperation with the Brno City Council. The application is in test deployment, if you encounter any inconsistencies or have a suggestion to improve the application please do not hesitate to use the contact form.",
+  "appDescription": "The application is analyzing and visualizing traffic data from Waze was created as part of the master thesis at FIT BUT in cooperation with the Brno City Council. The application is in test deployment, if you encounter any inconsistencies or have a suggestion to improve the application please do not hesitate to use the contact form or send e-mail to:",
   "tourButton": "Explain how app works",
 
   "routeLoadingInProgress": "Loading of route section",
@@ -157,5 +158,13 @@
   "type": "Type",
   "subtype": "Subtype",
   "street": "Street",
-  "pubMillis": "Date and time"
+  "pubMillis": "Date and time",
+  "backHome": "Back home",
+  "pageNotExist": "Sorry, the page you visited does not exist.",
+  "colorExplained": "Colors used for drawing traffic jams on map: ",
+  "green": "Green: On average, less than 3 traffic jams daily on street segment",
+  "orange": "Orange: On average, between 4-7 traffic jams daily on street segment ",
+  "red": "Red: On average. more than 7 traffic jams daily on street segment",
+
+  "or": "or"
 }

@@ -31,6 +31,8 @@ type Props = {
   alertsPoints: AdressPoint;
   map: L.Map;
   setAlertsPoints: React.Dispatch<React.SetStateAction<AdressPoint>>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<Boolean>>;
 };
 
 const Sidebar = ({
@@ -45,6 +47,8 @@ const Sidebar = ({
   alertsPoints,
   map,
   setAlertsPoints,
+  loading,
+  setLoading,
 }: Props) => {
   const { t } = useTranslation();
   const { filter } = useContext(filterContext);
@@ -59,7 +63,7 @@ const Sidebar = ({
   const [openDrawerRoute, setOpenDrawerRoute] = useState<boolean>(false);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   const [trafficCheck, setTrafficCheck] = useState<boolean>(true);
   const [accident, setTrafficAccident] = useState<boolean>(true);
   const [hazard, setTrafficHazard] = useState<boolean>(true);
@@ -80,6 +84,7 @@ const Sidebar = ({
       setJamsData(data.jams);
       setAlertData(data.alerts);
       setXAxisData(data.xaxis);
+      console.log('tu');
       setLoading(false);
     };
     get_data();
@@ -149,7 +154,7 @@ const Sidebar = ({
           </div>
         </div>
         {showMarkers && (
-          <div style={{ paddingLeft: '5px' }}>
+          <div style={{ paddingLeft: '5px', display: 'flex', flexDirection: 'column' }}>
             <Tooltip placement="right" title={t('JAM')}>
               <Checkbox onClick={() => updateAlerts('JAM', trafficCheck, setTrafficCheck)} checked={trafficCheck}>
                 <TrafficJamIcon />

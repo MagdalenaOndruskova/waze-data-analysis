@@ -39,7 +39,19 @@ const InfoModal = ({ openInfoModalState, setOpenInfoModalState, setOpenTour }) =
         </Flex>
       }
     >
-      <p>{t('appDescription')}</p>
+      <p>
+        {t('appDescription')}
+        <a href="mailto:xondru16@stud.fit.vutbr.cz"> xondru16@stud.fit.vutbr.cz</a> {t('or')}
+        <a href="mailto:data@brno.cz"> data@brno.cz</a>.
+      </p>
+      <br />
+      <p>{t('colorExplained')}</p>
+      <ul style={{ paddingLeft: '40px' }}>
+        <li>{t('green')}</li>
+        <li>{t('orange')}</li>
+        <li>{t('red')}</li>
+      </ul>
+
       <br />
       <div className="modalButtonDiv">
         <Button type="primary" onClick={() => setOpenTour(true)} className="modalButton">

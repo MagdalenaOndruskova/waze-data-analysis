@@ -58,6 +58,7 @@ export async function get_data_delay_alerts(filter: Filter, route, streetsInRout
 
   const body = getRequestBodyWithRoute(filter, route, streetsInRoute);
   const response = await backendApi.post('data_for_plot_drawer/', body);
+  console.log('🚀 ~ get_data_delay_alerts ~ response:', response);
   const data: ResponseDelayAlerts = {
     jams: response.data.jams,
     alerts: response.data.alerts,
@@ -70,11 +71,11 @@ export async function get_data_delay_alerts(filter: Filter, route, streetsInRout
   return data;
 }
 
-export async function get_data_critical_streets(filter: Filter) {
+export async function get_data_critical_streets(filter: Filter, route, streetsInRoute: string[]) {
   if (!filter) {
     return;
   }
-  const body = getRequestBody(filter);
+  const body = getRequestBodyWithRoute(filter, route, streetsInRoute);
   const response = await backendApi.post('data_for_plot_streets/', body);
   const data: ResponseCriticalStreets = {
     streets_jams: response.data.streets_jams,
@@ -85,19 +86,17 @@ export async function get_data_critical_streets(filter: Filter) {
   return data;
 }
 
-export async function get_data_alert_types(filter: Filter) {
+export async function get_data_alert_types(filter: Filter, route, streetsInRoute: string[]) {
   if (!filter) {
     return;
   }
-  const body = getRequestBody(filter);
+  const body = getRequestBodyWithRoute(filter, route, streetsInRoute);
   const response = await backendApi.post('data_for_plot_alerts/', body);
   return response.data;
 }
 
 export async function get_streets_coord(filter: Filter, newlySelected: string) {
   const response = await backendApi.get(`/street_coord/?${queryStreetCoord(filter, newlySelected)}`);
-
-  console.log('🚀 ~ get_streets_coord ~ response:', response);
   return response.data;
 }
 
@@ -111,7 +110,6 @@ export async function get_all_street_delays(filter: Filter) {
 
 export async function get_all_street_alerts(filter: Filter, route: any[], streetsInRoute: string[]) {
   const body = getRequestBodyWithRoute(filter, route, streetsInRoute);
-  console.log('🚀 ~ get_all_street_alerts ~ body:', body);
 
   const response = await backendApi.post('draw_alerts/', body);
   return response.data;
@@ -129,6 +127,7 @@ export async function get_route(src_coord, dst_coord, filter: Filter) {
     from_time: filter.fromDate,
     to_time: filter.toDate,
   };
+  console.log(data_route);
   const response = await backendApi.post('find_route_by_coord/', data_route);
   console.log('🚀 ~ get_route ~ response:', response);
 

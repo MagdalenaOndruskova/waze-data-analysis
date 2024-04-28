@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from 'react-leaflet';
-import L, { Map as LeafletMap } from 'leaflet';
+import L, { Map as LeafletMap, icon } from 'leaflet';
 import { dataContext, filterContext, routeContext, streetContext } from '../utils/contexts';
 import { useTranslation } from 'react-i18next';
 import { NotificationInstance } from 'antd/es/notification/interface';
@@ -16,6 +16,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet/dist/leaflet.css';
 import { get_data_delay_alerts, get_route, reverse_geocode } from '../utils/backendApiRequests';
+import { pin, pinCarCrash, pinHazard } from '../utils/icons';
 
 type Props = {
   mapMode: string;
@@ -26,16 +27,28 @@ type Props = {
   alertsPoints: AdressPoint;
   mapRef: React.MutableRefObject<L.Map>;
   setMapMode: React.Dispatch<React.SetStateAction<'route' | 'street' | 'nothing'>>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Map = ({ mapMode, api, routeStreets, setRouteStreets, showMarkers, alertsPoints, mapRef, setMapMode }: Props) => {
+const Map = ({
+  mapMode,
+  api,
+  routeStreets,
+  setRouteStreets,
+  showMarkers,
+  alertsPoints,
+  mapRef,
+  setMapMode,
+  loading,
+  setLoading,
+}: Props) => {
   const { t } = useTranslation();
   const { setNewStreetsInSelected, setNewStreetsInMap, setNewStreetsInRoute, streetsInRoute } =
     useContext(streetContext);
   const { filter, setNewFilter } = useContext(filterContext);
   const { coordinates, setNewCoordinates, setNewRoute, route } = useContext(routeContext);
-  const { setXAxisData, setJamsData, setAlertData, setDateTimeFrom, setDateTimeTo, setPreviousDate } =
-    useContext(dataContext);
+  const { setXAxisData, setJamsData, setAlertData } = useContext(dataContext);
 
   const MapClickEvent = () => {
     const handleContextMenu = (e) => {
@@ -48,7 +61,7 @@ const Map = ({ mapMode, api, routeStreets, setRouteStreets, showMarkers, alertsP
         const map = mapRef.current;
 
         if (mapMode === 'route') {
-          const marker = L.marker([e.latlng.lat, e.latlng.lng]);
+          const marker = L.marker([e.latlng.lat, e.latlng.lng], { icon: pin });
           marker.addTo(map);
 
           const coord: Coord = {
@@ -75,6 +88,7 @@ const Map = ({ mapMode, api, routeStreets, setRouteStreets, showMarkers, alertsP
               });
             };
             openNotification();
+            setLoading(true);
             const response = await get_route(last_two[0], last_two[1], filter);
 
             if (response.streets_coord.length < 1) {
@@ -106,9 +120,12 @@ const Map = ({ mapMode, api, routeStreets, setRouteStreets, showMarkers, alertsP
               return [...prevData, ...response.route];
             });
             const data = await get_data_delay_alerts(filter, route, streetsInRoute);
+            console.log('🚀 ~ click: ~ data:', data);
             setJamsData(data.jams);
             setAlertData(data.alerts);
             setXAxisData(data.xaxis);
+            setLoading(false);
+            console.log(filter);
             setTimeout(() => {
               api['success']({
                 key,
@@ -164,47 +181,48 @@ const Map = ({ mapMode, api, routeStreets, setRouteStreets, showMarkers, alertsP
   };
 
   return (
-    <MapContainer
-      ref={mapRef}
-      center={[49.194391, 16.612064]}
-      zoom={15}
-      scrollWheelZoom={true}
-      style={{ height: 'calc(100dvh - 50px)', width: '100%' }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <MapClickEvent />
-      {showMarkers && (
-        <MarkerClusterGroup chunkedLoading>
-          {(alertsPoints as AdressPoint).map(
-            (alert) =>
-              alert?.visible && (
-                <Marker key={alert['key']} position={[alert['latitude'], alert['longitude']]}>
-                  <Popup>
-                    {t('type')}: {t(alert['type'])}
-                    {alert['subtype'] && (
+    <>
+      <MapContainer
+        ref={mapRef}
+        center={[49.194391, 16.612064]}
+        zoom={15}
+        scrollWheelZoom={true}
+        style={{ height: 'calc(100dvh - 50px)', width: '100%' }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapClickEvent />
+        {showMarkers && (
+          <MarkerClusterGroup chunkedLoading>
+            {(alertsPoints as AdressPoint).map(
+              (alert) =>
+                alert?.visible && (
+                  <Marker key={alert['key']} position={[alert['latitude'], alert['longitude']]} icon={alert['icon']}>
+                    <Popup>
+                      {t('type')}: {t(alert['type'])}
+                      {alert['subtype'] && (
+                        <p>
+                          {t('subtype')}: {t(alert['subtype'])}
+                        </p>
+                      )}
+                      {alert['street'] && (
+                        <p>
+                          {t('street')}: {alert['street']}
+                        </p>
+                      )}
                       <p>
-                        {t('subtype')}: {t(alert['subtype'])}
+                        {t('pubMillis')}: {dayjs(alert['pubMillis']).format('DD.MM.YYYY HH:mm')}
                       </p>
-                    )}
-                    {alert['street'] && (
-                      <p>
-                        {t('street')}: {alert['street']}
-                      </p>
-                    )}
-                    <p>
-                      {t('pubMillis')}: {dayjs(alert['pubMillis']).format('DD.MM.YYYY HH:mm')}
-                    </p>
-                  </Popup>
-                </Marker>
-              ),
-          )}
-        </MarkerClusterGroup>
-      )}
-    </MapContainer>
+                    </Popup>
+                  </Marker>
+                ),
+            )}
+          </MarkerClusterGroup>
+        )}
+      </MapContainer>
+    </>
   );
 };
-
 export default Map;

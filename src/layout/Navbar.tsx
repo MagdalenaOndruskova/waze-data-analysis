@@ -51,6 +51,7 @@ function Navbar() {
       <div
         style={{ height: '55px', width: '120px', cursor: 'pointer' }}
         onClick={() => navigate('/waze-data-analysis/')}
+        className="logo"
       >
         <svg
           xmlns="https://www.w3.org/2000/svg"
@@ -76,17 +77,17 @@ function Navbar() {
           {t('Dashboard')}
         </NavLink>
         <LanguageSwitcher i18n={i18n} t={t}></LanguageSwitcher>
+        <Dropdown
+          menu={{ items, selectable: true, defaultSelectedKeys: ['0'] }}
+          trigger={['click']}
+          className="mobile-menu"
+          overlayClassName="mobile-menu-overlay"
+        >
+          <a onClick={(e) => e.preventDefault()}>
+            <MenuOutlined />
+          </a>
+        </Dropdown>
       </nav>
-
-      <Dropdown
-        menu={{ items, selectable: true, defaultSelectedKeys: ['0'] }}
-        trigger={['click']}
-        className="mobile-menu"
-      >
-        <a onClick={(e) => e.preventDefault()}>
-          <MenuOutlined />
-        </a>
-      </Dropdown>
     </header>
   );
 }

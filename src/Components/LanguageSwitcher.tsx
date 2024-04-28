@@ -13,10 +13,16 @@ const LanguageSwitcher = ({ i18n, t }) => {
   };
 
   return (
-    <Select style={{}} onChange={onClickLanguageChange} defaultValue="sk" popupClassName="language-switcher">
+    <Select
+      style={{}}
+      onChange={onClickLanguageChange}
+      defaultValue="sk"
+      popupClassName="language-switcher"
+      className="language-select"
+    >
       {languageOptions.map((option) => (
         <Select.Option key={option.value} value={option.value}>
-          <img src={option.flag} alt={option.value} style={{ width: 24, height: 16 }} />
+          <img src={option.flag} alt={option.value} style={{ height: 32 }} />
         </Select.Option>
       ))}
     </Select>

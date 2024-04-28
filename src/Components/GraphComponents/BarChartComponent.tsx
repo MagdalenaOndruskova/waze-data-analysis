@@ -11,7 +11,7 @@ const BarChartComponent = ({ streets, values, id, title }) => {
     },
     plotOptions: {
       bar: {
-        barHeight: 20,
+        barHeight: 30,
         distributed: true,
         horizontal: true,
         dataLabels: {

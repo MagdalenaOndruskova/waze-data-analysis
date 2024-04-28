@@ -20,19 +20,34 @@ import Map from '../Components/Map';
 import { AdressPoint } from '../types/baseTypes';
 import { t } from 'i18next';
 import { useUrlSearchParams } from '../hooks/useUrlSearchParams';
+import Icon from '@ant-design/icons/lib/components/Icon';
 
 type Coord = {
   latitude: number;
   longitude: number;
 };
 
+function getPinIcon(alert_type: string) {
+  if (alert_type == 'JAM') {
+    return Icons.pinJam;
+  } else if (alert_type == 'HAZARD') {
+    return Icons.pinHazard;
+  } else if (alert_type == 'ACCIDENT') {
+    return Icons.pinCarCrash;
+  } else if (alert_type == 'ROAD_CLOSED') {
+    return Icons.pinRoadClosed;
+  }
+  return Icons.pin;
+}
+
 const FullMap = () => {
   const { filter } = useContext(filterContext);
   const { streetsInRoute, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap, newlySelected } =
     useContext(streetContext);
-  const { route } = useContext(routeContext);
+  const { route, coordinates } = useContext(routeContext);
 
   const mapRef = useRef<LeafletMap>(null);
+  console.log('🚀 ~ FullMap ~ mapRef:', mapRef);
   const { t } = useTranslation();
 
   const refStats = useRef(null);
@@ -51,6 +66,7 @@ const FullMap = () => {
   const [mapMode, setMapMode] = useState<'route' | 'street' | 'nothing'>('street');
   const [api, contextHolder] = notification.useNotification({ stack: { threshold: 3 } });
   const [delayStreets, setDelayStreets] = useState<StreetInMap[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [showMarkers, setShowMarkers] = useState<boolean>(false);
   const [alertsPoints, setAlertsPoints] = useState<AdressPoint>([]);
 
@@ -136,7 +152,7 @@ const FullMap = () => {
     openNotification();
 
     const data: AdressPoint = await get_all_street_alerts(filter, route, streetsInRoute);
-    const newData: AdressPoint = data.map((obj) => ({ ...obj, visible: true }));
+    const newData: AdressPoint = data.map((obj) => ({ ...obj, visible: true, icon: getPinIcon(obj.type) }));
 
     setAlertsPoints(newData);
     setShowMarkers(true);
@@ -160,6 +176,17 @@ const FullMap = () => {
       return;
     }
   };
+
+  useEffect(() => {
+    if (mapRef.current) {
+      if (route.length > 0) {
+        coordinates?.forEach((obj) => {
+          obj.marker.addTo(mapRef.current);
+        });
+      }
+      streetsInMap?.forEach((obj) => obj.lines?.forEach((line) => line?.addTo(mapRef?.current)));
+    }
+  }, [mapRef.current]);
 
   useEffect(() => {
     if (!newlySelected) {
@@ -245,9 +272,11 @@ const FullMap = () => {
             showMarkers={showMarkers}
             alertsPoints={alertsPoints}
             setAlertsPoints={setAlertsPoints}
+            loading={loading}
+            setLoading={setLoading}
           />
         </Col>
-        <Col span={23} style={{ position: 'relative' }}>
+        <Col span={23} style={{ position: 'relative', flex: '1', maxWidth: 'unset' }}>
           <div className="divButtonsOnMap">
             <Button className="buttonRoute" ref={refRoute} type={buttonStyle} onClick={findRoute}>
               {buttonStyle == 'default' && t('route.button')}
@@ -273,6 +302,8 @@ const FullMap = () => {
             showMarkers={showMarkers}
             alertsPoints={alertsPoints}
             setMapMode={setMapMode}
+            loading={loading}
+            setLoading={setLoading}
           />
 
           <div className="divTimelineOnMap">

@@ -3,6 +3,8 @@ import { Streets } from '../types/baseTypes';
 import useAxios from './useAxios';
 import dayjs from 'dayjs';
 
+import { deburr } from 'lodash';
+
 export function getOptionsFromStreet(streets: Streets | null, streetsInRoute: string[] | null) {
   if (streets == null) {
     return;
@@ -25,3 +27,11 @@ export function getOptionsFromStreet(streets: Streets | null, streetsInRoute: st
 export function getXMinDate(toDate: string) {
   return dayjs(`${toDate}`, { format: 'YYYY-MM-DD' }).subtract(2, 'day').format('YYYY-MM-DD');
 }
+
+export const ignoreDiacriticsFilter = (input, option) => {
+  // Normalize both input and option text to remove diacritics
+  const inputValue = deburr(input).toLowerCase();
+  const optionValue = deburr(option.value).toLowerCase();
+
+  return optionValue.includes(inputValue);
+};

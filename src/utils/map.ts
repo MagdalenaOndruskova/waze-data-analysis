@@ -42,9 +42,7 @@ export function deleteAllFromMap(streetsInMap: StreetInMap[]) {
  * @returns Modified array of StreetInMap
  */
 export function deleteMultipleFromMap(streetsInMap: StreetInMap[], streets: string[]) {
-  console.log('🚀 ~ deleteMultipleFromMap ~ streetsInMap:', streetsInMap);
   const streetsInMapToDelete = streetsInMap?.filter((street) => streets.includes(street.name));
-  console.log('🚀 ~ deleteMultipleFromMap ~ streetsInMapToDelete:', streetsInMapToDelete);
   streetsInMapToDelete?.forEach((street) => {
     street?.lines?.forEach((line) => line.remove());
   });

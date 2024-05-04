@@ -71,7 +71,6 @@ const Dashboard = () => {
     setLoadingAlertTypes(true);
 
     const get_critical_streets_data = async () => {
-      console.log(filter);
       const data = await get_data_critical_streets(filter, route, streetsInRoute);
       setCriticalStreetsJams({ streets: data.streets_jams, values: data.values_jams });
       setCriticalStreetsAlerts({ streets: data.streets_alerts, values: data.values_alerts });

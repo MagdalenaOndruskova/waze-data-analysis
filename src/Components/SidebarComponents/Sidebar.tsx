@@ -84,7 +84,6 @@ const Sidebar = ({
       setJamsData(data.jams);
       setAlertData(data.alerts);
       setXAxisData(data.xaxis);
-      console.log('tu');
       setLoading(false);
     };
     get_data();

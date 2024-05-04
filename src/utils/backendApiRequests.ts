@@ -40,10 +40,7 @@ function getRequestBody(filter: Filter) {
 function getRequestBodyWithRoute(filter: Filter, route, streetsInRoute: string[]) {
   const tmp = getRequestBody(filter);
   var body;
-  console.log(route);
   if (route.length > 0) {
-    console.log(filter.streets);
-    console.log(streetsInRoute);
     const new_streets = [...new Set([...filter.streets, ...streetsInRoute])];
     body = { ...tmp, streets: new_streets, route: route };
   } else {
@@ -59,7 +56,6 @@ export async function get_data_delay_alerts(filter: Filter, route, streetsInRout
 
   const body = getRequestBodyWithRoute(filter, route, streetsInRoute);
   const response = await backendApi.post('data_for_plot_drawer/', body);
-  console.log('🚀 ~ get_data_delay_alerts ~ response:', response);
   const data: ResponseDelayAlerts = {
     jams: response.data.jams,
     alerts: response.data.alerts,
@@ -133,9 +129,7 @@ export async function get_route(src_coord, dst_coord, filter: Filter) {
     from_time: filter.fromDate,
     to_time: filter.toDate,
   };
-  console.log(data_route);
   const response = await backendApi.post('find_route_by_coord/', data_route);
-  console.log('🚀 ~ get_route ~ response:', response);
 
   return response.data;
 }

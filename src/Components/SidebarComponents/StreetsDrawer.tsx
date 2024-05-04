@@ -46,7 +46,6 @@ const StreetsDrawer = ({
   useEffect(() => {
     setNewStreetsInSelected(filter.streets);
     const filterStreets = [...filter.streets];
-    console.log('🚀 ~ useEffect ~ filterStreets:', filterStreets);
     const fetchData = async (street_name) => {
       const isMatched = streetsInMap.some((street) => street.name === street_name);
 
@@ -115,7 +114,6 @@ const StreetsDrawer = ({
     // call again the routing algorithmus for each point
     for (let i = 0; i < coordinates.length - 1; i++) {
       let pair = [coordinates[i], coordinates[i + 1]];
-      console.log(pair);
       const response = await get_route(pair[0], pair[1], filter);
 
       setRouteStreets(response.streets_coord);

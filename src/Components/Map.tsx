@@ -95,7 +95,6 @@ const Map = ({
               const removedCoord: Coord = coordinates.pop();
               setNewCoordinates(coordinates);
               removedCoord.marker.remove();
-              console.log(coordinates);
               setTimeout(() => {
                 api['error']({
                   key,
@@ -116,17 +115,11 @@ const Map = ({
             });
             setNewCoordinates((prevData) => {
               const newData = [...prevData];
-              console.log('🚀 ~ setNewCoordinates ~ newData:', newData);
-              console.log('🚀 ~ setNewCoordinates ~ dst street:', response.dst_street);
-              console.log('🚀 ~ setNewCoordinates ~ src street:', response.src_street);
-              console.log('🚀 ~ setNewCoordinates ~ last index:', lastIndex);
-              console.log('🚀 ~ setNewCoordinates ~ second last index:', secondLastIndex);
 
               newData[lastIndex] = { ...newData[lastIndex], street: response.dst_street };
               newData[secondLastIndex] = { ...newData[secondLastIndex], street: response.src_street };
               if (newData[secondLastIndex].street == newData[lastIndex].street) {
                 newData.pop();
-                console.log('popujem');
               }
               return newData;
             });
@@ -135,8 +128,7 @@ const Map = ({
               return [...prevData, ...response.route];
             });
             const data = await get_data_delay_alerts(filter, new_route, newStreetsInRoute2);
-            console.log(new_route);
-            console.log('🚀 ~ click: ~ data:', data);
+
             setJamsData(data.jams);
             setAlertData(data.alerts);
             setXAxisData(data.xaxis);

@@ -33,7 +33,6 @@ const FilterDrawer = ({ openDrawerFilter, setOpenDrawerFilter }: Props) => {
     if (!dataStreets) {
       return;
     }
-    console.log(streetsInRoute);
     setOptions(getOptionsFromStreet(dataStreets, streetsInRoute));
     setSelected((prevValue) => {
       return prevValue.filter((street) => !streetsInRoute.includes(street));

@@ -153,7 +153,10 @@ const FullMap = () => {
     } else {
       setButtonStyleDelay('default');
       deleteAllFromMap(delayStreets);
-      deleteAllFromMap(streetsInMap);
+      console.log('tu odmazavam ulice');
+      if (route.length === 0) {
+        deleteAllFromMap(streetsInMap);
+      }
       setNewStreetsInSelected([]);
       setNewStreetsInMap([]);
       setDelayStreets([]);

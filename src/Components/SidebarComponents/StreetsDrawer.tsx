@@ -178,7 +178,7 @@ const StreetsDrawer = ({
 
       <Select
         showSearch
-        className="filterStyle"
+        className="filterStyle streets"
         allowClear
         mode="multiple"
         placeholder={t('PleaseSelect')}

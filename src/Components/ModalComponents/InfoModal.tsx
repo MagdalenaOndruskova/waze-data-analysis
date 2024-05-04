@@ -13,8 +13,8 @@ const InfoModal = ({ openInfoModalState, setOpenInfoModalState, setOpenTour }) =
       title={t('app.title')}
       width={800}
       footer={
-        <Flex justify="space-between" wrap="wrap" className="info-modal-footer">
-          <div style={{ width: '25%', cursor: 'pointer' }}>
+        <Flex justify="space-between" wrap="wrap" className="info-modal-footer" style={{ gap: '12px' }}>
+          <div style={{ width: '160px', paddingTop: '7px', cursor: 'pointer' }}>
             <a href="https://data.brno.cz/" target="_blank">
               <svg
                 xmlns="https://www.w3.org/2000/svg"

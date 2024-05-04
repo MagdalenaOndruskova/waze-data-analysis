@@ -99,7 +99,7 @@ const EmailModalForm = ({ openEmailModal, setOpenEmailModal }) => {
           <Input />
         </Form.Item>
         <Form.Item name="body" label={t('app.body')} rules={[{ required: true, message: t('app.bodyHint') }]}>
-          <Input.TextArea showCount maxLength={1000} />
+          <Input.TextArea showCount maxLength={1000} autoSize={{ minRows: 2, maxRows: 4 }} />
         </Form.Item>
         <Form.Item {...tailFormItemLayout} style={{ margin: 0 }}>
           <Button type="primary" htmlType="submit" className="modalButton">

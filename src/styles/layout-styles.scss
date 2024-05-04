@@ -191,6 +191,11 @@ a {
   min-width: 180px;
   max-width: 220px;
   margin-top: 5px;
+
+  &.streets {
+    max-width: unset;
+    width: 90%;
+  }
 }
 
 // .ant-select-item .ant-select-item-option .ant-select-item-option-selected {

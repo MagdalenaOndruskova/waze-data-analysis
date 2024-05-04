@@ -100,7 +100,7 @@ const FilterDrawer = ({ openDrawerFilter, setOpenDrawerFilter }: Props) => {
       <h3 className="text-left">{t('PleaseSelect')}:</h3>
       <Select
         showSearch
-        className="filterStyle"
+        className="filterStyle streets"
         allowClear
         mode="multiple"
         placeholder={t('PleaseSelect')}

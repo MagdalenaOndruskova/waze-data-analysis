@@ -14,6 +14,7 @@ const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
   return (
     <Drawer
       className="sidebar-drawer"
+      rootClassName={'stats-drawer'}
       title={t('graph.tiles.title')}
       placement="left"
       onClose={onCloseDrawer}
@@ -22,7 +23,7 @@ const StatsDrawer = ({ open, onCloseDrawer }: Props) => {
       closable={true}
       zIndex={10000}
     >
-      <StatsTilesComplet spaceBetween={true} />
+      <StatsTilesComplet />
     </Drawer>
   );
 };

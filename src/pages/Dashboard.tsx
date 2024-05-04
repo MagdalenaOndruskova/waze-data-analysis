@@ -90,7 +90,7 @@ const Dashboard = () => {
   return (
     <div style={{ padding: '12px' }}>
       <div className="top-row">
-        <StatsTilesComplet spaceBetween={false} isDashboard={true} />
+        <StatsTilesComplet isDashboard={true} />
       </div>
       <Row className="dashboard-row" gutter={24}>
         <Col xxl={5} xl={9} lg={9} md={24} className="alerts-type-col">

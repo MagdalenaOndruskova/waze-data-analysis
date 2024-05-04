@@ -421,6 +421,24 @@ a {
   z-index: 100000;
 }
 
+.stats-drawer .ant-drawer-body .cardbody > div {
+  &:first-of-type {
+    // border: 1px solid red !important;
+    line-height: 20px;
+  }
+
+  &:last-of-type {
+    // border: 1px solid green !important;
+    line-height: 7px;
+  }
+}
+
+.stats-drawer .ant-spin-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .pie-chart {
   width: 350px;
 }

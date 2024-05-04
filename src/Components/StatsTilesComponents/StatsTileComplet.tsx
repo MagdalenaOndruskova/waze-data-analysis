@@ -9,11 +9,10 @@ import { get_data_delay_alerts } from '../../utils/backendApiRequests';
 import { Spin } from 'antd';
 
 type Props = {
-  spaceBetween: boolean;
   isDashboard?: boolean;
 };
 
-const StatsTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
+const StatsTilesComplet = ({ isDashboard }: Props) => {
   const { t } = useTranslation();
   const { filter } = useContext(filterContext);
 
@@ -76,13 +75,11 @@ const StatsTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
           tileTitle={new Intl.NumberFormat('cs-CZ').format(alertData?.reduce((sum, attribute) => sum + attribute, 0))}
           tileType={t('tile.ActiveAlerts')}
         ></StatsTile>
-        {spaceBetween ? <br /> : <></>}
         <StatsTile
           icon={<Icons.CarIcon />}
           tileTitle={new Intl.NumberFormat('cs-CZ').format(jamsData?.reduce((sum, attribute) => sum + attribute, 0))}
           tileType={t('tile.TrafficJams')}
         ></StatsTile>
-        {spaceBetween ? <br /> : <></>}
         <StatsTile
           icon={<Icons.SpeedIcon />}
           tileTitle={new Intl.NumberFormat('pt-PT', {
@@ -91,7 +88,6 @@ const StatsTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
           }).format(Number((speedData?.reduce((sum, attribute) => sum + attribute, 0) / jamsData?.length).toFixed(2)))}
           tileType={t('tile.AverageSpeed')}
         ></StatsTile>
-        {spaceBetween ? <br /> : <></>}
         <StatsTile
           icon={<Icons.CarIcon />}
           tileTitle={new Intl.NumberFormat('cs-CZ', {
@@ -100,7 +96,6 @@ const StatsTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
           }).format(lengthData?.reduce((sum, attribute) => sum + attribute, 0))}
           tileType={t('tile.JamsLength')}
         ></StatsTile>
-        {spaceBetween ? <br /> : <></>}
 
         <StatsTile
           icon={<Icons.JamDelayIcon />}
@@ -110,7 +105,6 @@ const StatsTilesComplet = ({ spaceBetween, isDashboard }: Props) => {
           }).format(timeData?.reduce((sum, attribute) => sum + attribute, 0) / 60)}
           tileType={t('tile.JamsDelay')}
         ></StatsTile>
-        {spaceBetween ? <br /> : <></>}
 
         <StatsTile
           icon={<Icons.JamLevelIcon />}

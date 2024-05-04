@@ -153,8 +153,14 @@
 
   "plot.downloadSVG": "Stiahni SVG",
   "data.delay.loading": "Načítavam dáta o dopravných zápchach.",
+  "data.delay.loading.stopped": "Načítavanie dát o dopravných zápchach bolo zrušené.",
   "data.alerts.loading": "Načítavam dáta o dopravných udalostiach.",
+  "data.alerts.loading.stopped": "Načítavanie dát o dopravných udalostiach bolo zrušené. ",
+  "data.loading.street": "Načítavanie ulice",
+  "data.loading.street.description": "Načítavam ulicu a jej dopravné zápchy.",
+  "data.loading.street.done": "Načítavanie ulice a dopravných zápch hotovo.",
   "type": "Typ",
+
   "subtype": "Podtyp",
   "street": "Ulica",
   "pubMillis": "Dátum a čas",

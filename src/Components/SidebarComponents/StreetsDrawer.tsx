@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filterContext, routeContext, streetContext } from '../../utils/contexts';
 import useAxios from '../../utils/useAxios';
-import { Coord, Streets } from '../../types/baseTypes';
+import { AdressPoint, Coord, Streets } from '../../types/baseTypes';
 import { getOptionsFromStreet, ignoreDiacriticsFilter } from '../../utils/util';
 import { deleteAllFromMap, deleteFromMap, deleteMultipleFromMap, drawOnMap } from '../../utils/map';
 import { get_route, get_streets_coord } from '../../utils/backendApiRequests';
@@ -14,10 +14,19 @@ type Props = {
   openDrawerRoute: boolean;
   setOpenDrawerRoute: React.Dispatch<React.SetStateAction<boolean>>;
   setRouteStreets: React.Dispatch<any>;
+  alertsPoints: AdressPoint;
+  setAlertsPoints: React.Dispatch<React.SetStateAction<AdressPoint>>;
   map: L.Map;
 };
 
-const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, setRouteStreets, map }: Props) => {
+const StreetsDrawer = ({
+  openDrawerRoute,
+  setOpenDrawerRoute,
+  setRouteStreets,
+  map,
+  alertsPoints,
+  setAlertsPoints,
+}: Props) => {
   const { t } = useTranslation();
   const {
     streetsInRoute,
@@ -76,7 +85,6 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, setRouteStreets, m
     if (!dataStreets) {
       return;
     }
-    console.log(streetsInRoute);
     setOptions(getOptionsFromStreet(dataStreets, streetsInRoute));
     setSelected((prevValue) => {
       return prevValue.filter((street) => !streetsInRoute.includes(street));
@@ -99,16 +107,11 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, setRouteStreets, m
   }, [streetsInSelected]);
 
   async function updateRoute(index: number) {
-    console.log(index);
-    console.log(coordinates[index]);
-    console.log('🚀 ~ StreetsDrawer ~ coordinates:', coordinates);
-
     const removedCoord: Coord = coordinates.splice(index, 1)[0];
     removedCoord.marker.remove();
     setNewCoordinates(coordinates);
     deleteAllFromMap(streetsInMap);
 
-    console.log('🚀 ~ StreetsDrawer ~ coordinates:', coordinates);
     // call again the routing algorithmus for each point
     for (let i = 0; i < coordinates.length - 1; i++) {
       let pair = [coordinates[i], coordinates[i + 1]];
@@ -116,11 +119,26 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, setRouteStreets, m
       const response = await get_route(pair[0], pair[1], filter);
 
       setRouteStreets(response.streets_coord);
-      setNewStreetsInRoute([...new Set([...response.streets_coord.map((street) => street.street_name)])]);
+      const oldStreetsInRoute = [...streetsInRoute];
+      var newStreetsInRoute = [];
+      if (i === 0) {
+        newStreetsInRoute = [...new Set([...response.streets_coord.map((street) => street.street_name)])];
+        setNewStreetsInRoute([...new Set([...response.streets_coord.map((street) => street.street_name)])]);
+      } else {
+        setNewStreetsInRoute((prevData) => {
+          newStreetsInRoute = [
+            ...new Set([...response.streets_coord.map((street) => street.street_name), ...prevData]),
+          ];
+          return [...new Set([...response.streets_coord.map((street) => street.street_name), ...prevData])];
+        });
+      }
 
       setNewRoute((prevData) => {
         return [...prevData, ...response.route];
       });
+      const streetToRemove = oldStreetsInRoute?.filter((item) => !newStreetsInRoute?.includes(item));
+      const newAlertPoints = alertsPoints?.filter((item) => !streetToRemove.includes(item.street));
+      setAlertsPoints(newAlertPoints);
     }
   }
 
@@ -165,7 +183,6 @@ const StreetsDrawer = ({ openDrawerRoute, setOpenDrawerRoute, setRouteStreets, m
         mode="multiple"
         placeholder={t('PleaseSelect')}
         onChange={(value) => {
-          setNewStreetsInSelected(value);
           setNewFilter((prevState) => ({
             ...prevState,
             streets: value,

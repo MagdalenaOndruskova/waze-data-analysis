@@ -211,6 +211,8 @@ const Sidebar = ({
         map={map}
         setOpenDrawerRoute={setOpenDrawerRoute}
         setRouteStreets={setRouteStreets}
+        alertsPoints={alertsPoints}
+        setAlertsPoints={setAlertsPoints}
       />
     </div>
   );

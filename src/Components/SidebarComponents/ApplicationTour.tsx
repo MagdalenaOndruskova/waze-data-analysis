@@ -79,7 +79,7 @@ const ApplicationTour = ({
       target: () => refAlerts.current,
     },
   ];
-  return <Tour open={openTour} onClose={() => setOpenTour(false)} steps={steps} />;
+  return <Tour open={openTour} onClose={() => setOpenTour(false)} steps={steps} zIndex={100000} />;
 };
 
 export default ApplicationTour;

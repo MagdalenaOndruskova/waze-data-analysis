@@ -18,9 +18,7 @@ import { get_all_street_delays, get_all_street_alerts, get_streets_coord } from 
 
 import Map from '../Components/Map';
 import { AdressPoint } from '../types/baseTypes';
-import { t } from 'i18next';
 import { useUrlSearchParams } from '../hooks/useUrlSearchParams';
-import Icon from '@ant-design/icons/lib/components/Icon';
 
 type Coord = {
   latitude: number;
@@ -41,13 +39,18 @@ function getPinIcon(alert_type: string) {
 }
 
 const FullMap = () => {
-  const { filter } = useContext(filterContext);
-  const { streetsInRoute, setNewStreetsInSelected, streetsInMap, setNewStreetsInMap, newlySelected } =
-    useContext(streetContext);
+  const { filter, setNewFilter } = useContext(filterContext);
+  const {
+    streetsInRoute,
+    setNewStreetsInSelected,
+    streetsInSelected,
+    streetsInMap,
+    setNewStreetsInMap,
+    newlySelected,
+  } = useContext(streetContext);
   const { route, coordinates } = useContext(routeContext);
 
   const mapRef = useRef<LeafletMap>(null);
-  console.log('🚀 ~ FullMap ~ mapRef:', mapRef);
   const { t } = useTranslation();
 
   const refStats = useRef(null);
@@ -71,6 +74,8 @@ const FullMap = () => {
   const [alertsPoints, setAlertsPoints] = useState<AdressPoint>([]);
 
   const [routeStreets, setRouteStreets] = useState<any>([]);
+  const controller = useRef<AbortController>(new AbortController());
+  const controllerAlerts = useRef<AbortController>(new AbortController());
 
   const findRoute = () => {
     if (buttonStyle === 'default') {
@@ -78,7 +83,6 @@ const FullMap = () => {
       setButtonStyle('primary');
       setButtonStyleDelay('default');
       setMapMode('route');
-      // TODO: po obdrzani route, filtrovat na ulice ktore su vidiet
     } else {
       setButtonStyle('default');
       setMapMode('street');
@@ -89,6 +93,9 @@ const FullMap = () => {
   const allDelayData = async () => {
     const map = mapRef.current;
     deleteAllFromMap(delayStreets);
+
+    setNewStreetsInSelected([]);
+
     const key = 'data_delay';
     const openNotification = () => {
       api['info']({
@@ -101,8 +108,28 @@ const FullMap = () => {
       });
     };
     openNotification();
-    const data = await get_all_street_delays(filter);
+    var data;
+    try {
+      data = await get_all_street_delays(filter, controller.current);
+    } catch (error) {
+      data = [];
+      setNewFilter((prevData) => {
+        return { ...prevData, streets: [] };
+      });
+      setTimeout(() => {
+        api['error']({
+          key,
+          message: t('loading.data'),
+          description: t('data.delay.loading.stopped'),
+          placement: 'bottomRight',
+        });
+      }, 1000);
+      return;
+    }
     const streets: StreetInMap[] = [];
+    setNewFilter((prevData) => {
+      return { ...prevData, streets: [] };
+    });
     data?.forEach((element) => {
       streets.push(drawOnMap(map, element?.street, element?.path, element?.color));
     });
@@ -122,6 +149,7 @@ const FullMap = () => {
     if (buttonStyleDelay === 'default') {
       setButtonStyleDelay('primary');
       setButtonStyle('default');
+      allDelayData();
     } else {
       setButtonStyleDelay('default');
       deleteAllFromMap(delayStreets);
@@ -129,10 +157,9 @@ const FullMap = () => {
       setNewStreetsInSelected([]);
       setNewStreetsInMap([]);
       setDelayStreets([]);
+      controller.current.abort();
       return;
     }
-
-    allDelayData();
   };
 
   const allAlertData = async () => {
@@ -150,8 +177,21 @@ const FullMap = () => {
       });
     };
     openNotification();
-
-    const data: AdressPoint = await get_all_street_alerts(filter, route, streetsInRoute);
+    var data: AdressPoint;
+    try {
+      data = await get_all_street_alerts(filter, route, streetsInRoute, controllerAlerts.current);
+    } catch (error) {
+      data = [];
+      setTimeout(() => {
+        api['error']({
+          key,
+          message: t('loading.data'),
+          description: t('data.alerts.loading.stopped'),
+          placement: 'bottomRight',
+        });
+      }, 1000);
+      return;
+    }
     const newData: AdressPoint = data.map((obj) => ({ ...obj, visible: true, icon: getPinIcon(obj.type) }));
 
     setAlertsPoints(newData);
@@ -172,6 +212,7 @@ const FullMap = () => {
     } else {
       setButtonStyleAlerts('default');
       setShowMarkers(false);
+      controllerAlerts.current.abort();
 
       return;
     }
@@ -194,7 +235,6 @@ const FullMap = () => {
     }
 
     const map = mapRef.current;
-    console.log(newlySelected);
     const fetchData = async () => {
       const isMatched = streetsInMap.some((street) => street.name === newlySelected);
 
@@ -247,7 +287,9 @@ const FullMap = () => {
       allDelayData();
     }
     if (buttonStyleAlerts == 'primary') {
-      allAlertData();
+      const streetToRemove = streetsInSelected?.filter((item) => !filter?.streets.includes(item));
+      const newAlertPoints = alertsPoints?.filter((item) => !streetToRemove.includes(item.street));
+      setAlertsPoints(newAlertPoints);
     }
   }, [filter]);
 

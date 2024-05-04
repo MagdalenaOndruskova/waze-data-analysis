@@ -153,9 +153,15 @@
 
   "plot.downloadSVG": "Download SVG",
   "data.delay.loading": "Loading data of streets delay.",
+  "data.delay.loading.stopped": "Loading data of streets delay was canceled.",
   "data.alerts.loading": "Loading data of streets alerts.",
+  "data.alerts.loading.stopped": "Loading data of streets alerts was canceled.",
+  "data.loading.street": "Loading street",
+  "data.loading.street.description": "Loading street and its delays.",
+  "data.loading.street.done": "Loading street and its delays is done.",
 
   "type": "Type",
+
   "subtype": "Subtype",
   "street": "Street",
   "pubMillis": "Date and time",

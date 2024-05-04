@@ -40,6 +40,7 @@ function getRequestBody(filter: Filter) {
 function getRequestBodyWithRoute(filter: Filter, route, streetsInRoute: string[]) {
   const tmp = getRequestBody(filter);
   var body;
+  console.log(route);
   if (route.length > 0) {
     console.log(filter.streets);
     console.log(streetsInRoute);
@@ -100,18 +101,23 @@ export async function get_streets_coord(filter: Filter, newlySelected: string) {
   return response.data;
 }
 
-export async function get_all_street_delays(filter: Filter) {
+export async function get_all_street_delays(filter: Filter, controller: AbortController) {
   const tmp = getRequestBody(filter);
   const body = { ...tmp, route: [] };
-  const response = await backendApi.post(`/all_delays/`, body);
+  const response = await backendApi.post(`/all_delays/`, body, { signal: controller.signal });
   const data = response.data;
   return data;
 }
 
-export async function get_all_street_alerts(filter: Filter, route: any[], streetsInRoute: string[]) {
+export async function get_all_street_alerts(
+  filter: Filter,
+  route: any[],
+  streetsInRoute: string[],
+  controller: AbortController,
+) {
   const body = getRequestBodyWithRoute(filter, route, streetsInRoute);
 
-  const response = await backendApi.post('draw_alerts/', body);
+  const response = await backendApi.post('draw_alerts/', body, { signal: controller.signal });
   return response.data;
 }
 

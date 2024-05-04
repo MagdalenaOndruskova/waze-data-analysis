@@ -13,7 +13,7 @@ function Navbar() {
 
   const [searchParams] = useSearchParams();
 
-  const { filter } = useContext(filterContext);
+  const { filter, setNewFilter } = useContext(filterContext);
 
   var searchParamsQuery = '';
   if (JSON.stringify(filter) !== JSON.stringify(FILTER_DEFAULT_VALUE.filterDefaultValue) && filter !== null) {
@@ -50,7 +50,10 @@ function Navbar() {
     <header className="header">
       <div
         style={{ height: '55px', width: '120px', cursor: 'pointer' }}
-        onClick={() => navigate('/waze-data-analysis/')}
+        onClick={() => {
+          setNewFilter(FILTER_DEFAULT_VALUE.filterDefaultValue);
+          navigate('/waze-data-analysis/');
+        }}
         className="logo"
       >
         <svg

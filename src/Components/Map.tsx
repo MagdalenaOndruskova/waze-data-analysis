@@ -107,25 +107,40 @@ const Map = ({
               return;
             }
             setRouteStreets(response.streets_coord);
+            const newStreetsInRoute2 = [
+              ...new Set([...streetsInRoute, ...response.streets_coord.map((street) => street.street_name)]),
+            ];
+
             setNewStreetsInRoute((prevState) => {
               return [...new Set([...prevState, ...response.streets_coord.map((street) => street.street_name)])];
             });
             setNewCoordinates((prevData) => {
               const newData = [...prevData];
+              console.log('🚀 ~ setNewCoordinates ~ newData:', newData);
+              console.log('🚀 ~ setNewCoordinates ~ dst street:', response.dst_street);
+              console.log('🚀 ~ setNewCoordinates ~ src street:', response.src_street);
+              console.log('🚀 ~ setNewCoordinates ~ last index:', lastIndex);
+              console.log('🚀 ~ setNewCoordinates ~ second last index:', secondLastIndex);
+
               newData[lastIndex] = { ...newData[lastIndex], street: response.dst_street };
               newData[secondLastIndex] = { ...newData[secondLastIndex], street: response.src_street };
+              if (newData[secondLastIndex].street == newData[lastIndex].street) {
+                newData.pop();
+                console.log('popujem');
+              }
               return newData;
             });
+            const new_route = [...route, ...response.route];
             setNewRoute((prevData) => {
               return [...prevData, ...response.route];
             });
-            const data = await get_data_delay_alerts(filter, route, streetsInRoute);
+            const data = await get_data_delay_alerts(filter, new_route, newStreetsInRoute2);
+            console.log(new_route);
             console.log('🚀 ~ click: ~ data:', data);
             setJamsData(data.jams);
             setAlertData(data.alerts);
             setXAxisData(data.xaxis);
             setLoading(false);
-            console.log(filter);
             setTimeout(() => {
               api['success']({
                 key,
@@ -142,8 +157,8 @@ const Map = ({
             const openNotification = () => {
               api['info']({
                 key,
-                message: 'todo preklad',
-                description: 'Loading street',
+                message: t('data.loading.street'),
+                description: t('data.loading.street.description'),
                 placement: 'bottomRight',
                 duration: 0,
                 icon: <LoadingOutlined />,
@@ -167,8 +182,8 @@ const Map = ({
             setTimeout(() => {
               api['success']({
                 key,
-                message: t('route.selection.inProgress'),
-                description: 'Street loaded succesfully',
+                message: t('data.loading.street'),
+                description: t('data.loading.street.done'),
                 placement: 'bottomRight',
               });
             }, 1000);

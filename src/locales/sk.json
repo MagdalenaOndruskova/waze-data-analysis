@@ -171,5 +171,7 @@
   "orange": "Oranžová: Priemerne, medzi 4-7 dopravných zápch denne na danom segmente ulice",
   "red": "Červená: Priemerne, viac ako 7 dopravných zápch denne na danom segmente ulice",
 
-  "or": "alebo"
+  "or": "alebo",
+
+  "clear.route": "Vymaž trasu"
 }

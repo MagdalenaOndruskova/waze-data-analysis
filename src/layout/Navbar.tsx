@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { useNavigate, NavLink, useSearchParams } from 'react-router-dom';
-// import '../styles/layout-styles.scss';
 import { FILTER_DEFAULT_VALUE, filterContext } from '../utils/contexts';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../Components/LanguageSwitcher';

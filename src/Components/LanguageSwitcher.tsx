@@ -16,7 +16,7 @@ const LanguageSwitcher = ({ i18n, t }) => {
     <Select
       style={{}}
       onChange={onClickLanguageChange}
-      defaultValue="sk"
+      defaultValue="cs"
       popupClassName="language-switcher"
       className="language-select"
     >

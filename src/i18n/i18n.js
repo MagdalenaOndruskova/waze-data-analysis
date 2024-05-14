@@ -20,7 +20,7 @@ const resources = {
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: 'sk',
+  lng: 'cs',
   fallbackLng: 'en',
   debug: true,
   supportedLngs: ['cs', 'en', 'sk'],

@@ -140,6 +140,17 @@ const StreetsDrawer = ({
     }
   }
 
+  function clearRoute(): void {
+    setNewRoute([]);
+    coordinates.forEach((item) => {
+      item.marker.remove();
+    });
+    setNewCoordinates([]);
+    deleteAllFromMap(streetsInMap);
+    setNewStreetsInMap([]);
+    setRouteStreets([]);
+  }
+
   return (
     <Drawer
       className="sidebar-drawer"
@@ -153,10 +164,10 @@ const StreetsDrawer = ({
     >
       {coordinates?.length > 0 ? <h3>{t('route.pass')}</h3> : <></>}
 
-      <div style={{ maxHeight: '410px', overflowY: 'scroll' }}>
+      <div style={{ maxHeight: '510px', overflowY: 'scroll' }}>
         {coordinates?.map((coord, index) =>
           coord.street.length > 0 ? (
-            <div key={index.toString()}>
+            <div key={index.toString()} style={{ paddingBottom: '5px' }}>
               <Input style={{ width: '170px' }} value={coord.street} disabled />
 
               <CloseOutlined
@@ -169,6 +180,15 @@ const StreetsDrawer = ({
           ) : (
             <></>
           ),
+        )}
+        {coordinates?.length > 0 ? (
+          <div style={{ paddingRight: '20px' }}>
+            <Button type="primary" style={{ background: 'red', color: 'white' }} onClick={clearRoute}>
+              {t('clear.route')}
+            </Button>
+          </div>
+        ) : (
+          <></>
         )}
       </div>
 

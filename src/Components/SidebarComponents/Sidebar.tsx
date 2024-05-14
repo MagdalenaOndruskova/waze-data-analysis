@@ -63,7 +63,6 @@ const Sidebar = ({
   const [openDrawerRoute, setOpenDrawerRoute] = useState<boolean>(false);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false);
-  // const [loading, setLoading] = useState<boolean>(false);
   const [trafficCheck, setTrafficCheck] = useState<boolean>(true);
   const [accident, setTrafficAccident] = useState<boolean>(true);
   const [hazard, setTrafficHazard] = useState<boolean>(true);
@@ -77,7 +76,6 @@ const Sidebar = ({
     setDateTimeFrom(`${filter.fromDate}`);
     setDateTimeTo(`${filter.toDate}`);
     setPreviousDate(getXMinDate(filter?.toDate));
-
     setLoading(true);
     const get_data = async () => {
       const data = await get_data_delay_alerts(filter, route, streetsInRoute);

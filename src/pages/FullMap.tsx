@@ -61,10 +61,11 @@ const FullMap = () => {
   const refAlerts = useRef(null);
   const refRouteSidebar = useRef(null);
 
-  const [openInfoModalState, setOpenInfoModalState] = useState<boolean>(false);
+  const [openInfoModalState, setOpenInfoModalState] = useState<boolean>(true);
   const [openTour, setOpenTour] = useState<boolean>(false);
   const [buttonStyle, setButtonStyle] = useState<'default' | 'primary'>('default');
   const [buttonStyleDelay, setButtonStyleDelay] = useState<'default' | 'primary'>('default');
+  const [buttonStyleDelayDisabled, setButtonStyleDelayDisabled] = useState<boolean>(false);
   const [buttonStyleAlerts, setButtonStyleAlerts] = useState<'default' | 'primary'>('default');
   const [mapMode, setMapMode] = useState<'route' | 'street' | 'nothing'>('street');
   const [api, contextHolder] = notification.useNotification({ stack: { threshold: 3 } });
@@ -258,8 +259,14 @@ const FullMap = () => {
   }, [newlySelected]);
 
   useEffect(() => {
+    if (routeStreets.length < 1) {
+      setButtonStyleDelayDisabled(false);
+      return;
+    }
     const map = mapRef.current;
     var newStreetsInMap: StreetInMap[] = [];
+    console.log(routeStreets);
+    setButtonStyleDelayDisabled(true);
 
     routeStreets?.forEach((element) => {
       const streetInMapNew: StreetInMap = drawOnMap(map, element?.street_name, element?.path, element?.color);
@@ -286,9 +293,10 @@ const FullMap = () => {
   }, [routeStreets]);
 
   useEffect(() => {
-    if (buttonStyleDelay == 'primary') {
-      allDelayData();
-    }
+    // if (buttonStyleDelay == 'primary') {
+    //   console.log('cyklim');
+    //   allDelayData();
+    // }
     if (buttonStyleAlerts == 'primary') {
       const streetToRemove = streetsInSelected?.filter((item) => !filter?.streets.includes(item));
       const newAlertPoints = alertsPoints?.filter((item) => !streetToRemove.includes(item.street));
@@ -328,7 +336,13 @@ const FullMap = () => {
               {buttonStyle == 'primary' && t('route.button.active')}
               <RouteIcon />
             </Button>
-            <Button ref={refDelays} className="buttonRoute" type={buttonStyleDelay} onClick={drawDelays}>
+            <Button
+              ref={refDelays}
+              className="buttonRoute"
+              type={buttonStyleDelay}
+              disabled={buttonStyleDelayDisabled}
+              onClick={drawDelays}
+            >
               {t('Jams')}
               <Icons.CarSmallIcon />
             </Button>

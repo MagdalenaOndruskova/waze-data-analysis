@@ -49,6 +49,8 @@ const StatsTilesComplet = ({ isDashboard }: Props) => {
 
     setDataLoading(true);
     const get_data = async () => {
+      console.log('Data delay alers v StatsTileComplet.tsx');
+
       const response = await get_data_delay_alerts(filter, route, streetsInRoute);
       setJamsData(response.jams);
       setAlertData(response.alerts);

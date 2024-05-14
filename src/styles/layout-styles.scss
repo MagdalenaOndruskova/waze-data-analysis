@@ -432,6 +432,15 @@ a {
     line-height: 7px;
   }
 }
+.h3 {
+  text-align: start;
+  padding-left: 25px;
+}
+.ant-btn-default:disabled {
+  opacity: 0.75;
+  color: rgba(0, 0, 0, 0.88);
+  background: #ffffff;
+}
 
 .stats-drawer .ant-spin-container {
   display: flex;

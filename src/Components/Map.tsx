@@ -127,6 +127,7 @@ const Map = ({
             setNewRoute((prevData) => {
               return [...prevData, ...response.route];
             });
+            console.log('Data delay alers v Map.tsx');
             const data = await get_data_delay_alerts(filter, new_route, newStreetsInRoute2);
 
             setJamsData(data.jams);

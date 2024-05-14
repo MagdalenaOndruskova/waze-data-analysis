@@ -172,5 +172,7 @@
   "orange": "Orange: On average, between 4-7 traffic jams daily on street segment ",
   "red": "Red: On average. more than 7 traffic jams daily on street segment",
 
-  "or": "or"
+  "or": "or",
+
+  "clear.route": "Clear route"
 }

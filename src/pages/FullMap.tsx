@@ -67,6 +67,7 @@ const FullMap = () => {
   const [buttonStyleDelay, setButtonStyleDelay] = useState<'default' | 'primary'>('default');
   const [buttonStyleDelayDisabled, setButtonStyleDelayDisabled] = useState<boolean>(false);
   const [buttonStyleAlerts, setButtonStyleAlerts] = useState<'default' | 'primary'>('default');
+  const [buttonStyleAlertsDisabled, setButtonStyleAlertsDisabled] = useState<boolean>(false);
   const [mapMode, setMapMode] = useState<'route' | 'street' | 'nothing'>('street');
   const [api, contextHolder] = notification.useNotification({ stack: { threshold: 3 } });
   const [delayStreets, setDelayStreets] = useState<StreetInMap[]>([]);
@@ -84,9 +85,13 @@ const FullMap = () => {
       setButtonStyle('primary');
       setButtonStyleDelay('default');
       setMapMode('route');
+      setButtonStyleDelayDisabled(true);
+      setButtonStyleAlertsDisabled(true);
     } else {
       setButtonStyle('default');
       setMapMode('street');
+      setButtonStyleDelayDisabled(false);
+      setButtonStyleAlertsDisabled(false);
     }
   };
   useUrlSearchParams();
@@ -293,10 +298,6 @@ const FullMap = () => {
   }, [routeStreets]);
 
   useEffect(() => {
-    // if (buttonStyleDelay == 'primary') {
-    //   console.log('cyklim');
-    //   allDelayData();
-    // }
     if (buttonStyleAlerts == 'primary') {
       const streetToRemove = streetsInSelected?.filter((item) => !filter?.streets.includes(item));
       const newAlertPoints = alertsPoints?.filter((item) => !streetToRemove.includes(item.street));
@@ -346,7 +347,13 @@ const FullMap = () => {
               {t('Jams')}
               <Icons.CarSmallIcon />
             </Button>
-            <Button ref={refAlerts} className="buttonRoute" type={buttonStyleAlerts} onClick={drawAlerts}>
+            <Button
+              ref={refAlerts}
+              className="buttonRoute"
+              type={buttonStyleAlerts}
+              disabled={buttonStyleAlertsDisabled}
+              onClick={drawAlerts}
+            >
               {t('Alerts')}
               <Icons.WarningSmallIcon />
             </Button>

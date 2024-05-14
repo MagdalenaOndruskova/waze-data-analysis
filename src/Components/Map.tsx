@@ -29,12 +29,16 @@ type Props = {
   setMapMode: React.Dispatch<React.SetStateAction<'route' | 'street' | 'nothing'>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  drawAlertsAnyway: any;
+  buttonStyleAlerts: 'primary' | 'default';
 };
 
 const Map = ({
   mapMode,
   api,
+  drawAlertsAnyway,
   routeStreets,
+  buttonStyleAlerts,
   setRouteStreets,
   showMarkers,
   alertsPoints,
@@ -98,8 +102,8 @@ const Map = ({
               setTimeout(() => {
                 api['error']({
                   key,
-                  message: 'route not found', // t('route.selection.inProgress'),
-                  description: 'Select different points - ideally with multiple pass points', // t('route.selection.loading.done'),
+                  message: 'route not found',
+                  description: 'Select different points - ideally with multiple pass points',
                   placement: 'bottomRight',
                 });
               }, 1000);
@@ -133,6 +137,7 @@ const Map = ({
             setAlertData(data.alerts);
             setXAxisData(data.xaxis);
             setLoading(false);
+
             setTimeout(() => {
               api['success']({
                 key,

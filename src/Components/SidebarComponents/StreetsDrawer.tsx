@@ -145,6 +145,7 @@ const StreetsDrawer = ({
     coordinates.forEach((item) => {
       item.marker.remove();
     });
+    setAlertsPoints([]);
     setNewCoordinates([]);
     deleteAllFromMap(streetsInMap);
     setNewStreetsInMap([]);

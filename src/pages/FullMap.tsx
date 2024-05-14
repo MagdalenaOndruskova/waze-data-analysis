@@ -159,7 +159,6 @@ const FullMap = () => {
     } else {
       setButtonStyleDelay('default');
       deleteAllFromMap(delayStreets);
-      console.log('tu odmazavam ulice');
       if (route.length === 0) {
         deleteAllFromMap(streetsInMap);
       }
@@ -173,7 +172,6 @@ const FullMap = () => {
 
   const allAlertData = async () => {
     const key = 'alertData';
-    // setAlertsPoints([]);
 
     const openNotification = () => {
       api['info']({
@@ -225,6 +223,10 @@ const FullMap = () => {
 
       return;
     }
+  };
+
+  const drawAlertsAnyway = async () => {
+    allAlertData();
   };
 
   useEffect(() => {
@@ -295,10 +297,16 @@ const FullMap = () => {
       });
       return [...stateCopy, ...newStreets];
     });
+
+    if (buttonStyleAlerts == 'primary') {
+      console.log('robim daco');
+      allAlertData();
+    }
   }, [routeStreets]);
 
   useEffect(() => {
     if (buttonStyleAlerts == 'primary') {
+      allAlertData();
       const streetToRemove = streetsInSelected?.filter((item) => !filter?.streets.includes(item));
       const newAlertPoints = alertsPoints?.filter((item) => !streetToRemove.includes(item.street));
       setAlertsPoints(newAlertPoints);
@@ -370,6 +378,8 @@ const FullMap = () => {
             setMapMode={setMapMode}
             loading={loading}
             setLoading={setLoading}
+            drawAlertsAnyway={drawAlertsAnyway}
+            buttonStyleAlerts={buttonStyleAlerts}
           />
 
           <div className="divTimelineOnMap">

@@ -61,7 +61,7 @@ const FullMap = () => {
   const refAlerts = useRef(null);
   const refRouteSidebar = useRef(null);
 
-  const [openInfoModalState, setOpenInfoModalState] = useState<boolean>(true);
+  const [openInfoModalState, setOpenInfoModalState] = useState<boolean>(false);
   const [openTour, setOpenTour] = useState<boolean>(false);
   const [buttonStyle, setButtonStyle] = useState<'default' | 'primary'>('default');
   const [buttonStyleDelay, setButtonStyleDelay] = useState<'default' | 'primary'>('default');

@@ -121,7 +121,6 @@ const Dashboard = () => {
         </Col>
         <Col xxl={12} xl={24} lg={24} md={24} className="graphs-col">
           <Card title={t('graphs.title')}>
-            {filter.toDate}
             <ChartTimelineComponent
               dataJams={jamsData}
               dataAlerts={alertData}

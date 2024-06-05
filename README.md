@@ -8,8 +8,9 @@ data collected from users using navigation application Waze.
 This application was created in cooperation with [data.brno.cz](https://data.brno.cz/)
 
 
-In this repository you can find a code for running frontend application. 
-This application is querying data from backend application.
+In this repository you can find a code for running frontend application. This application is querying data from backend application and visualizing the data for user. 
+It visualize data on map (using leaflet library) and in dashboard. User can select different streets and routes for which the visualization is done, while choosing 
+a time interval (up to one year in the past). 
 
 
 Datasets can be found at: [Traffic delays](https://data.brno.cz/datasets/mestobrno::plynulost-dopravy-traffic-delays/about) and [Traffic events](https://data.brno.cz/datasets/mestobrno::ud%C3%A1losti-na-cest%C3%A1ch-traffic-events/about). 
@@ -23,9 +24,8 @@ Final application is available at:
 __________________________________
 ### Usage
 In terminal, use command:
-```
-docker compose up --build
-```
+- Nainstalovanie potrebnych kniznic: `pnpm i`
+- Spustenie aplikacie `pnpm preview`
 
 ___________________________________
 ### License 
